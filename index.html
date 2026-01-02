@@ -16,9 +16,10 @@
       --line: rgba(255,255,255,.10);
       --shadow: 0 14px 40px rgba(0,0,0,.45);
       --radius: 18px;
+      --ok:#2ecc71;
+      --warn:#ffb020;
     }
     *{ box-sizing:border-box; }
-
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -29,12 +30,7 @@
         radial-gradient(900px 500px at 95% 15%, rgba(255,59,48,.12), transparent 55%),
         linear-gradient(180deg, #070a0f, #0b0f14 40%, #070a0f);
     }
-
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 18px 14px 28px;
-    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 18px 14px 28px; }
 
     .hero{
       background:
@@ -57,33 +53,17 @@
       opacity:.9;
       pointer-events:none;
     }
-
-    .brand{
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
+    .brand{ display:flex; gap:12px; align-items:center; }
     .logo{
-      width: 46px; height: 46px;
-      border-radius: 14px;
+      width: 46px; height: 46px; border-radius: 14px;
       background: linear-gradient(135deg, rgba(215,38,56,.95), rgba(255,59,48,.65));
       box-shadow: 0 10px 24px rgba(215,38,56,.22);
-      display:grid;
-      place-items:center;
+      display:grid; place-items:center;
       border: 1px solid rgba(255,255,255,.18);
-      flex: 0 0 auto;
+      flex:0 0 auto;
     }
-    .title{
-      margin:0;
-      font-size: 22px;
-      letter-spacing: .2px;
-      line-height: 1.08;
-    }
-    .subtitle{
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .title{ margin:0; font-size:22px; letter-spacing:.2px; line-height:1.08; }
+    .subtitle{ margin:6px 0 0; color:var(--muted); font-size:13px; }
 
     .card{
       margin-top: 14px;
@@ -93,26 +73,13 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-
     .cardBody{ padding: 14px; }
 
-    .row{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    @media(min-width: 520px){
-      .row.two{ grid-template-columns: 1fr 1fr; }
-    }
+    .row{ display:grid; grid-template-columns: 1fr; gap: 12px; }
+    @media(min-width: 520px){ .row.two{ grid-template-columns: 1fr 1fr; } }
 
-    label{
-      display:block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    select{
+    label{ display:block; font-size:12px; color: var(--muted); margin-bottom:6px; }
+    select, input, textarea{
       width:100%;
       padding: 12px 12px;
       border-radius: 14px;
@@ -122,15 +89,15 @@
       outline: none;
       font-size: 16px;
     }
-    select:focus{
+    textarea{ min-height: 110px; resize: vertical; }
+
+    select:focus, input:focus, textarea:focus{
       border-color: rgba(255,59,48,.55);
       box-shadow: 0 0 0 4px rgba(215,38,56,.15);
     }
 
     .tabs{
-      display:flex;
-      gap: 10px;
-      padding: 10px;
+      display:flex; gap:10px; padding:10px;
       background: rgba(15,21,34,.40);
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
@@ -145,10 +112,7 @@
       cursor:pointer;
       font-weight: 800;
       font-size: 14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
+      display:flex; align-items:center; justify-content:center; gap:8px;
       user-select:none;
       transition: transform .08s ease, background .15s ease, border-color .15s ease;
     }
@@ -159,19 +123,113 @@
       box-shadow: 0 10px 22px rgba(215,38,56,.10);
     }
 
-    .content{
-      display:none;
-      padding: 14px;
-      min-height: 160px;
-    }
+    .content{ display:none; padding: 14px; }
     .content.active{ display:block; }
 
-    /* Pour que ça reste “vide mais propre” comme tu veux */
-    .emptyBox{
-      border: 1px dashed rgba(255,255,255,.16);
-      border-radius: 14px;
+    .section{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
       background: rgba(15,21,34,.35);
-      height: 160px;
+    }
+    .sectionTitle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      margin:0 0 10px 0;
+      font-size: 13px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .btn{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(135deg, rgba(215,38,56,.95), rgba(255,59,48,.78));
+      color: white;
+      font-weight: 900;
+      cursor:pointer;
+      font-size: 16px;
+      box-shadow: 0 12px 28px rgba(215,38,56,.20);
+      transition: transform .08s ease, filter .15s ease;
+    }
+    .btn:active{ transform: scale(.99); }
+    .btn:hover{ filter: brightness(1.05); }
+
+    .btnGhost{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font-weight: 800;
+      cursor:pointer;
+    }
+
+    .inlineBtns{ display:flex; gap:10px; }
+    .inlineBtns > *{ flex:1; }
+
+    .list{
+      margin: 10px 0 0 0;
+      padding: 0;
+      list-style: none;
+      display:flex;
+      flex-direction: column;
+      gap:8px;
+    }
+    .item{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap:10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+    }
+    .item span{ font-weight: 700; }
+    .smallBtn{
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;
+      font-weight: 800;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .smallBtn.danger{
+      border-color: rgba(255,59,48,.35);
+      background: rgba(255,59,48,.10);
+    }
+
+    .hint{
+      margin: 10px 0 0 0;
+      font-size: 12px;
+      color: rgba(255,255,255,.55);
+      line-height: 1.35;
+    }
+
+    .lockRow{ display:grid; grid-template-columns: 1fr auto; gap: 10px; align-items:center; }
+    @media(max-width:420px){ .lockRow{ grid-template-columns: 1fr; } }
+
+    .footer{ margin-top: 14px; color: rgba(255,255,255,.45); font-size: 12px; text-align:center; }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -226,17 +284,137 @@
         <div class="tab" role="tab" aria-selected="false" onclick="showTab('admin')">🛡️ Administrateur</div>
       </div>
 
+      <!-- AGENT -->
       <div id="agent" class="content active">
-        <div class="emptyBox"></div>
+        <div class="section">
+          <div class="sectionTitle">
+            <span>Vue Agent</span>
+            <span class="pill">Bientôt</span>
+          </div>
+          <!-- On remplira plus tard -->
+          <div style="height:140px; border:1px dashed rgba(255,255,255,.16); border-radius:14px;"></div>
+          <p class="hint">Cette partie sera affichée automatiquement à partir des paramètres Admin (agents + missions par période).</p>
+        </div>
       </div>
 
+      <!-- ADMIN -->
       <div id="admin" class="content">
-        <div class="emptyBox"></div>
+        <div class="section">
+          <div class="sectionTitle">
+            <span>Accès Administrateur</span>
+            <span class="pill">Code requis</span>
+          </div>
+
+          <div class="lockRow">
+            <input type="password" id="codeAdmin" placeholder="Code administrateur" />
+            <button class="btn" style="max-width:220px;" onclick="unlockAdmin()">Accéder</button>
+          </div>
+          <p class="hint">Le code est dans le fichier (variable <b>ADMIN_CODE</b>). On le changera plus tard si tu veux.</p>
+        </div>
+
+        <div id="adminZone" style="display:none; margin-top:12px;">
+          <!-- Agents -->
+          <div class="section">
+            <div class="sectionTitle">
+              <span>Agents</span>
+              <span class="pill" id="agentsCount">0</span>
+            </div>
+
+            <div class="row two">
+              <div>
+                <label for="agentNom">Ajouter un agent (Nom Prénom)</label>
+                <input id="agentNom" placeholder="Ex : VÉNANTE Pierre" />
+              </div>
+              <div style="display:flex; align-items:flex-end;">
+                <button class="btn" onclick="addAgent()">Ajouter</button>
+              </div>
+            </div>
+
+            <ul class="list" id="agentsList"></ul>
+
+            <div class="inlineBtns" style="margin-top:10px;">
+              <button class="btnGhost" onclick="exportData()">Exporter données</button>
+              <button class="btnGhost" onclick="importData()">Importer données</button>
+            </div>
+
+            <p class="hint">
+              Stockage actuel : <b>dans le navigateur</b> (localStorage). Sur un autre PC/téléphone ce sera vide.
+              L’export/import sert à transporter les paramètres.
+            </p>
+          </div>
+
+          <!-- Missions par période -->
+          <div class="section" style="margin-top:12px;">
+            <div class="sectionTitle">
+              <span>Missions par période</span>
+              <span class="pill" id="periodPill">—</span>
+            </div>
+
+            <p class="hint" style="margin-top:0;">
+              Choisis d’abord <b>Mois</b> et <b>Année</b> en haut, puis saisis les missions (une par ligne).
+            </p>
+
+            <div class="row">
+              <div>
+                <label for="missionsInput">Missions (1 par ligne)</label>
+                <textarea id="missionsInput" placeholder="Ex :
+Nettoyage des communs
+Inventaire véhicules
+Sortie poubelles / verre"></textarea>
+              </div>
+              <div class="inlineBtns">
+                <button class="btn" onclick="saveMissions()">Enregistrer</button>
+                <button class="btnGhost" onclick="loadMissions()">Charger</button>
+              </div>
+            </div>
+
+            <ul class="list" id="missionsPreview"></ul>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div class="footer">© Centre de secours • Prototype interne</div>
   </div>
 
   <script>
+    // ======= CONFIG =======
+    const ADMIN_CODE = "1234"; // change ici si tu veux
+
+    const LS_KEY = "cs_consenvoye_entretien_v1";
+
+    // ======= STATE =======
+    const state = loadState();
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw) return { agents: [], missionsByPeriod: {} };
+        const parsed = JSON.parse(raw);
+        return {
+          agents: Array.isArray(parsed.agents) ? parsed.agents : [],
+          missionsByPeriod: parsed.missionsByPeriod && typeof parsed.missionsByPeriod === "object" ? parsed.missionsByPeriod : {}
+        };
+      }catch(e){
+        return { agents: [], missionsByPeriod: {} };
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      renderAgents();
+      renderPeriodPill();
+      renderMissionsPreview();
+    }
+
+    function periodKey(){
+      const mois = document.getElementById("mois").value;
+      const annee = document.getElementById("annee").value;
+      if(!mois || !annee) return "";
+      return `${annee}-${mois}`;
+    }
+
+    // ======= UI Tabs =======
     function showTab(tab) {
       const tabs = document.querySelectorAll('.tab');
       const contents = document.querySelectorAll('.content');
@@ -251,6 +429,198 @@
       }
       document.getElementById(tab).classList.add('active');
     }
+
+    // ======= Admin Lock =======
+    function unlockAdmin(){
+      const code = document.getElementById("codeAdmin").value;
+      if(code === ADMIN_CODE){
+        document.getElementById("adminZone").style.display = "block";
+        renderAgents();
+        renderPeriodPill();
+        loadMissions(); // charge automatiquement la période sélectionnée si possible
+      }else{
+        alert("Code incorrect");
+      }
+    }
+
+    // ======= Agents =======
+    function normalizeName(s){
+      return (s || "").trim().replace(/\s+/g, " ");
+    }
+
+    function addAgent(){
+      const inp = document.getElementById("agentNom");
+      const name = normalizeName(inp.value);
+      if(!name) return;
+
+      // éviter doublons exacts
+      if(state.agents.includes(name)){
+        inp.value = "";
+        return;
+      }
+
+      state.agents.push(name);
+      state.agents.sort((a,b)=>a.localeCompare(b, "fr", { sensitivity:"base" }));
+      inp.value = "";
+      saveState();
+    }
+
+    function removeAgent(name){
+      const idx = state.agents.indexOf(name);
+      if(idx >= 0){
+        state.agents.splice(idx,1);
+        saveState();
+      }
+    }
+
+    function renderAgents(){
+      const ul = document.getElementById("agentsList");
+      const badge = document.getElementById("agentsCount");
+      ul.innerHTML = "";
+      badge.textContent = String(state.agents.length);
+
+      state.agents.forEach(name=>{
+        const li = document.createElement("li");
+        li.className = "item";
+        li.innerHTML = `
+          <span>${escapeHtml(name)}</span>
+          <button class="smallBtn danger" type="button">Supprimer</button>
+        `;
+        li.querySelector("button").addEventListener("click", ()=>removeAgent(name));
+        ul.appendChild(li);
+      });
+    }
+
+    // ======= Missions by Period =======
+    function renderPeriodPill(){
+      const pill = document.getElementById("periodPill");
+      const key = periodKey();
+      pill.textContent = key ? key : "Sélectionner mois + année";
+    }
+
+    function parseLines(text){
+      return (text || "")
+        .split(/\r?\n/)
+        .map(s=>s.trim())
+        .filter(Boolean);
+    }
+
+    function loadMissions(){
+      const key = periodKey();
+      renderPeriodPill();
+      const ta = document.getElementById("missionsInput");
+      if(!key){
+        ta.value = "";
+        renderMissionsPreview();
+        return;
+      }
+      const arr = Array.isArray(state.missionsByPeriod[key]) ? state.missionsByPeriod[key] : [];
+      ta.value = arr.join("\n");
+      renderMissionsPreview();
+    }
+
+    function saveMissions(){
+      const key = periodKey();
+      if(!key){
+        alert("Sélectionne d'abord le mois et l'année.");
+        return;
+      }
+      const ta = document.getElementById("missionsInput");
+      const missions = parseLines(ta.value);
+
+      // supprimer doublons en gardant l’ordre
+      const seen = new Set();
+      const unique = [];
+      for(const m of missions){
+        if(!seen.has(m)){
+          seen.add(m);
+          unique.push(m);
+        }
+      }
+
+      state.missionsByPeriod[key] = unique;
+      saveState();
+      alert("Missions enregistrées pour " + key);
+    }
+
+    function renderMissionsPreview(){
+      const key = periodKey();
+      const ul = document.getElementById("missionsPreview");
+      ul.innerHTML = "";
+
+      if(!key) return;
+
+      const arr = Array.isArray(state.missionsByPeriod[key]) ? state.missionsByPeriod[key] : [];
+      if(arr.length === 0) return;
+
+      arr.forEach((m)=>{
+        const li = document.createElement("li");
+        li.className = "item";
+        li.innerHTML = `<span>${escapeHtml(m)}</span>`;
+        ul.appendChild(li);
+      });
+    }
+
+    // ======= Export / Import =======
+    function exportData(){
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "entretien-consenvoye-data.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(){
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "application/json";
+      input.onchange = () => {
+        const file = input.files && input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try{
+            const data = JSON.parse(reader.result);
+            state.agents = Array.isArray(data.agents) ? data.agents : [];
+            state.missionsByPeriod = data.missionsByPeriod && typeof data.missionsByPeriod === "object" ? data.missionsByPeriod : {};
+            saveState();
+            alert("Import OK");
+          }catch(e){
+            alert("Fichier invalide");
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+
+    // ======= Helpers =======
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // ======= Events =======
+    document.getElementById("mois").addEventListener("change", ()=>{
+      renderPeriodPill();
+      // si admin est déjà ouvert, recharge les missions
+      if(document.getElementById("adminZone").style.display === "block") loadMissions();
+    });
+    document.getElementById("annee").addEventListener("change", ()=>{
+      renderPeriodPill();
+      if(document.getElementById("adminZone").style.display === "block") loadMissions();
+    });
+
+    // init
+    renderPeriodPill();
   </script>
 </body>
 </html>
