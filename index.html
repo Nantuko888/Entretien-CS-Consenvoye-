@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Entretien du centre de secours de France 1 World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .tabs {
+      display: flex;
+      margin-top: 20px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      background: #ddd;
+      border: 1px solid #bbb;
+    }
+
+    .tab.active {
+      background: #fff;
+      font-weight: bold;
+    }
+
+    .content {
+      display: none;
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #bbb;
+      border-top: none;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Entretien du centre de secours de France 1 World</h1>
+
+  <!-- Sélection Mois / Année -->
+  <div class="field">
+    <label for="mois">Mois</label>
+    <select id="mois">
+      <option value="">-- Sélectionner --</option>
+      <option>Janvier</option>
+      <option>Février</option>
+      <option>Mars</option>
+      <option>Avril</option>
+      <option>Mai</option>
+      <option>Juin</option>
+      <option>Juillet</option>
+      <option>Août</option>
+      <option>Septembre</option>
+      <option>Octobre</option>
+      <option>Novembre</option>
+      <option>Décembre</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="annee">Année</label>
+    <select id="annee">
+      <option value="">-- Sélectionner --</option>
+      <option>2025</option>
+      <option>2026</option>
+      <option>2027</option>
+    </select>
+  </div>
+
+  <!-- Onglets -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('agent')">Agent</div>
+    <div class="tab" onclick="showTab('admin')">Administrateur</div>
+  </div>
+
+  <!-- Onglet Agent -->
+  <div id="agent" class="content active">
+    <p>
+      Interface Agent.<br>
+      Les missions et agents attitrés apparaîtront ici après sélection du mois et de l’année.
+    </p>
+  </div>
+
+  <!-- Onglet Admin -->
+  <div id="admin" class="content">
+    <div class="field">
+      <label for="codeAdmin">Code administrateur</label>
+      <input type="password" id="codeAdmin" placeholder="Code">
+    </div>
+    <button onclick="verifierCode()">Accéder</button>
+
+    <div id="adminZone" style="display:none; margin-top:20px;">
+      <p>
+        Interface Administrateur.<br>
+        Création des missions et affectation des équipes.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+
+      document.querySelector(`.tab[onclick*="${tab}"]`).classList.add('active');
+      document.getElementById(tab).classList.add('active');
+    }
+
+    function verifierCode() {
+      const code = document.getElementById('codeAdmin').value;
+      if (code === "1234") {
+        document.getElementById('adminZone').style.display = "block";
+      } else {
+        alert("Code incorrect");
+      }
+    }
+  </script>
+
+</body>
+</html>
