@@ -38,7 +38,6 @@
       overflow-x:hidden;
     }
 
-    /* décor “caserne / pompier” */
     body::before{
       content:"";
       position:fixed;
@@ -75,7 +74,6 @@
       padding: 18px 14px 34px;
     }
 
-    /* Header pleine largeur */
     .brand{
       width:100%;
       background:
@@ -120,7 +118,6 @@
       font-size: 13px;
     }
 
-    /* Période sous le header */
     .periodCard{
       margin-top: 12px;
       width:100%;
@@ -177,7 +174,6 @@
     }
     .pill.ok{ color:#dff7ea; background: rgba(46,204,113,.10); border-color: rgba(46,204,113,.25); }
     .pill.warn{ color:#ffe9c7; background: rgba(255,176,32,.10); border-color: rgba(255,176,32,.25); }
-    .pill.bad{ color:#ffd6da; background: rgba(255,59,48,.10); border-color: rgba(255,59,48,.25); }
 
     .hint{
       margin-top: 10px;
@@ -186,7 +182,6 @@
       line-height: 1.35;
     }
 
-    /* Onglets */
     .main{
       margin-top: 12px;
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
@@ -342,6 +337,7 @@
       border:1px solid var(--line);
       background: rgba(255,255,255,.05);
     }
+
     .smallBtn{
       padding: 9px 10px;
       border-radius: 12px;
@@ -411,11 +407,9 @@
 <body>
   <div class="wrap">
 
-    <!-- HEADER pleine largeur -->
     <div class="brand">
       <div class="brandRow">
         <div class="mark" aria-hidden="true">
-          <!-- casque / flamme -->
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
             <path d="M7 13.5V10.8C7 7.6 9.3 5 12 5s5 2.6 5 5.8v2.7"
               stroke="white" stroke-width="2" stroke-linecap="round"/>
@@ -432,7 +426,6 @@
       </div>
     </div>
 
-    <!-- PERIODE sous le header -->
     <div class="periodCard">
       <div class="two">
         <div>
@@ -461,11 +454,10 @@
       </div>
 
       <div class="hint">
-        La période sert à paramétrer les missions (admin) et à afficher les missions de l’agent (si l’agent est attribué à la période).
+        Les missions ne s’affichent que si l’agent est connecté <b>et</b> attribué à la période.
       </div>
     </div>
 
-    <!-- ONGLET -->
     <div class="main">
       <div class="tabs" role="tablist" aria-label="Onglets">
         <div class="tab active" role="tab" aria-selected="true" onclick="showTab('agent')">👨‍🚒 Agent</div>
@@ -496,11 +488,11 @@
             <button class="btnGhost" type="button" onclick="agentLogout()">Déconnexion</button>
           </div>
 
-          <!-- Forcer changement code -->
+          <!-- Changement code -->
           <div id="forceChangeBox" class="section" style="display:none; margin-top:12px; background: rgba(15,23,36,.35);">
             <div class="sectionHead">
-              <h2 class="sectionTitle">Changement de code requis</h2>
-              <span class="pill warn">Première connexion</span>
+              <h2 class="sectionTitle">Changement de code</h2>
+              <span class="pill warn">Obligatoire</span>
             </div>
 
             <div class="grid2">
@@ -520,7 +512,7 @@
             <div class="hint">Lettres et chiffres uniquement. Minimum 4 caractères.</div>
           </div>
 
-          <!-- Missions agent -->
+          <!-- Missions agent (uniquement après connexion + attribution période) -->
           <div id="agentMissionsBox" class="section" style="display:none; margin-top:12px; background: rgba(15,23,36,.35);">
             <div class="sectionHead">
               <h2 class="sectionTitle">Missions à effectuer</h2>
@@ -556,7 +548,7 @@
           </div>
 
           <div class="hint">
-            Stockage : localStorage (sur ce navigateur). (On fera export/import plus tard si tu veux.)
+            Stockage : localStorage (sur ce navigateur).
           </div>
         </div>
 
@@ -593,12 +585,11 @@
             <ul class="list" id="agentsList"></ul>
 
             <div class="hint">
-              Chaque agent a un <b>code</b> (réinitialisable) et un <b>statut</b> modifiable.
-              L’admin peut attribuer des <b>périodes</b> (mois/année) à chaque agent.
+              L’admin ne voit pas les codes. Il peut uniquement <b>réinitialiser</b> un code à <b>0000</b>.
             </div>
           </div>
 
-          <!-- MISSIONS PAR PÉRIODE (sans compteur) -->
+          <!-- MISSIONS PAR PÉRIODE -->
           <div class="section">
             <div class="sectionHead">
               <h2 class="sectionTitle">Missions par période</h2>
@@ -606,7 +597,7 @@
             </div>
 
             <div class="grid2">
-              <!-- gauche: liste période -->
+              <!-- gauche -->
               <div class="section" style="margin:0;">
                 <div class="sectionHead">
                   <h2 class="sectionTitle">Liste (période)</h2>
@@ -616,7 +607,7 @@
                 <div class="hint">Une mission est présente ou absente (pas de compteur).</div>
               </div>
 
-              <!-- droite: catalogue -->
+              <!-- droite -->
               <div class="section" style="margin:0;">
                 <div class="sectionHead">
                   <h2 class="sectionTitle">Catalogue</h2>
@@ -660,7 +651,7 @@
   <script>
     // ===================== CONFIG =====================
     const ADMIN_CODE = "1234";
-    const LS_KEY = "consenvoye_entretien_v3";
+    const LS_KEY = "consenvoye_entretien_v4";
 
     // ===================== STATE =====================
     const state = loadState();
@@ -755,29 +746,23 @@
     }
 
     // ===================== AGENTS =====================
-    function generateAgentCode(){
-      // 4 chiffres par défaut (l’agent pourra le changer)
-      const n = Math.floor(Math.random() * 9000) + 1000;
-      return String(n);
-    }
-
     function addAgent(){
       const name = normalize(document.getElementById("agentNom").value);
       const role = document.getElementById("agentStatut").value;
 
       if(!name) return;
-
       if(state.agents.some(a => a.name === name)){
         document.getElementById("agentNom").value = "";
         return;
       }
 
+      // Par défaut : code = 0000 + changement obligatoire
       state.agents.push({
         id: cryptoRandomId(),
         name,
         role, // equipier | responsable
-        code: generateAgentCode(),
-        mustChangeCode: true, // première connexion
+        code: "0000",
+        mustChangeCode: true,
         periods: [] // périodes autorisées
       });
 
@@ -797,10 +782,11 @@
       saveState();
     }
 
-    function resetAgentCode(id){
+    // Réinitialisation demandée : code = 0000 (admin ne voit jamais le code)
+    function resetAgentCodeTo0000(id){
       const a = state.agents.find(x => x.id === id);
       if(!a) return;
-      a.code = generateAgentCode();
+      a.code = "0000";
       a.mustChangeCode = true;
       saveState();
     }
@@ -808,7 +794,6 @@
     function removeAgent(id){
       const idx = state.agents.findIndex(x => x.id === id);
       if(idx >= 0){
-        // purge status entries for this agent
         const prefix = id + "|";
         Object.keys(state.missionStatus).forEach(k=>{
           if(k.startsWith(prefix)) delete state.missionStatus[k];
@@ -861,7 +846,6 @@
           <div class="itemLeft">
             <div class="name">${escapeHtml(a.name)}</div>
             <div class="meta">
-              <span class="tag">🔑 Code : <b style="color:var(--text)">${escapeHtml(a.code)}</b></span>
               <span class="tag">👤 Statut :
                 <select id="${roleSelectId}" style="margin-left:6px; padding:6px 8px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); color: var(--text);">
                   <option value="equipier">Équipier</option>
@@ -875,7 +859,7 @@
             </div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-            <button class="smallBtn" type="button">Réinit. code</button>
+            <button class="smallBtn" type="button">Réinit. code → 0000</button>
             <button class="smallBtn danger" type="button">Supprimer</button>
           </div>
         `;
@@ -893,7 +877,7 @@
 
         const btnReset = li.querySelectorAll("button")[0];
         const btnDel = li.querySelectorAll("button")[1];
-        btnReset.addEventListener("click", ()=> resetAgentCode(a.id));
+        btnReset.addEventListener("click", ()=> resetAgentCodeTo0000(a.id));
         btnDel.addEventListener("click", ()=> removeAgent(a.id));
 
         ul.appendChild(li);
@@ -1075,8 +1059,6 @@
       agentSession = { id:a.id, name:a.name, role:a.role };
 
       document.getElementById("agentNamePill").textContent = a.name;
-      document.getElementById("agentMissionsBox").style.display = "block";
-      document.getElementById("forceChangeBox").style.display = "none";
       document.getElementById("agentCode").value = "";
 
       document.getElementById("whoPill").className = "pill ok";
@@ -1086,8 +1068,8 @@
       ap.className = "pill ok";
       ap.textContent = "Connecté";
 
+      // Si changement code requis, on n’affiche pas les missions
       if(a.mustChangeCode){
-        // force changement avant de voir les missions
         document.getElementById("agentMissionsBox").style.display = "none";
         document.getElementById("forceChangeBox").style.display = "block";
         ap.className = "pill warn";
@@ -1095,7 +1077,8 @@
         return;
       }
 
-      renderAgentMissions();
+      document.getElementById("forceChangeBox").style.display = "none";
+      renderAgentMissions(); // décidera d’afficher ou pas selon attribution période
     }
 
     function agentLogout(){
@@ -1135,7 +1118,6 @@
       document.getElementById("newAgentCode").value = "";
       document.getElementById("newAgentCode2").value = "";
       document.getElementById("forceChangeBox").style.display = "none";
-      document.getElementById("agentMissionsBox").style.display = "block";
 
       const ap = document.getElementById("agentPill");
       ap.className = "pill ok";
@@ -1172,27 +1154,33 @@
       ul.innerHTML = "";
       msg.textContent = "";
 
+      // Missions visibles UNIQUEMENT si agent connecté
       if(!agentSession){
         box.style.display = "none";
         return;
       }
 
       const period = periodKey();
+
+      // Sans période -> on n’affiche pas la box missions
       if(!period){
-        msg.textContent = "Sélectionne une période (mois/année).";
+        box.style.display = "none";
         return;
       }
 
       const agent = state.agents.find(x=>x.id===agentSession.id);
       const assigned = agent && Array.isArray(agent.periods) && agent.periods.includes(period);
 
+      // Non attribué -> on n’affiche pas la box missions
       if(!assigned){
-        msg.textContent = "Tu n’es pas attribué à cette période.";
-        msg.style.color = "rgba(255,255,255,.70)";
+        box.style.display = "none";
         return;
       }
 
       const missions = getPeriodMissions(period);
+      // Attribué mais aucune mission -> on affiche box (utile)
+      box.style.display = "block";
+
       if(missions.length === 0){
         msg.textContent = "Aucune mission enregistrée pour cette période.";
         return;
@@ -1209,7 +1197,6 @@
 
           const current = getMissionStatus(agentSession.id, period, m);
 
-          // 3 cases à cocher mais exclusives : JS forcera une seule coche
           const idF = `f_${agentSession.id}_${hash(period+m)}`;
           const idP = `p_${agentSession.id}_${hash(period+m)}`;
           const idN = `n_${agentSession.id}_${hash(period+m)}`;
@@ -1217,11 +1204,9 @@
           li.innerHTML = `
             <div class="itemLeft">
               <div class="name">${escapeHtml(m)}</div>
-              <div class="meta">
-                <span class="tag">📌 ${escapeHtml(period)}</span>
-              </div>
+              <div class="meta"><span class="tag">📌 ${escapeHtml(period)}</span></div>
             </div>
-            <div class="tri" data-mission="${escapeHtml(m)}">
+            <div class="tri">
               <label class="fait" title="Fait">
                 <input type="checkbox" id="${idF}" data-status="fait" /> Fait
               </label>
@@ -1237,24 +1222,18 @@
           const tri = li.querySelector(".tri");
           const checks = Array.from(tri.querySelectorAll('input[type="checkbox"]'));
 
-          // init
           checks.forEach(ch=>{
             const s = ch.getAttribute("data-status");
             ch.checked = (s === current);
           });
 
-          // exclusivité + sauvegarde
           checks.forEach(ch=>{
             ch.addEventListener("change", ()=>{
               if(ch.checked){
-                // un seul
-                checks.forEach(other=>{
-                  if(other !== ch) other.checked = false;
-                });
+                checks.forEach(other=>{ if(other !== ch) other.checked = false; });
                 const status = ch.getAttribute("data-status");
                 setMissionStatus(agentSession.id, period, m, status);
               }else{
-                // si on décoche -> plus de statut
                 setMissionStatus(agentSession.id, period, m, "");
               }
             });
@@ -1265,7 +1244,6 @@
     }
 
     function hash(s){
-      // petit hash stable pour ids DOM
       let h = 0;
       for(let i=0;i<s.length;i++){
         h = (h<<5) - h + s.charCodeAt(i);
@@ -1282,13 +1260,14 @@
       renderAgents();
       renderAgentSelect();
 
-      // si agent connecté, rafraîchir missions
+      // rafraîchir missions si agent connecté (sinon rien ne s’affiche)
       if(agentSession){
         const a = state.agents.find(x=>x.id===agentSession.id);
         if(a){
           document.getElementById("agentNamePill").textContent = a.name;
           document.getElementById("whoPill").className = "pill ok";
           document.getElementById("whoPill").textContent = "Connecté : " + a.name;
+
           if(a.mustChangeCode){
             document.getElementById("forceChangeBox").style.display = "block";
             document.getElementById("agentMissionsBox").style.display = "none";
@@ -1297,7 +1276,6 @@
             ap.textContent = "Changement code requis";
           }else{
             document.getElementById("forceChangeBox").style.display = "none";
-            document.getElementById("agentMissionsBox").style.display = "block";
             const ap = document.getElementById("agentPill");
             ap.className = "pill ok";
             ap.textContent = "Connecté";
@@ -1311,7 +1289,7 @@
     document.getElementById("mois").addEventListener("change", ()=> renderAll());
     document.getElementById("annee").addEventListener("change", ()=> renderAll());
 
-    // init defaults
+    // init
     renderAll();
   </script>
 </body>
