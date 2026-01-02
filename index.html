@@ -38,7 +38,7 @@
       overflow-x:hidden;
     }
 
-    /* décor “pompier / caserne” (sans image externe) */
+    /* décor “caserne / pompier” */
     body::before{
       content:"";
       position:fixed;
@@ -63,7 +63,6 @@
       height: 380px;
       pointer-events:none;
       opacity:.55;
-      filter: blur(.2px);
       background:
         radial-gradient(circle at 30% 30%, rgba(255,59,48,.35), rgba(255,59,48,0) 60%),
         radial-gradient(circle at 60% 50%, rgba(255,176,32,.20), rgba(255,176,32,0) 55%);
@@ -76,17 +75,9 @@
       padding: 18px 14px 34px;
     }
 
-    .topbar{
-      display:flex;
-      align-items:stretch;
-      justify-content:space-between;
-      gap:14px;
-      flex-wrap:wrap;
-    }
-
+    /* Header pleine largeur */
     .brand{
-      flex: 1 1 520px;
-      min-width: 290px;
+      width:100%;
       background:
         linear-gradient(135deg, rgba(215,38,56,.20), rgba(15,23,36,.92) 58%),
         linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,0) 40%);
@@ -97,13 +88,14 @@
       position:relative;
       overflow:hidden;
     }
-
-    .brand .row{
+    .brandRow{
       display:flex;
       gap:12px;
       align-items:center;
+      justify-content:center;
+      text-align:center;
+      flex-wrap:wrap;
     }
-
     .mark{
       width:54px;
       height:54px;
@@ -115,52 +107,37 @@
       place-items:center;
       flex:0 0 auto;
     }
-
+    .titleBox{ text-align:center; }
     .title{
       margin:0;
       font-size: 22px;
       line-height: 1.08;
       letter-spacing: .2px;
-      text-align:left;
     }
-
     .subtitle{
       margin:6px 0 0;
       color: var(--muted);
       font-size: 13px;
     }
 
-    .chips{
-      margin-top: 12px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 650;
-      user-select:none;
-    }
-    .chip b{ color: var(--text); }
-
+    /* Période sous le header */
     .periodCard{
-      flex: 0 1 360px;
-      min-width: 290px;
+      margin-top: 12px;
+      width:100%;
       background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
       border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 14px;
     }
-
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 520px){
+      .two{ grid-template-columns: 1fr; }
+    }
     .label{
       display:block;
       color: var(--muted);
@@ -185,24 +162,39 @@
       box-shadow: 0 0 0 4px rgba(215,38,56,.14);
     }
 
-    .two{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
     }
-    @media (max-width: 520px){
-      .two{ grid-template-columns: 1fr; }
+    .pill.ok{ color:#dff7ea; background: rgba(46,204,113,.10); border-color: rgba(46,204,113,.25); }
+    .pill.warn{ color:#ffe9c7; background: rgba(255,176,32,.10); border-color: rgba(255,176,32,.25); }
+    .pill.bad{ color:#ffd6da; background: rgba(255,59,48,.10); border-color: rgba(255,59,48,.25); }
+
+    .hint{
+      margin-top: 10px;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      line-height: 1.35;
     }
 
+    /* Onglets */
     .main{
-      margin-top: 14px;
+      margin-top: 12px;
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-
     .tabs{
       display:flex;
       gap:10px;
@@ -261,25 +253,19 @@
       color: var(--muted);
       font-weight: 900;
     }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items:start;
     }
-    .pill.ok{ color:#dff7ea; background: rgba(46,204,113,.10); border-color: rgba(46,204,113,.25); }
-    .pill.warn{ color:#ffe9c7; background: rgba(255,176,32,.10); border-color: rgba(255,176,32,.25); }
+    @media (max-width: 820px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
 
     .btnRow{ display:flex; gap:10px; flex-wrap:wrap; }
     .btnRow > *{ flex: 1 1 180px; }
-
     .btn{
       width:100%;
       padding: 12px 12px;
@@ -330,6 +316,7 @@
       flex-direction: column;
       gap:2px;
       min-width: 0;
+      flex: 1 1 auto;
     }
     .itemLeft .name{
       font-weight: 950;
@@ -337,13 +324,14 @@
       overflow:hidden;
       text-overflow: ellipsis;
     }
-    .itemLeft .meta{
+    .meta{
       color: var(--muted);
       font-size: 12px;
       font-weight: 750;
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      align-items:center;
     }
     .tag{
       display:inline-flex;
@@ -354,9 +342,6 @@
       border:1px solid var(--line);
       background: rgba(255,255,255,.05);
     }
-    .tag.resp{ border-color: rgba(255,176,32,.35); background: rgba(255,176,32,.10); color:#ffe9c7; }
-    .tag.eq{ border-color: rgba(255,255,255,.14); background: rgba(255,255,255,.04); color: var(--muted); }
-
     .smallBtn{
       padding: 9px 10px;
       border-radius: 12px;
@@ -373,45 +358,46 @@
       background: rgba(255,59,48,.10);
     }
 
-    .qtyBox{
+    .rowTight{
       display:flex;
-      align-items:center;
-      gap:8px;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:flex-end;
     }
-    .qty{
-      min-width: 46px;
-      text-align:center;
+    .rowTight > *{ flex: 1 1 220px; }
+    .rowTight .auto{ flex: 0 0 auto; }
+
+    /* Missions: 3 cases (exclusives) */
+    .tri{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+    .tri label{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
       padding: 6px 10px;
       border-radius: 999px;
       border:1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      font-weight: 950;
+      background: rgba(255,255,255,.04);
+      cursor:pointer;
+      user-select:none;
+      font-size: 13px;
+      font-weight: 850;
       color: var(--text);
     }
-
-    .hint{
-      margin-top: 10px;
-      color: rgba(255,255,255,.55);
-      font-size: 12px;
-      line-height: 1.35;
+    .tri input[type="checkbox"]{
+      width: 16px;
+      height: 16px;
+      accent-color: var(--red2);
+      cursor:pointer;
     }
-
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items:start;
-    }
-    @media (max-width: 820px){
-      .grid2{ grid-template-columns: 1fr; }
-    }
-
-    .empty{
-      height: 160px;
-      border: 1px dashed rgba(255,255,255,.16);
-      border-radius: 16px;
-      background: rgba(15,23,36,.35);
-    }
+    .tri label.fait{ border-color: rgba(46,204,113,.25); background: rgba(46,204,113,.08); }
+    .tri label.partiel{ border-color: rgba(255,176,32,.25); background: rgba(255,176,32,.08); }
+    .tri label.nonfait{ border-color: rgba(255,59,48,.25); background: rgba(255,59,48,.08); }
 
     .footer{
       margin-top: 14px;
@@ -419,75 +405,67 @@
       color: rgba(255,255,255,.45);
       font-size: 12px;
     }
-
-    /* mini icônes */
-    .ico{ width:18px; height:18px; opacity:.9; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
 
-    <div class="topbar">
-      <div class="brand">
-        <div class="row">
-          <div class="mark" aria-hidden="true">
-            <!-- icône casque / flamme -->
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-              <path d="M7 13.5V10.8C7 7.6 9.3 5 12 5s5 2.6 5 5.8v2.7"
-                stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M6 14.5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2V18c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1v-3.5Z"
-                stroke="white" stroke-width="2" stroke-linejoin="round"/>
-              <path d="M12 9c.6.7.9 1.2.9 1.9 0 1-1 1.8-1.9 1.8S9.2 12 9.2 11c0-.9.7-1.6 1.5-2.3.6-.5.9-.9 1.3-1.7Z"
-                fill="white" opacity=".9"/>
-            </svg>
-          </div>
-          <div>
-            <h1 class="title">Entretien du centre de secours de Consenvoye</h1>
-            <p class="subtitle">Interface interne • Paramétrage administratif • Accès agents</p>
-          </div>
+    <!-- HEADER pleine largeur -->
+    <div class="brand">
+      <div class="brandRow">
+        <div class="mark" aria-hidden="true">
+          <!-- casque / flamme -->
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+            <path d="M7 13.5V10.8C7 7.6 9.3 5 12 5s5 2.6 5 5.8v2.7"
+              stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6 14.5c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2V18c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1v-3.5Z"
+              stroke="white" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M12 9c.6.7.9 1.2.9 1.9 0 1-1 1.8-1.9 1.8S9.2 12 9.2 11c0-.9.7-1.6 1.5-2.3.6-.5.9-.9 1.3-1.7Z"
+              fill="white" opacity=".9"/>
+          </svg>
         </div>
-
-        <div class="chips" aria-label="Infos rapides">
-          <div class="chip">📱 <b>Mobile</b> agents</div>
-          <div class="chip">🖥️ <b>PC</b> admin</div>
-          <div class="chip">🗓️ <b>Période</b> mensuelle</div>
-          <div class="chip">🔐 <b>Accès</b> par code</div>
-        </div>
-      </div>
-
-      <div class="periodCard">
-        <div class="two">
-          <div>
-            <span class="label">Mois</span>
-            <select id="mois">
-              <option value="">-- Sélectionner --</option>
-              <option>Janvier</option><option>Février</option><option>Mars</option><option>Avril</option>
-              <option>Mai</option><option>Juin</option><option>Juillet</option><option>Août</option>
-              <option>Septembre</option><option>Octobre</option><option>Novembre</option><option>Décembre</option>
-            </select>
-          </div>
-          <div>
-            <span class="label">Année</span>
-            <select id="annee">
-              <option value="">-- Sélectionner --</option>
-              <option>2025</option>
-              <option selected>2026</option>
-              <option>2027</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:10px;">
-          <span class="pill" id="periodPill">Sélectionner mois + année</span>
-        </div>
-
-        <div class="hint">
-          La période pilote l’affectation et les missions (côté administrateur).
+        <div class="titleBox">
+          <h1 class="title">Entretien du centre de secours de Consenvoye</h1>
+          <p class="subtitle">Interface interne • Accès agents • Paramétrage administrateur</p>
         </div>
       </div>
     </div>
 
+    <!-- PERIODE sous le header -->
+    <div class="periodCard">
+      <div class="two">
+        <div>
+          <span class="label">Mois</span>
+          <select id="mois">
+            <option value="">-- Sélectionner --</option>
+            <option>Janvier</option><option>Février</option><option>Mars</option><option>Avril</option>
+            <option>Mai</option><option>Juin</option><option>Juillet</option><option>Août</option>
+            <option>Septembre</option><option>Octobre</option><option>Novembre</option><option>Décembre</option>
+          </select>
+        </div>
+        <div>
+          <span class="label">Année</span>
+          <select id="annee">
+            <option value="">-- Sélectionner --</option>
+            <option>2025</option>
+            <option selected>2026</option>
+            <option>2027</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+        <span class="pill" id="periodPill">Sélectionner mois + année</span>
+        <span class="pill" id="whoPill">Non connecté</span>
+      </div>
+
+      <div class="hint">
+        La période sert à paramétrer les missions (admin) et à afficher les missions de l’agent (si l’agent est attribué à la période).
+      </div>
+    </div>
+
+    <!-- ONGLET -->
     <div class="main">
       <div class="tabs" role="tablist" aria-label="Onglets">
         <div class="tab active" role="tab" aria-selected="true" onclick="showTab('agent')">👨‍🚒 Agent</div>
@@ -499,7 +477,7 @@
         <div class="section">
           <div class="sectionHead">
             <h2 class="sectionTitle">Connexion agent</h2>
-            <span class="pill" id="agentLockPill">Accès restreint</span>
+            <span class="pill" id="agentPill">Accès</span>
           </div>
 
           <div class="grid2">
@@ -518,16 +496,42 @@
             <button class="btnGhost" type="button" onclick="agentLogout()">Déconnexion</button>
           </div>
 
-          <div id="agentArea" style="margin-top:12px; display:none;">
-            <div class="section" style="background: rgba(15,23,36,.35);">
-              <div class="sectionHead">
-                <h2 class="sectionTitle">Espace agent</h2>
-                <span class="pill ok" id="agentNamePill">—</span>
+          <!-- Forcer changement code -->
+          <div id="forceChangeBox" class="section" style="display:none; margin-top:12px; background: rgba(15,23,36,.35);">
+            <div class="sectionHead">
+              <h2 class="sectionTitle">Changement de code requis</h2>
+              <span class="pill warn">Première connexion</span>
+            </div>
+
+            <div class="grid2">
+              <div>
+                <span class="label">Nouveau code (min 4 lettres/chiffres)</span>
+                <input id="newAgentCode" type="password" placeholder="Ex : 1234 ou A1b2" />
               </div>
-              <div class="hint" id="agentInfo">
-                (À brancher ensuite : affichage des mois autorisés + missions.)
+              <div>
+                <span class="label">Confirmer</span>
+                <input id="newAgentCode2" type="password" placeholder="Retaper le code" />
               </div>
-              <div class="empty" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="btnRow" style="margin-top:10px;">
+              <button class="btn" type="button" onclick="confirmChangeAgentCode()">Valider le nouveau code</button>
+            </div>
+            <div class="hint">Lettres et chiffres uniquement. Minimum 4 caractères.</div>
+          </div>
+
+          <!-- Missions agent -->
+          <div id="agentMissionsBox" class="section" style="display:none; margin-top:12px; background: rgba(15,23,36,.35);">
+            <div class="sectionHead">
+              <h2 class="sectionTitle">Missions à effectuer</h2>
+              <span class="pill ok" id="agentNamePill">—</span>
+            </div>
+
+            <div id="agentAccessMsg" class="hint" style="margin-top:0;"></div>
+            <ul class="list" id="agentMissionsList"></ul>
+
+            <div class="hint">
+              Pour chaque mission : coche <b>Fait</b> / <b>Partiellement fait</b> / <b>Non fait</b>.
             </div>
           </div>
         </div>
@@ -552,7 +556,7 @@
           </div>
 
           <div class="hint">
-            Les paramètres sont stockés sur ce navigateur (localStorage). (Export/import possible plus tard.)
+            Stockage : localStorage (sur ce navigateur). (On fera export/import plus tard si tu veux.)
           </div>
         </div>
 
@@ -564,7 +568,7 @@
               <span class="pill" id="agentsCount">0</span>
             </div>
 
-            <div class="grid2">
+            <div class="rowTight">
               <div>
                 <span class="label">Nom Prénom</span>
                 <input id="agentNom" placeholder="Ex : VÉNANTE Pierre" />
@@ -576,39 +580,43 @@
                   <option value="responsable">Responsable d’équipe</option>
                 </select>
               </div>
+              <div class="auto">
+                <button class="btn" type="button" onclick="addAgent()">Ajouter</button>
+              </div>
             </div>
 
             <div class="btnRow" style="margin-top:10px;">
-              <button class="btn" type="button" onclick="addAgent()">Ajouter l’agent</button>
               <button class="btnGhost" type="button" onclick="sortAgents()">Trier A→Z</button>
+              <button class="btnGhost" type="button" onclick="assignSelectedPeriodToAll()">Attribuer cette période à tous</button>
             </div>
 
             <ul class="list" id="agentsList"></ul>
 
             <div class="hint">
-              Chaque agent a un <b>code d’accès</b> (réinitialisable) + un <b>statut</b> (équipier/responsable).
+              Chaque agent a un <b>code</b> (réinitialisable) et un <b>statut</b> modifiable.
+              L’admin peut attribuer des <b>périodes</b> (mois/année) à chaque agent.
             </div>
           </div>
 
-          <!-- MISSIONS PAR PÉRIODE -->
+          <!-- MISSIONS PAR PÉRIODE (sans compteur) -->
           <div class="section">
             <div class="sectionHead">
               <h2 class="sectionTitle">Missions par période</h2>
-              <span class="pill" id="missionsCountPill">0</span>
+              <span class="pill" id="missionsPill">0</span>
             </div>
 
             <div class="grid2">
-              <!-- gauche : liste période -->
+              <!-- gauche: liste période -->
               <div class="section" style="margin:0;">
                 <div class="sectionHead">
                   <h2 class="sectionTitle">Liste (période)</h2>
-                  <span class="pill" id="periodCount">0</span>
+                  <span class="pill" id="periodMissionsCount">0</span>
                 </div>
                 <ul class="list" id="periodMissionsList"></ul>
-                <div class="hint">Utilise + / − pour ajuster la quantité. À 0, la mission disparaît.</div>
+                <div class="hint">Une mission est présente ou absente (pas de compteur).</div>
               </div>
 
-              <!-- droite : catalogue -->
+              <!-- droite: catalogue -->
               <div class="section" style="margin:0;">
                 <div class="sectionHead">
                   <h2 class="sectionTitle">Catalogue</h2>
@@ -633,16 +641,17 @@
 
                 <div class="btnRow" style="margin-top:10px;">
                   <button class="btnGhost" type="button" onclick="deleteSelectedFromCatalog()">Supprimer du catalogue</button>
-                  <button class="btnGhost" type="button" onclick="resetPeriodMissions()">Vider période</button>
+                  <button class="btnGhost" type="button" onclick="clearPeriodMissions()">Vider période</button>
                 </div>
 
-                <div class="hint">La période est celle sélectionnée en haut (mois/année).</div>
+                <div class="hint">La période est celle sélectionnée tout en haut.</div>
               </div>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
+
     </div>
 
     <div class="footer">© Centre de secours • Prototype web (GitHub Pages)</div>
@@ -651,7 +660,7 @@
   <script>
     // ===================== CONFIG =====================
     const ADMIN_CODE = "1234";
-    const LS_KEY = "consenvoye_entretien_v2";
+    const LS_KEY = "consenvoye_entretien_v3";
 
     // ===================== STATE =====================
     const state = loadState();
@@ -659,15 +668,21 @@
     function loadState(){
       try{
         const raw = localStorage.getItem(LS_KEY);
-        if(!raw) return { agents: [], catalogMissions: [], missionsByPeriod: {} };
-        const parsed = JSON.parse(raw);
+        if(!raw) return {
+          agents: [],
+          catalogMissions: [],
+          periodMissions: {}, // { "2026-Janvier": ["Mission A","Mission B"] }
+          missionStatus: {} // { "agentId|2026-Janvier|Mission A": "fait|partiel|nonfait" }
+        };
+        const p = JSON.parse(raw);
         return {
-          agents: Array.isArray(parsed.agents) ? parsed.agents : [],
-          catalogMissions: Array.isArray(parsed.catalogMissions) ? parsed.catalogMissions : [],
-          missionsByPeriod: (parsed.missionsByPeriod && typeof parsed.missionsByPeriod === "object") ? parsed.missionsByPeriod : {}
+          agents: Array.isArray(p.agents) ? p.agents : [],
+          catalogMissions: Array.isArray(p.catalogMissions) ? p.catalogMissions : [],
+          periodMissions: (p.periodMissions && typeof p.periodMissions === "object") ? p.periodMissions : {},
+          missionStatus: (p.missionStatus && typeof p.missionStatus === "object") ? p.missionStatus : {}
         };
       }catch(e){
-        return { agents: [], catalogMissions: [], missionsByPeriod: {} };
+        return { agents: [], catalogMissions: [], periodMissions: {}, missionStatus: {} };
       }
     }
 
@@ -679,7 +694,6 @@
     function normalize(s){
       return (s || "").trim().replace(/\s+/g, " ");
     }
-
     function escapeHtml(str){
       return String(str)
         .replaceAll("&","&amp;")
@@ -687,6 +701,9 @@
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
+    }
+    function cryptoRandomId(){
+      return (Math.random().toString(16).slice(2) + Date.now().toString(16)).slice(0,16);
     }
 
     // ===================== PERIOD =====================
@@ -696,7 +713,6 @@
       if(!mois || !annee) return "";
       return `${annee}-${mois}`;
     }
-
     function renderPeriodPill(){
       const pill = document.getElementById("periodPill");
       const key = periodKey();
@@ -718,7 +734,7 @@
       }
       document.getElementById(tab).classList.add('active');
 
-      // Nettoyage minimal visuel quand on quitte admin
+      // cache admin si on quitte
       if(tab !== 'admin'){
         const codeEl = document.getElementById('codeAdmin');
         const zoneEl = document.getElementById('adminZone');
@@ -740,18 +756,17 @@
 
     // ===================== AGENTS =====================
     function generateAgentCode(){
-      // 4 chiffres
+      // 4 chiffres par défaut (l’agent pourra le changer)
       const n = Math.floor(Math.random() * 9000) + 1000;
       return String(n);
     }
 
     function addAgent(){
       const name = normalize(document.getElementById("agentNom").value);
-      const statut = document.getElementById("agentStatut").value;
+      const role = document.getElementById("agentStatut").value;
 
       if(!name) return;
 
-      // pas de doublon exact
       if(state.agents.some(a => a.name === name)){
         document.getElementById("agentNom").value = "";
         return;
@@ -760,17 +775,14 @@
       state.agents.push({
         id: cryptoRandomId(),
         name,
-        role: statut, // "equipier" | "responsable"
-        code: generateAgentCode()
+        role, // equipier | responsable
+        code: generateAgentCode(),
+        mustChangeCode: true, // première connexion
+        periods: [] // périodes autorisées
       });
 
       document.getElementById("agentNom").value = "";
       saveState();
-    }
-
-    function cryptoRandomId(){
-      // id simple
-      return (Math.random().toString(16).slice(2) + Date.now().toString(16)).slice(0,16);
     }
 
     function sortAgents(){
@@ -778,19 +790,54 @@
       saveState();
     }
 
+    function updateAgentRole(id, newRole){
+      const a = state.agents.find(x => x.id === id);
+      if(!a) return;
+      a.role = newRole;
+      saveState();
+    }
+
     function resetAgentCode(id){
-      const a = state.agents.find(x=>x.id===id);
+      const a = state.agents.find(x => x.id === id);
       if(!a) return;
       a.code = generateAgentCode();
+      a.mustChangeCode = true;
       saveState();
     }
 
     function removeAgent(id){
-      const idx = state.agents.findIndex(x=>x.id===id);
+      const idx = state.agents.findIndex(x => x.id === id);
       if(idx >= 0){
+        // purge status entries for this agent
+        const prefix = id + "|";
+        Object.keys(state.missionStatus).forEach(k=>{
+          if(k.startsWith(prefix)) delete state.missionStatus[k];
+        });
         state.agents.splice(idx,1);
         saveState();
       }
+    }
+
+    function toggleAgentPeriod(id, key, enabled){
+      const a = state.agents.find(x => x.id === id);
+      if(!a) return;
+      if(!Array.isArray(a.periods)) a.periods = [];
+      if(enabled){
+        if(!a.periods.includes(key)) a.periods.push(key);
+      }else{
+        a.periods = a.periods.filter(p => p !== key);
+      }
+      saveState();
+    }
+
+    function assignSelectedPeriodToAll(){
+      const key = periodKey();
+      if(!key){ alert("Sélectionne d'abord mois + année."); return; }
+      state.agents.forEach(a=>{
+        if(!a.periods) a.periods = [];
+        if(!a.periods.includes(key)) a.periods.push(key);
+      });
+      saveState();
     }
 
     function renderAgents(){
@@ -799,18 +846,32 @@
       ul.innerHTML = "";
       badge.textContent = String(state.agents.length);
 
+      const key = periodKey();
+
       state.agents.forEach(a=>{
         const li = document.createElement("li");
         li.className = "item";
-        const roleLabel = (a.role === "responsable") ? "Responsable d’équipe" : "Équipier";
-        const roleTagClass = (a.role === "responsable") ? "resp" : "eq";
+
+        const roleSelectId = `role_${a.id}`;
+        const assignId = `assign_${a.id}`;
+
+        const isAssigned = key && Array.isArray(a.periods) && a.periods.includes(key);
 
         li.innerHTML = `
           <div class="itemLeft">
             <div class="name">${escapeHtml(a.name)}</div>
             <div class="meta">
-              <span class="tag ${roleTagClass}">👤 ${escapeHtml(roleLabel)}</span>
               <span class="tag">🔑 Code : <b style="color:var(--text)">${escapeHtml(a.code)}</b></span>
+              <span class="tag">👤 Statut :
+                <select id="${roleSelectId}" style="margin-left:6px; padding:6px 8px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); color: var(--text);">
+                  <option value="equipier">Équipier</option>
+                  <option value="responsable">Responsable d’équipe</option>
+                </select>
+              </span>
+              <span class="tag">
+                📅 Attribué à la période :
+                <input id="${assignId}" type="checkbox" ${isAssigned ? "checked" : ""} ${key ? "" : "disabled"} style="width:16px;height:16px; accent-color: var(--amber);" />
+              </span>
             </div>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
@@ -818,9 +879,20 @@
             <button class="smallBtn danger" type="button">Supprimer</button>
           </div>
         `;
+
+        const sel = li.querySelector(`#${roleSelectId}`);
+        sel.value = a.role || "equipier";
+        sel.addEventListener("change", e => updateAgentRole(a.id, e.target.value));
+
+        const cb = li.querySelector(`#${assignId}`);
+        cb.addEventListener("change", e => {
+          const k = periodKey();
+          if(!k) return;
+          toggleAgentPeriod(a.id, k, e.target.checked);
+        });
+
         const btnReset = li.querySelectorAll("button")[0];
         const btnDel = li.querySelectorAll("button")[1];
-
         btnReset.addEventListener("click", ()=> resetAgentCode(a.id));
         btnDel.addEventListener("click", ()=> removeAgent(a.id));
 
@@ -828,87 +900,15 @@
       });
     }
 
-    // ===================== AGENT LOGIN UI =====================
-    let agentSession = null;
-
-    function renderAgentSelect(){
-      const sel = document.getElementById("agentSelect");
-      sel.innerHTML = "";
-
-      if(state.agents.length === 0){
-        const opt = document.createElement("option");
-        opt.value = "";
-        opt.textContent = "-- Aucun agent --";
-        sel.appendChild(opt);
-        return;
-      }
-
-      const opt0 = document.createElement("option");
-      opt0.value = "";
-      opt0.textContent = "-- Choisir votre nom --";
-      sel.appendChild(opt0);
-
-      state.agents
-        .slice()
-        .sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}))
-        .forEach(a=>{
-          const opt = document.createElement("option");
-          opt.value = a.id;
-          opt.textContent = a.name;
-          sel.appendChild(opt);
-        });
-    }
-
-    function agentLogin(){
-      const id = document.getElementById("agentSelect").value;
-      const code = document.getElementById("agentCode").value;
-
-      const a = state.agents.find(x=>x.id===id);
-      if(!a){
-        alert("Sélectionne ton nom.");
-        return;
-      }
-      if(!code){
-        alert("Entre ton code.");
-        return;
-      }
-      if(code !== a.code){
-        alert("Code incorrect.");
-        return;
-      }
-
-      agentSession = { id: a.id, name: a.name, role: a.role };
-      document.getElementById("agentArea").style.display = "block";
-      document.getElementById("agentNamePill").textContent = a.name;
-      document.getElementById("agentCode").value = "";
-      document.getElementById("agentLockPill").className = "pill ok";
-      document.getElementById("agentLockPill").textContent = "Connecté";
-      document.getElementById("agentInfo").textContent =
-        "Connexion OK. (Étape suivante : afficher uniquement les périodes attribuées + missions.)";
-    }
-
-    function agentLogout(){
-      agentSession = null;
-      document.getElementById("agentArea").style.display = "none";
-      document.getElementById("agentSelect").value = "";
-      document.getElementById("agentCode").value = "";
-      document.getElementById("agentLockPill").className = "pill";
-      document.getElementById("agentLockPill").textContent = "Accès restreint";
-    }
-
-    // ===================== MISSIONS (catalogue + période + qty) =====================
-    function getPeriodList(){
-      const key = periodKey();
+    // ===================== MISSIONS (catalogue + période) =====================
+    function getPeriodMissions(key){
       if(!key) return [];
-      const raw = state.missionsByPeriod[key];
-      if(Array.isArray(raw)) return raw;
-      return [];
+      const arr = state.periodMissions[key];
+      return Array.isArray(arr) ? arr : [];
     }
 
-    function setPeriodList(list){
-      const key = periodKey();
-      if(!key) return;
-      state.missionsByPeriod[key] = list;
+    function setPeriodMissions(key, missions){
+      state.periodMissions[key] = missions;
     }
 
     function renderCatalog(){
@@ -940,56 +940,11 @@
       });
     }
 
-    function renderPeriodMissions(){
-      const ul = document.getElementById("periodMissionsList");
-      const badge = document.getElementById("periodCount");
-      const countPill = document.getElementById("missionsCountPill");
-
-      ul.innerHTML = "";
-
-      const key = periodKey();
-      if(!key){
-        badge.textContent = "0";
-        countPill.textContent = "0";
-        return;
-      }
-
-      const list = getPeriodList();
-      badge.textContent = String(list.length);
-      countPill.textContent = String(list.length);
-
-      list.forEach((item)=>{
-        const li = document.createElement("li");
-        li.className = "item";
-        li.innerHTML = `
-          <div class="itemLeft">
-            <div class="name">${escapeHtml(item.name)}</div>
-            <div class="meta"><span class="tag">📌 Période : <b style="color:var(--text)">${escapeHtml(key)}</b></span></div>
-          </div>
-          <div class="qtyBox">
-            <button class="smallBtn" type="button">−</button>
-            <div class="qty">${item.qty}</div>
-            <button class="smallBtn" type="button">+</button>
-          </div>
-        `;
-        const minus = li.querySelectorAll("button")[0];
-        const plus = li.querySelectorAll("button")[1];
-
-        minus.addEventListener("click", ()=> changeQty(item.name, -1));
-        plus.addEventListener("click", ()=> changeQty(item.name, +1));
-
-        ul.appendChild(li);
-      });
-    }
-
     function addMissionToCatalog(){
       const inp = document.getElementById("newCatalogMission");
       const name = normalize(inp.value);
       if(!name) return;
-
-      if(!state.catalogMissions.includes(name)){
-        state.catalogMissions.push(name);
-      }
+      if(!state.catalogMissions.includes(name)) state.catalogMissions.push(name);
       inp.value = "";
       saveState();
     }
@@ -998,85 +953,365 @@
       const sel = document.getElementById("catalogSelect");
       const name = sel.value;
       if(!name) return;
-
       state.catalogMissions = state.catalogMissions.filter(x => x !== name);
       saveState();
     }
 
     function addSelectedMissionToPeriod(){
       const key = periodKey();
-      if(!key){
-        alert("Sélectionne d'abord le mois et l'année.");
-        return;
-      }
+      if(!key){ alert("Sélectionne d'abord mois + année."); return; }
       const sel = document.getElementById("catalogSelect");
       const name = sel.value;
       if(!name) return;
 
-      const list = getPeriodList().slice();
-      const idx = list.findIndex(x => x.name === name);
-      if(idx >= 0){
-        list[idx].qty += 1;
-      }else{
-        list.push({ name, qty: 1 });
-      }
-      setPeriodList(list);
+      const list = getPeriodMissions(key).slice();
+      if(!list.includes(name)) list.push(name);
+      setPeriodMissions(key, list);
       saveState();
     }
 
     function removeSelectedMissionFromPeriod(){
       const key = periodKey();
-      if(!key){
-        alert("Sélectionne d'abord le mois et l'année.");
-        return;
-      }
+      if(!key){ alert("Sélectionne d'abord mois + année."); return; }
       const sel = document.getElementById("catalogSelect");
       const name = sel.value;
       if(!name) return;
 
-      changeQty(name, -1);
-    }
-
-    function changeQty(name, delta){
-      const key = periodKey();
-      if(!key) return;
-
-      const list = getPeriodList().slice();
-      const idx = list.findIndex(x => x.name === name);
-      if(idx < 0) return;
-
-      list[idx].qty += delta;
-      if(list[idx].qty <= 0){
-        list.splice(idx, 1);
-      }
-      setPeriodList(list);
+      const list = getPeriodMissions(key).slice().filter(x => x !== name);
+      setPeriodMissions(key, list);
       saveState();
     }
 
-    function resetPeriodMissions(){
+    function clearPeriodMissions(){
       const key = periodKey();
+      if(!key){ alert("Sélectionne d'abord mois + année."); return; }
+      setPeriodMissions(key, []);
+      saveState();
+    }
+
+    function renderPeriodMissions(){
+      const key = periodKey();
+      const ul = document.getElementById("periodMissionsList");
+      const count = document.getElementById("periodMissionsCount");
+      const pill = document.getElementById("missionsPill");
+
+      ul.innerHTML = "";
       if(!key){
-        alert("Sélectionne d'abord le mois et l'année.");
+        count.textContent = "0";
+        pill.textContent = "0";
         return;
       }
-      setPeriodList([]);
+
+      const list = getPeriodMissions(key);
+      count.textContent = String(list.length);
+      pill.textContent = String(list.length);
+
+      list
+        .slice()
+        .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}))
+        .forEach(m=>{
+          const li = document.createElement("li");
+          li.className = "item";
+          li.innerHTML = `
+            <div class="itemLeft">
+              <div class="name">${escapeHtml(m)}</div>
+              <div class="meta"><span class="tag">📌 ${escapeHtml(key)}</span></div>
+            </div>
+            <button class="smallBtn danger" type="button">Retirer</button>
+          `;
+          li.querySelector("button").addEventListener("click", ()=>{
+            const list2 = getPeriodMissions(key).filter(x => x !== m);
+            setPeriodMissions(key, list2);
+            saveState();
+          });
+          ul.appendChild(li);
+        });
+    }
+
+    // ===================== AGENT LOGIN + MISSIONS =====================
+    let agentSession = null; // {id,name,role}
+
+    function renderAgentSelect(){
+      const sel = document.getElementById("agentSelect");
+      sel.innerHTML = "";
+
+      if(state.agents.length === 0){
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "-- Aucun agent --";
+        sel.appendChild(opt);
+        return;
+      }
+
+      const opt0 = document.createElement("option");
+      opt0.value = "";
+      opt0.textContent = "-- Choisir votre nom --";
+      sel.appendChild(opt0);
+
+      state.agents
+        .slice()
+        .sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}))
+        .forEach(a=>{
+          const opt = document.createElement("option");
+          opt.value = a.id;
+          opt.textContent = a.name;
+          sel.appendChild(opt);
+        });
+    }
+
+    function isValidAgentCode(code){
+      return /^[A-Za-z0-9]{4,}$/.test(code);
+    }
+
+    function agentLogin(){
+      const id = document.getElementById("agentSelect").value;
+      const code = document.getElementById("agentCode").value;
+
+      const a = state.agents.find(x=>x.id===id);
+      if(!a){ alert("Sélectionne ton nom."); return; }
+      if(!code){ alert("Entre ton code."); return; }
+      if(code !== a.code){ alert("Code incorrect."); return; }
+
+      agentSession = { id:a.id, name:a.name, role:a.role };
+
+      document.getElementById("agentNamePill").textContent = a.name;
+      document.getElementById("agentMissionsBox").style.display = "block";
+      document.getElementById("forceChangeBox").style.display = "none";
+      document.getElementById("agentCode").value = "";
+
+      document.getElementById("whoPill").className = "pill ok";
+      document.getElementById("whoPill").textContent = "Connecté : " + a.name;
+
+      const ap = document.getElementById("agentPill");
+      ap.className = "pill ok";
+      ap.textContent = "Connecté";
+
+      if(a.mustChangeCode){
+        // force changement avant de voir les missions
+        document.getElementById("agentMissionsBox").style.display = "none";
+        document.getElementById("forceChangeBox").style.display = "block";
+        ap.className = "pill warn";
+        ap.textContent = "Changement code requis";
+        return;
+      }
+
+      renderAgentMissions();
+    }
+
+    function agentLogout(){
+      agentSession = null;
+      document.getElementById("agentSelect").value = "";
+      document.getElementById("agentCode").value = "";
+      document.getElementById("newAgentCode").value = "";
+      document.getElementById("newAgentCode2").value = "";
+      document.getElementById("forceChangeBox").style.display = "none";
+      document.getElementById("agentMissionsBox").style.display = "none";
+
+      const ap = document.getElementById("agentPill");
+      ap.className = "pill";
+      ap.textContent = "Accès";
+
+      document.getElementById("whoPill").className = "pill";
+      document.getElementById("whoPill").textContent = "Non connecté";
+    }
+
+    function confirmChangeAgentCode(){
+      if(!agentSession){ alert("Connecte-toi d'abord."); return; }
+      const a = state.agents.find(x=>x.id===agentSession.id);
+      if(!a) return;
+
+      const c1 = document.getElementById("newAgentCode").value || "";
+      const c2 = document.getElementById("newAgentCode2").value || "";
+
+      if(c1 !== c2){ alert("Les deux codes ne sont pas identiques."); return; }
+      if(!isValidAgentCode(c1)){
+        alert("Code invalide : min 4 caractères, lettres/chiffres uniquement.");
+        return;
+      }
+
+      a.code = c1;
+      a.mustChangeCode = false;
+
+      document.getElementById("newAgentCode").value = "";
+      document.getElementById("newAgentCode2").value = "";
+      document.getElementById("forceChangeBox").style.display = "none";
+      document.getElementById("agentMissionsBox").style.display = "block";
+
+      const ap = document.getElementById("agentPill");
+      ap.className = "pill ok";
+      ap.textContent = "Connecté";
+
       saveState();
+      renderAgentMissions();
+      alert("Code modifié.");
+    }
+
+    function statusKey(agentId, period, mission){
+      return `${agentId}|${period}|${mission}`;
+    }
+
+    function setMissionStatus(agentId, period, mission, status){
+      const k = statusKey(agentId, period, mission);
+      if(!status){
+        delete state.missionStatus[k];
+      }else{
+        state.missionStatus[k] = status;
+      }
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+
+    function getMissionStatus(agentId, period, mission){
+      return state.missionStatus[statusKey(agentId, period, mission)] || "";
+    }
+
+    function renderAgentMissions(){
+      const box = document.getElementById("agentMissionsBox");
+      const msg = document.getElementById("agentAccessMsg");
+      const ul = document.getElementById("agentMissionsList");
+
+      ul.innerHTML = "";
+      msg.textContent = "";
+
+      if(!agentSession){
+        box.style.display = "none";
+        return;
+      }
+
+      const period = periodKey();
+      if(!period){
+        msg.textContent = "Sélectionne une période (mois/année).";
+        return;
+      }
+
+      const agent = state.agents.find(x=>x.id===agentSession.id);
+      const assigned = agent && Array.isArray(agent.periods) && agent.periods.includes(period);
+
+      if(!assigned){
+        msg.textContent = "Tu n’es pas attribué à cette période.";
+        msg.style.color = "rgba(255,255,255,.70)";
+        return;
+      }
+
+      const missions = getPeriodMissions(period);
+      if(missions.length === 0){
+        msg.textContent = "Aucune mission enregistrée pour cette période.";
+        return;
+      }
+
+      msg.innerHTML = `Période : <b>${escapeHtml(period)}</b> • Missions : <b>${missions.length}</b>`;
+
+      missions
+        .slice()
+        .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}))
+        .forEach(m=>{
+          const li = document.createElement("li");
+          li.className = "item";
+
+          const current = getMissionStatus(agentSession.id, period, m);
+
+          // 3 cases à cocher mais exclusives : JS forcera une seule coche
+          const idF = `f_${agentSession.id}_${hash(period+m)}`;
+          const idP = `p_${agentSession.id}_${hash(period+m)}`;
+          const idN = `n_${agentSession.id}_${hash(period+m)}`;
+
+          li.innerHTML = `
+            <div class="itemLeft">
+              <div class="name">${escapeHtml(m)}</div>
+              <div class="meta">
+                <span class="tag">📌 ${escapeHtml(period)}</span>
+              </div>
+            </div>
+            <div class="tri" data-mission="${escapeHtml(m)}">
+              <label class="fait" title="Fait">
+                <input type="checkbox" id="${idF}" data-status="fait" /> Fait
+              </label>
+              <label class="partiel" title="Partiellement fait">
+                <input type="checkbox" id="${idP}" data-status="partiel" /> Partiel
+              </label>
+              <label class="nonfait" title="Non fait">
+                <input type="checkbox" id="${idN}" data-status="nonfait" /> Non fait
+              </label>
+            </div>
+          `;
+
+          const tri = li.querySelector(".tri");
+          const checks = Array.from(tri.querySelectorAll('input[type="checkbox"]'));
+
+          // init
+          checks.forEach(ch=>{
+            const s = ch.getAttribute("data-status");
+            ch.checked = (s === current);
+          });
+
+          // exclusivité + sauvegarde
+          checks.forEach(ch=>{
+            ch.addEventListener("change", ()=>{
+              if(ch.checked){
+                // un seul
+                checks.forEach(other=>{
+                  if(other !== ch) other.checked = false;
+                });
+                const status = ch.getAttribute("data-status");
+                setMissionStatus(agentSession.id, period, m, status);
+              }else{
+                // si on décoche -> plus de statut
+                setMissionStatus(agentSession.id, period, m, "");
+              }
+            });
+          });
+
+          ul.appendChild(li);
+        });
+    }
+
+    function hash(s){
+      // petit hash stable pour ids DOM
+      let h = 0;
+      for(let i=0;i<s.length;i++){
+        h = (h<<5) - h + s.charCodeAt(i);
+        h |= 0;
+      }
+      return Math.abs(h);
     }
 
     // ===================== RENDER ALL =====================
     function renderAll(){
       renderPeriodPill();
-      renderAgents();
-      renderAgentSelect();
       renderCatalog();
       renderPeriodMissions();
+      renderAgents();
+      renderAgentSelect();
+
+      // si agent connecté, rafraîchir missions
+      if(agentSession){
+        const a = state.agents.find(x=>x.id===agentSession.id);
+        if(a){
+          document.getElementById("agentNamePill").textContent = a.name;
+          document.getElementById("whoPill").className = "pill ok";
+          document.getElementById("whoPill").textContent = "Connecté : " + a.name;
+          if(a.mustChangeCode){
+            document.getElementById("forceChangeBox").style.display = "block";
+            document.getElementById("agentMissionsBox").style.display = "none";
+            const ap = document.getElementById("agentPill");
+            ap.className = "pill warn";
+            ap.textContent = "Changement code requis";
+          }else{
+            document.getElementById("forceChangeBox").style.display = "none";
+            document.getElementById("agentMissionsBox").style.display = "block";
+            const ap = document.getElementById("agentPill");
+            ap.className = "pill ok";
+            ap.textContent = "Connecté";
+            renderAgentMissions();
+          }
+        }
+      }
     }
 
-    // events période
-    document.getElementById("mois").addEventListener("change", ()=> { renderAll(); });
-    document.getElementById("annee").addEventListener("change", ()=> { renderAll(); });
+    // ===================== EVENTS =====================
+    document.getElementById("mois").addEventListener("change", ()=> renderAll());
+    document.getElementById("annee").addEventListener("change", ()=> renderAll());
 
-    // init
+    // init defaults
     renderAll();
   </script>
 </body>
