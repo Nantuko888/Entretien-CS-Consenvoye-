@@ -296,6 +296,16 @@
   /* Tables/listes larges : scroll horizontal plutôt que disparaître */
   table { display:block; overflow-x:auto; width:100%; }
 }
+/* PC: deux colonnes / Mobile: une colonne */
+@media (max-width: 700px){
+  .left, .right, .col, .column{
+    width:100% !important;
+    max-width:100% !important;
+  }
+  .row, .cols, .columns, .split, .layout{
+    display:block !important;
+  }
+}
 
   </style>
 </head>
