@@ -9,7 +9,13 @@
   <h2>JTUB → Apps Script (test)</h2>
   <button id="btn" style="min-height:44px;width:100%;font-weight:900">Charger agents</button>
   <pre id="out" style="white-space:pre-wrap;word-break:break-word;margin-top:12px"></pre>
-
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbx7mITnDrovMdJcIsVJxMgEsfU_itJxGGoDE4ypvZtb-N1e-tNFN83VuozZL2Wyt1ZV/exec";
+const s = document.createElement("script");
+s.src = API_URL + "?action=ping&callback=cb";
+window.cb = (d)=>alert(JSON.stringify(d));
+document.body.appendChild(s);
+</script>
 <script>
   // 👉 COLLE ICI TON URL /exec (API)
   const API_URL = "https://script.google.com/macros/s/AKfycbx7mITnDrovMdJcIsVJxMgEsfU_itJxGGoDE4ypvZtb-N1e-tNFN83VuozZL2Wyt1ZV/exec";
