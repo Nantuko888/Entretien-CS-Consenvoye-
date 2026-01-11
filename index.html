@@ -465,6 +465,36 @@
   </div>
 </div>
 
+  <script>
+  const API_URL = "COLLE_ICI_URL_EXEC";
+  const TOKEN = "TEST123";
+
+  function jsonp(params){
+    return new Promise((resolve, reject)=>{
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      params.callback = cb;
+      const s = document.createElement("script");
+      const t = setTimeout(()=>{ cleanup(); reject(new Error("timeout")); }, 12000);
+      function cleanup(){ clearTimeout(t); delete window[cb]; s.remove(); }
+      window[cb] = (data)=>{ cleanup(); resolve(data); };
+      s.onerror = ()=>{ cleanup(); reject(new Error("load_error")); };
+      s.src = API_URL + "?" + new URLSearchParams(params);
+      document.body.appendChild(s);
+    });
+  }
+
+  // Test ping
+  (async ()=>{
+    try{
+      const res = await jsonp({ action:"ping", token:TOKEN });
+      console.log("PING RESULT:", res);
+      alert(res.ok ? "✅ PING OK (GitHub ↔ Apps Script)" : "❌ PING FAIL: " + res.error);
+    }catch(e){
+      alert("❌ PING ERREUR TECHNIQUE: " + e);
+    }
+  })();
+</script>
+
 <script>
 /** ============================================================
  *  ENTRETENIR CS CONSENVOYE — Version locale (sans serveur)
