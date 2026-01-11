@@ -1,90 +1,31 @@
-<!doctype html>
+doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>JTUB Test</title>
+  <title>JTUB</title>
   <style>
     body{margin:0;font-family:Arial;background:#0b0f14;color:#e8eef9;padding:16px}
-    button{min-height:44px;width:100%;font-weight:900;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#e8eef9}
-    pre{white-space:pre-wrap;word-break:break-word;margin-top:12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;background:rgba(0,0,0,.18)}
+    .card{max-width:700px;margin:0 auto;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;background:rgba(255,255,255,.04)}
+    a.btn{display:block;text-align:center;text-decoration:none;margin-top:12px;padding:14px;border-radius:12px;
+          border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#e8eef9;font-weight:900}
     .muted{color:rgba(232,238,249,.72)}
+    .small{font-size:12px}
   </style>
 </head>
 <body>
-  <h2>JTUB TEST 777</h2>
-  <div class="muted">On teste le chargement JSONP et on affiche tout ici (pas de console).</div>
+  <div class="card">
+    <h2>Entretien CS Consenvoye</h2>
+    <div class="muted">Accès rapide à l’application (Sheets / Apps Script).</div>
 
-  <button id="btn">Charger agents</button>
-  <pre id="out">Prêt.</pre>
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // celle du projet API, Application Web
+    <!-- ✅ COLLE ICI TON URL /exec BASE 186 -->
+    <a class="btn" href="https://script.google.com/macros/s/AKfycbx7mITnDrovMdJcIsVJxMgEsfU_itJxGGoDE4ypvZtb-N1e-tNFN83VuozZL2Wyt1ZV/exec" target="_blank" rel="noopener">
+      Ouvrir l’application
+    </a>
 
-  function jsonp(url){
-    return new Promise((resolve,reject)=>{
-      const cb = "cb_" + Math.random().toString(36).slice(2);
-      window[cb] = (data)=>{ cleanup(); resolve(data); };
-      const s = document.createElement("script");
-      s.onerror = ()=>{ cleanup(); reject("load_error"); };
-      function cleanup(){ delete window[cb]; s.remove(); }
-      s.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-      document.body.appendChild(s);
-    });
-  }
-
-  document.getElementById("btn").onclick = async ()=>{
-    const out = document.getElementById("out");
-    out.textContent = "PING...";
-    try{
-      const res = await jsonp(API_URL + "?action=ping");
-      out.textContent = JSON.stringify(res, null, 2);
-    }catch(e){
-      out.textContent = "ERREUR: " + e;
-    }
-  };
-</script>
-
-<script>
-  // 👉 COLLE ICI TON URL /exec (celle "Application web" du projet API)
-  const API_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
-
-  const out = document.getElementById("out");
-  const btn = document.getElementById("btn");
-
-  function jsonp(baseUrl){
-    return new Promise((resolve, reject)=>{
-      const cb = "cb_" + Math.random().toString(36).slice(2);
-      window[cb] = (data)=>{ cleanup(); resolve(data); };
-
-      const s = document.createElement("script");
-      s.onerror = ()=>{ cleanup(); reject("load_error"); };
-
-      function cleanup(){
-        delete window[cb];
-        s.remove();
-      }
-
-      const url = baseUrl + (baseUrl.includes("?") ? "&" : "?") + "callback=" + cb;
-      s.src = url;
-      document.body.appendChild(s);
-    });
-  }
-
-  btn.addEventListener("click", async ()=>{
-    out.textContent = "1) Clic OK. Appel API...";
-    try{
-      // on appelle l'action agents (c’est ce que ton API est censée exposer)
-      const res = await jsonp(API_URL + "?action=agents");
-      out.textContent = "2) Réponse reçue ✅\n\n" + JSON.stringify(res, null, 2);
-    }catch(e){
-      out.textContent =
-        "2) ERREUR ❌ : " + e + "\n\n" +
-        "Cause la plus fréquente :\n" +
-        "- mauvaise URL /exec\n" +
-        "- accès pas 'Tout le monde'\n" +
-        "- ton /exec renvoie du HTML (UI) au lieu de JSONP\n";
-    }
-  });
-</script>
+    <div class="muted small" style="margin-top:10px;">
+      Astuce : ajoute cette page à l’écran d’accueil du téléphone.
+    </div>
+  </div>
 </body>
 </html>
