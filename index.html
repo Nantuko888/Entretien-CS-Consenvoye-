@@ -17,6 +17,32 @@
 
   <button id="btn">Charger agents</button>
   <pre id="out">Prêt.</pre>
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // celle du projet API, Application Web
+
+  function jsonp(url){
+    return new Promise((resolve,reject)=>{
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      window[cb] = (data)=>{ cleanup(); resolve(data); };
+      const s = document.createElement("script");
+      s.onerror = ()=>{ cleanup(); reject("load_error"); };
+      function cleanup(){ delete window[cb]; s.remove(); }
+      s.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+      document.body.appendChild(s);
+    });
+  }
+
+  document.getElementById("btn").onclick = async ()=>{
+    const out = document.getElementById("out");
+    out.textContent = "PING...";
+    try{
+      const res = await jsonp(API_URL + "?action=ping");
+      out.textContent = JSON.stringify(res, null, 2);
+    }catch(e){
+      out.textContent = "ERREUR: " + e;
+    }
+  };
+</script>
 
 <script>
   // 👉 COLLE ICI TON URL /exec (celle "Application web" du projet API)
