@@ -1,105 +1,1241 @@
-!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Entretien CS Consenvoye</title>
-
   <style>
     :root{
-      --bg:#0b0f14;
-      --panel:#111827;
-      --border:rgba(255,255,255,.12);
-      --text:#e8eef9;
-      --muted:rgba(232,238,249,.7);
-      --btn:rgba(255,255,255,.08);
-      --btn-hover:rgba(255,255,255,.14);
+      --bg:#0b0f14; --panel:#0f1724; --panel2:#111b2b;
+      --stroke:rgba(255,255,255,.12);
+      --text:#e8eef9; --muted:rgba(232,238,249,.72);
+      --accent:#ff7a00; --accent2:#ffb000;
+      --danger:#ff3b30; --ok:#1fd36b;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --r:18px;
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, "Noto Sans", sans-serif;
     }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:var(--font);color:var(--text);
+      background:
+        radial-gradient(900px 420px at 20% 20%, rgba(255,122,0,.18), transparent 65%),
+        radial-gradient(900px 420px at 80% 10%, rgba(255,176,0,.12), transparent 60%),
+        linear-gradient(180deg, #06080b, var(--bg));
+      min-height:100vh;
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:22px 14px 46px}
+    h1{margin:0;font-size:30px;font-weight:900;letter-spacing:.2px;color:#ff8d1a;text-shadow:0 2px 14px rgba(255,122,0,.18);text-align:center;}
+    .subtitle{margin:6px 0 0;color:var(--muted);font-size:12px;text-align:center}
+    .tabsCenter{margin:14px 0 18px;display:flex;justify-content:center;}
+    .tabs{display:flex;gap:8px;align-items:center;border:1px solid var(--stroke);background:rgba(255,255,255,.02);padding:6px;border-radius:999px;box-shadow:var(--shadow);}
+    .tab{border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:999px;cursor:pointer;font-weight:900;font-size:13px;}
+    .tab.active{background:linear-gradient(90deg, rgba(255,122,0,.26), rgba(255,176,0,.18));color:var(--text);}
+    .btn{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.03);color:var(--text);border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:900;font-size:13px;transition:.15s transform ease,.15s background ease,.15s border-color ease;white-space:nowrap;}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
+    .btn.primary{background:linear-gradient(90deg, var(--accent), var(--accent2));border-color:transparent;color:#0b0f14;box-shadow:0 12px 26px rgba(255,122,0,.18);}
+    .btn.danger{background:rgba(255,59,48,.14);border-color:rgba(255,59,48,.35);color:#ffd0cd}
+    .btn.small{padding:8px 12px;font-size:12px}
+    .card{border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border-radius:var(--r);padding:16px;box-shadow:var(--shadow);}
+    .headRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+    .h2{margin:0;font-size:15px;font-weight:900}
+    .status{font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
+    .status.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
+    .status.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
+    input, select, textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--stroke);background:rgba(0,0,0,.25);color:var(--text);outline:none;font-size:13px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+    .row > *{flex:1;min-width:220px}
+    .divider{height:1px;background:rgba(255,255,255,.09);margin:14px 0}
+    .table{width:100%;border-collapse:collapse;border-radius:14px;border:1px solid var(--stroke);background:rgba(0,0,0,.18);overflow:hidden}
+    .table th,.table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;vertical-align:middle}
+    .table th{color:var(--muted);text-align:left;font-weight:900}
+    .table tr:last-child td{border-bottom:0}
+    .ghost{color:rgba(232,238,249,.55)}
+    .twoColBlock{display:grid;gap:12px}
+    @media(min-width:1000px){ .twoColBlock{grid-template-columns: 1fr 1.2fr;} }
+    .agentOneCol{max-width:760px;margin:0 auto}
+    .toast{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);font-size:13px;display:none}
+    .toast.show{display:block}
+    .toast.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.08);color:#c9f9db}
+    .toast.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.08);color:#ffd0cd}
+    .scrollBox{max-height:240px;overflow:auto;border-radius:14px}
+    .checkRow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .checkRow:last-child{border-bottom:0}
+    .checkRow small{color:rgba(232,238,249,.55)}
+    /* Missions du mois - rendu propre */
+.mCheckRow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.mCheckRow:last-child{border-bottom:0;}
+.mCheckRow input{width:18px;height:18px;flex:0 0 auto;}
+.mCheckLabel{
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 
-    html,body{
-      margin:0;
-      padding:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:Arial, Helvetica, sans-serif;
-      height:100%;
-    }
+/* ===============================
+   Missions du mois – rendu clean
+   =============================== */
 
-    .wrap{
-      min-height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-    }
+/* conteneur scroll */
+#missionsBox {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 6px;
+}
 
-    .card{
-      width:100%;
-      max-width:420px;
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:22px;
-      box-sizing:border-box;
-      text-align:center;
-    }
+/* une ligne mission */
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
 
-    h1{
-      margin:0 0 8px 0;
-      font-size:22px;
-      font-weight:900;
-    }
+/* dernière ligne sans bord */
+.checkRow:last-child {
+  border-bottom: none;
+}
 
-    .subtitle{
-      font-size:14px;
-      color:var(--muted);
-      margin-bottom:18px;
-    }
+/* checkbox bien visible */
+.checkRow input[type="checkbox"] {
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
 
-    .btn{
-      display:block;
-      width:100%;
-      text-decoration:none;
-      color:var(--text);
-      font-size:18px;
-      font-weight:900;
-      padding:16px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:var(--btn);
-      transition:background .15s ease;
-    }
+/* bloc texte mission */
+.checkRow > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 
-    .btn:active,
-    .btn:hover{
-      background:var(--btn-hover);
-    }
+/* libellé mission (gros, lisible) */
+.checkRow > div > div {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
 
-    .hint{
-      margin-top:14px;
-      font-size:12px;
-      color:var(--muted);
-    }
+/* ID mission => MASQUÉ */
+.checkRow small,
+.checkRow .ghost {
+  display: none !important;
+}
+
+/* Missions actives du mois : cacher les IDs techniques */
+#monthActiveTable .ghost {
+  display: none !important;
+}
+
+/* Etat "chargement" pour tous les boutons jaunes */
+.btn.primary.loading{
+  background: linear-gradient(90deg, #22c55e, #16a34a) !important;
+  color:#08120c !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 26px rgba(34,197,94,.18) !important;
+}
+.btn.primary.loading::after{
+  content:" …";
+  font-weight:900;
+}
+
+/* ===== Etat "chargement" (vert) pour les boutons ===== */
+.btn.loading,
+.btn.primary.loading{
+  background: linear-gradient(90deg, #1fd36b, #7dff9c) !important;
+  border-color: transparent !important;
+  color:#0b0f14 !important;
+  box-shadow: 0 12px 26px rgba(31,211,107,.18) !important;
+  cursor: wait !important;
+  opacity: 0.95;
+}
+.btn.loading::after{
+  content: " ⏳";
+  font-weight: 900;
+}
+.btn[disabled]{
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* ===== Agent mobile : cartes lisibles ===== */
+@media (max-width: 900px){
+  .row > *{ min-width:100% !important; }
+  .table{ display:none; }
+  .agentCards{ display:grid; gap:12px; }
+  .agentCard{
+    border:1px solid var(--stroke);
+    background:rgba(0,0,0,.18);
+    border-radius:14px;
+    padding:12px;
+  }
+  .agentTitle{
+    font-weight:900;
+    font-size:16px;
+    margin-bottom:10px;
+  }
+  .pillGroup{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .pillBtn{
+    border:1px solid var(--stroke);
+    background:rgba(255,255,255,.04);
+    color:var(--text);
+    border-radius:999px;
+    padding:10px 12px;
+    font-weight:900;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .pillBtn.active{
+    background:linear-gradient(90deg, rgba(255,122,0,.26), rgba(255,176,0,.18));
+  }
+  .agentCard input{
+    margin-top:10px;
+  }
+}
+@media (min-width: 901px){
+  .agentCards{ display:none; }
+}
+
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="card">
-      <h1>Entretien CS Consenvoye</h1>
-      <div class="subtitle">
-        Accès à l’application de gestion
+    <h1>Entretien du centre de secours de Consenvoye</h1>
+    <div class="subtitle">Agent : saisie • Admin : configuration • Justificatif obligatoire si <b>Partiel</b> / <b>Non fait</b></div>
+
+    <div class="tabsCenter">
+      <div class="tabs">
+        <button class="tab active" id="tabAgent" onclick="showView('agent')">🧑‍🚒 Agent</button>
+        <button class="tab" id="tabAdmin" onclick="showView('admin')">🛡️ Admin</button>
+        <button class="btn" onclick="bootstrap()">Recharger</button>
+      </div>
+    </div>
+
+    <!-- ============ AGENT (placeholder, tu m'as dit focus admin pour l'instant) ============ -->
+    <div id="viewAgent" class="agentOneCol card">
+      <div class="headRow">
+        <div class="h2">Connexion agent</div>
+        <div class="status" id="agentStatus">Agent : non connecté</div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Agent</label>
+          <select id="agentSel"></select>
+        </div>
+        <div>
+          <label>Code</label>
+          <input id="agentCode" placeholder="Code agent" />
+        </div>
+        <div class="right">
+          <button class="btn primary" onclick="agentLogin()">Se connecter</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="ghost">Agent : on branche après. (Admin d’abord)</div>
+      <!-- ====== MISSIONS AGENT (affiché après connexion) ====== -->
+<div id="agentMissionsWrap" style="display:none;">
+  <div class="headRow">
+    <div class="h2">Missions (agent)</div>
+    <div class="status" id="agentPeriodStatus">Période : —</div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Période (uniquement celles où tu es affecté)</label>
+      <select id="agentPeriodSel">
+        <option value="">—</option>
+      </select>
+    </div>
+    <div class="right">
+      <button class="btn primary" id="btnAgentLoad" onclick="agentLoadPeriod()">Charger</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Liste missions (cartes) -->
+  <div id="agentMissionsList" class="ghost">Connecte-toi puis choisis une période.</div>
+
+  <div class="divider"></div>
+
+  <div class="right">
+    <button class="btn primary" id="btnAgentSave" onclick="agentSave()">Enregistrer</button>
+  </div>
+
+  <div id="agentToast" class="toast"></div>
+</div>
+
+    </div>
+
+    <!-- ============ ADMIN ============ -->
+    <div id="viewAdmin" class="card" style="display:none">
+      <div class="headRow">
+        <div class="h2">Connexion admin</div>
+        <div class="status" id="adminStatus">Admin : non connecté</div>
       </div>
 
-      <!-- 🔴 REMPLACE ICI PAR TON URL APPS SCRIPT /exec (version 186) -->
-      <a class="btn" href="https://script.google.com/macros/s/AKfycbx7mITnDrovMdJcIsVJxMgEsfU_itJxGGoDE4ypvZtb-N1e-tNFN83VuozZL2Wyt1ZV/exec">
-        Ouvrir l’application
-      </a>
+      <div class="row">
+        <div>
+          <label>Code admin</label>
+          <input id="adminCode" placeholder="Code admin" />
+        </div>
+        <div class="right">
+          <button class="btn primary" onclick="adminLogin()">Se connecter</button>
+        </div>
+      </div>
+      <div id="adminLoginToast" class="toast"></div>
 
-      <div class="hint">
-        Astuce : ajoute cette page à l’écran d’accueil du téléphone.
+      <div id="adminBody" style="display:none">
+        <div class="divider"></div>
+
+        <div class="card">
+          <div class="headRow">
+            <div class="h2">Changer le code admin</div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Ancien code</label>
+              <input id="oldAdminCode" placeholder="ancien code" />
+            </div>
+            <div>
+              <label>Nouveau code</label>
+              <input id="newAdminCode" placeholder="nouveau code (min 4)" />
+            </div>
+            <div class="right">
+              <button class="btn" onclick="adminChangeCode()">Changer le code</button>
+            </div>
+          </div>
+          <div id="adminCodeToast" class="toast"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Agents : gauche saisie, droite liste -->
+        <div class="twoColBlock">
+          <div class="card">
+            <div class="headRow"><div class="h2">👥 Ajouter agent</div></div>
+            <div class="row">
+              <div>
+                <label>Nom</label>
+                <input id="newAgentName" placeholder="Nom Prénom" />
+              </div>
+              <div>
+                <label>Code</label>
+                <input id="newAgentCode" value="0000" />
+              </div>
+              <div class="right">
+                <button class="btn primary" onclick="adminAddAgent()">Ajouter</button>
+              </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <div>
+                <label>Reset code (0000)</label>
+                <select id="resetAgentSel"></select>
+              </div>
+              <div class="right">
+                <button class="btn" onclick="adminResetAgent()">Reset 0000</button>
+              </div>
+            </div>
+            <div id="agentToast" class="toast"></div>
+          </div>
+
+          <div class="card">
+            <div class="headRow"><div class="h2">📋 Liste agents</div></div>
+            <div class="scrollBox">
+              <table class="table">
+                <thead><tr><th>Nom</th><th>Actif</th><th>Actions</th></tr></thead>
+                <tbody id="agentsTable"><tr><td class="ghost" colspan="3">—</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Catalogue : gauche saisie, droite liste -->
+        <div class="twoColBlock">
+          <div class="card">
+            <div class="headRow"><div class="h2">📚 Catalogue missions</div></div>
+            <label>Libellé</label>
+            <input id="newMissionLib" placeholder="Ex : Pression véhicules" />
+            <div class="right" style="margin-top:10px">
+              <button class="btn primary" onclick="adminAddMission()">Ajouter</button>
+            </div>
+            <div id="missionToast" class="toast"></div>
+          </div>
+
+          <div class="card">
+            <div class="headRow"><div class="h2">📋 Liste missions</div></div>
+            <div class="scrollBox">
+              <table class="table">
+                <thead><tr><th>Libellé</th><th>Actif</th><th>Actions</th></tr></thead>
+                <tbody id="missionsTable"><tr><td class="ghost" colspan="3">—</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Groupe par période -->
+        <div class="twoColBlock">
+          <div class="card">
+            <div class="headRow"><div class="h2">🧩 Groupe par période</div><div class="status" id="respPill">Responsable : —</div></div>
+
+            <div class="row">
+              <div>
+                <label>Période</label>
+                <select id="periodeSel"></select>
+              </div>
+              <div class="right">
+                <button class="btn primary" onclick="adminLoadPeriod(this)">Charger groupe</button>
+
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+              <div>
+                <label>Ajouter un agent au groupe</label>
+                <select id="addToGroupSel"></select>
+              </div>
+              <div class="right">
+                <button class="btn primary" onclick="adminAddToGroup(this)">Ajouter au groupe</button>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+              <div>
+                <label>Définir responsable (doit être dans le groupe)</label>
+                <select id="responsableSel"></select>
+              </div>
+              <div class="right">
+                <button class="btn primary" onclick="adminSetResponsable(this)">Définir</button>
+              </div>
+            </div>
+
+            <div id="groupToast" class="toast"></div>
+          </div>
+
+          <div class="card">
+            <div class="headRow"><div class="h2">Agents du groupe</div></div>
+            <div class="scrollBox">
+              <table class="table">
+                <thead><tr><th>Nom</th><th>Action</th></tr></thead>
+                <tbody id="groupTable"><tr><td class="ghost" colspan="2">Aucun agent dans le groupe.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Missions du mois -->
+        <div class="twoColBlock">
+          <div class="card">
+            <div class="headRow"><div class="h2">Missions du mois (checkbox)</div></div>
+            <div class="row">
+              <div class="right">
+                <button class="btn" onclick="adminLoadMonthMissions()">Charger</button>
+              </div>
+            </div>
+            <div id="missionsBox" class="scrollBox" style="margin-top:10px;border:1px solid var(--stroke);background:rgba(0,0,0,.18)">
+              <div class="ghost" style="padding:10px">Sélectionne une période puis “Charger”.</div>
+            </div>
+            <div class="right" style="margin-top:10px">
+              <button class="btn primary" onclick="adminSaveMonthMissions()">Enregistrer</button>
+            </div>
+            <div id="monthToast" class="toast"></div>
+          </div>
+
+          <div class="card">
+            <div class="headRow"><div class="h2">Missions actives du mois</div></div>
+            <div class="scrollBox">
+              <table class="table">
+                <thead><tr><th>Mission</th></tr></thead>
+                <tbody id="monthActiveTable"><tr><td class="ghost">—</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Retours -->
+        <div class="card">
+          <div class="headRow"><div class="h2">📌 Retours (Non fait / Partiel)</div></div>
+          <div class="right">
+            <button class="btn" onclick="adminLoadRetours()">Charger (par période)</button>
+          </div>
+          <div class="scrollBox" style="margin-top:10px">
+            <table class="table">
+              <thead><tr><th>Période</th><th>Agent</th><th>Mission</th><th>Déclaration</th><th>Justificatif</th></tr></thead>
+              <tbody id="retoursTable"><tr><td class="ghost" colspan="5">—</td></tr></tbody>
+            </table>
+          </div>
+          <div id="retoursToast" class="toast"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  let DATA = { agents:[], catalog:[], periodes:[] };
+  let ADMIN_OK = false;
+  let CURRENT = { period_id:"", group:[], responsable:null, missionsOn:[] };
+
+  function setBtnLoading(btn, on){
+  if(!btn) return;
+  btn.classList.toggle("loading", !!on);
+  btn.disabled = !!on;
+}
+
+function withBtnLoading(btn, fnCall){
+  setBtnLoading(btn, true);
+  try { fnCall(); }
+  catch(e){ setBtnLoading(btn, false); throw e; }
+}
+
+  function withLoading(btn, fn){
+  if(!btn){ fn(()=>{}); return; }
+  btn.classList.add("loading");
+  btn.disabled = true;
+  const done = ()=>{
+    btn.classList.remove("loading");
+    btn.disabled = false;
+  };
+  fn(done);
+  }
+  function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function showToast(id, msg, ok){
+    const el = document.getElementById(id);
+    el.className = "toast show " + (ok ? "ok":"bad");
+    el.textContent = msg || "";
+  }
+  function clearToast(id){
+    const el = document.getElementById(id);
+    el.className = "toast";
+    el.textContent = "";
+  }
+
+  function showView(v){
+    const a = document.getElementById("viewAgent");
+    const ad = document.getElementById("viewAdmin");
+    document.getElementById("tabAgent").classList.toggle("active", v==="agent");
+    document.getElementById("tabAdmin").classList.toggle("active", v==="admin");
+    a.style.display = (v==="agent") ? "" : "none";
+    ad.style.display = (v==="admin") ? "" : "none";
+  }
+
+  function bootstrap(){
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok){ return; }
+      DATA = res;
+      fillAgentSelect();
+      fillAdminPeriodSelect();
+      adminRefreshAgents();
+      adminRefreshMissions();
+    }).apiBootstrap();
+  }
+
+  function fillAgentSelect(){
+    const sel = document.getElementById("agentSel");
+    sel.innerHTML = `<option value="">— Choisir agent —</option>`;
+    (DATA.agents||[]).filter(a=>a.actif).forEach(a=>{
+      sel.innerHTML += `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`;
+    });
+  }
+
+  function fillAdminPeriodSelect(){
+    const sel = document.getElementById("periodeSel");
+    sel.innerHTML = `<option value="">— Choisir période —</option>`;
+    (DATA.periodes||[]).forEach(p=>{
+      sel.innerHTML += `<option value="${esc(p.period_id)}">${esc(p.libelle || p.period_id)}</option>`;
+    });
+  }
+
+  function adminLogin(){
+  clearToast("adminLoginToast");
+  const code = document.getElementById("adminCode").value;
+  const btn = event?.target; // le bouton cliqué
+
+  withBtnLoading(btn, () => {
+    google.script.run.withSuccessHandler(res=>{
+      ADMIN_OK = !!(res && res.ok);
+
+      document.getElementById("adminStatus").textContent = ADMIN_OK ? "Admin : connecté" : "Admin : non connecté";
+      document.getElementById("adminStatus").className = "status " + (ADMIN_OK ? "ok":"bad");
+
+      if(!ADMIN_OK){
+        showToast("adminLoginToast","Code admin incorrect.", false);
+        document.getElementById("adminBody").style.display = "none";
+        setBtnLoading(btn, false);
+        return;
+      }
+
+      showToast("adminLoginToast","Admin connecté ✅", true);
+      document.getElementById("adminBody").style.display = "";
+
+      // refresh lists
+      adminRefreshAgents();
+      adminRefreshMissions();
+
+      setBtnLoading(btn, false);
+    }).withFailureHandler(err=>{
+      showToast("adminLoginToast", "Erreur connexion admin.", false);
+      setBtnLoading(btn, false);
+    }).apiAdminLogin(code);
+  });
+}
+
+  function adminChangeCode(){
+    clearToast("adminCodeToast");
+    const oldC = document.getElementById("oldAdminCode").value;
+    const newC = document.getElementById("newAdminCode").value;
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok){ showToast("adminCodeToast", (res && res.message) || "Erreur", false); return; }
+      showToast("adminCodeToast", res.message || "OK", true);
+      document.getElementById("oldAdminCode").value="";
+      document.getElementById("newAdminCode").value="";
+    }).apiAdminSetCode(oldC, newC);
+  }
+
+  function adminRefreshAgents(){
+    if(!ADMIN_OK) return;
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok) return;
+      DATA.agents = res.agents || [];
+      // table
+      const tb = document.getElementById("agentsTable");
+      const list = DATA.agents;
+      if(!list.length){
+        tb.innerHTML = `<tr><td class="ghost" colspan="3">—</td></tr>`; return;
+      }
+      tb.innerHTML = list.map(a=>`
+        <tr>
+          <td>${esc(a.nom)}</td>
+          <td>${a.actif ? "Oui":"Non"}</td>
+          <td class="right">
+            <button class="btn small" onclick="adminToggleAgent('${esc(a.agent_id)}', ${a.actif ? "false":"true"})">${a.actif ? "Désactiver":"Activer"}</button>
+            <button class="btn small" onclick="adminResetAgentCode('${esc(a.agent_id)}')">Reset 0000</button>
+            <button class="btn small danger" onclick="adminDeleteAgent('${esc(a.agent_id)}')">Supprimer</button>
+          </td>
+        </tr>`).join("");
+      // reset select + add-to-group select refresh
+      const resetSel = document.getElementById("resetAgentSel");
+      resetSel.innerHTML = `<option value="">— Choisir agent —</option>`;
+      list.filter(a=>a.actif).forEach(a=>{
+        resetSel.innerHTML += `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`;
+      });
+      const addSel = document.getElementById("addToGroupSel");
+      addSel.innerHTML = `<option value="">— Choisir agent —</option>`;
+      list.filter(a=>a.actif).forEach(a=>{
+        addSel.innerHTML += `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`;
+      });
+    }).apiAdminListAgents();
+  }
+
+  function adminAddAgent(){
+    if(!ADMIN_OK) return;
+    clearToast("agentToast");
+    const nom = document.getElementById("newAgentName").value;
+    const code = document.getElementById("newAgentCode").value;
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok){ showToast("agentToast", (res && res.message) || "Erreur", false); return; }
+      showToast("agentToast", res.message || "OK", true);
+      document.getElementById("newAgentName").value="";
+      document.getElementById("newAgentCode").value="0000";
+      adminRefreshAgents();
+      fillAgentSelect();
+    }).apiAdminAddAgent(nom, code);
+  }
+
+  function adminToggleAgent(id, actif){
+    if(!ADMIN_OK) return;
+    google.script.run.withSuccessHandler(_=>{
+      adminRefreshAgents();
+      fillAgentSelect();
+    }).apiAdminToggleAgent(id, actif);
+  }
+
+  function adminResetAgent(){
+    if(!ADMIN_OK) return;
+    const id = document.getElementById("resetAgentSel").value;
+    if(!id){ showToast("agentToast","Choisis un agent.", false); return; }
+    google.script.run.withSuccessHandler(res=>{
+      showToast("agentToast", (res && res.message) || "OK", !!(res && res.ok));
+      adminRefreshAgents();
+    }).apiAdminResetAgentCode(id, "0000");
+  }
+  function adminResetAgentCode(id){
+    if(!ADMIN_OK) return;
+    google.script.run.withSuccessHandler(res=>{
+      showToast("agentToast", (res && res.message) || "OK", !!(res && res.ok));
+      adminRefreshAgents();
+    }).apiAdminResetAgentCode(id, "0000");
+  }
+  function adminDeleteAgent(id){
+    if(!ADMIN_OK) return;
+    if(!confirm("Supprimer définitivement cet agent ?")) return;
+    google.script.run.withSuccessHandler(res=>{
+      showToast("agentToast", (res && res.message) || "OK", !!(res && res.ok));
+      adminRefreshAgents();
+      fillAgentSelect();
+    }).apiAdminDeleteAgentHard(id);
+  }
+
+  function adminRefreshMissions(){
+    if(!ADMIN_OK) return;
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok) return;
+      DATA.catalog = res.catalog || [];
+      const tb = document.getElementById("missionsTable");
+      const list = DATA.catalog;
+      if(!list.length){
+        tb.innerHTML = `<tr><td class="ghost" colspan="3">—</td></tr>`; return;
+      }
+      tb.innerHTML = list.map(m=>`
+        <tr>
+          <td>${esc(m.libelle)}</td>
+          <td>${m.actif ? "Oui":"Non"}</td>
+          <td class="right">
+            <button class="btn small" onclick="adminToggleMission('${esc(m.mission_id)}', ${m.actif ? "false":"true"})">${m.actif ? "Désactiver":"Activer"}</button>
+            <button class="btn small danger" onclick="adminDeleteMission('${esc(m.mission_id)}')">Supprimer</button>
+          </td>
+        </tr>`).join("");
+    }).apiAdminListCatalog();
+  }
+
+  function adminAddMission(){
+    if(!ADMIN_OK) return;
+    clearToast("missionToast");
+    const lib = document.getElementById("newMissionLib").value;
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok){ showToast("missionToast", (res && res.message) || "Erreur", false); return; }
+      showToast("missionToast", res.message || "OK", true);
+      document.getElementById("newMissionLib").value="";
+      adminRefreshMissions();
+    }).apiAdminAddCatalogMission(lib);
+  }
+
+  function adminToggleMission(id, actif){
+    if(!ADMIN_OK) return;
+    google.script.run.withSuccessHandler(_=>{
+      adminRefreshMissions();
+      // si on est dans missions du mois chargé => recharge box pour cohérence
+      if(CURRENT.period_id) adminLoadMonthMissions();
+    }).apiAdminToggleCatalogMission(id, actif);
+  }
+
+  function adminDeleteMission(id){
+    if(!ADMIN_OK) return;
+    if(!confirm("Supprimer définitivement cette mission ?")) return;
+    google.script.run.withSuccessHandler(res=>{
+      showToast("missionToast", (res && res.message) || "OK", !!(res && res.ok));
+      adminRefreshMissions();
+      if(CURRENT.period_id) adminLoadMonthMissions();
+    }).apiAdminDeleteMissionHard(id);
+  }
+
+  function adminLoadPeriod(btn){
+  if(!ADMIN_OK) return;
+  clearToast("groupToast");
+  const pid = document.getElementById("periodeSel").value;
+  if(!pid){ showToast("groupToast","Choisis une période.", false); return; }
+
+  withLoading(btn, done=>{
+    google.script.run
+      .withSuccessHandler(res=>{
+        if(!res || !res.ok){ showToast("groupToast",(res&&res.message)||"Erreur", false); done(); return; }
+        CURRENT.period_id = res.period_id;
+        CURRENT.group = res.group || [];
+        CURRENT.responsable = res.responsable || null;
+        CURRENT.missionsOn = res.missionsOn || [];
+
+        document.getElementById("respPill").textContent = "Responsable : " + (CURRENT.responsable ? CURRENT.responsable.nom : "—");
+        renderGroupTable();
+
+        const rsel = document.getElementById("responsableSel");
+        rsel.innerHTML = `<option value="">— Choisir responsable —</option>`;
+        (CURRENT.group||[]).forEach(a=>{
+          rsel.innerHTML += `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`;
+        });
+
+        showToast("groupToast","Groupe chargé ✅", true);
+        adminLoadMonthMissions(true);
+        adminLoadRetours(true);
+        done();
+      })
+      .withFailureHandler(e=>{
+        showToast("groupToast", (e && e.message) ? e.message : "Erreur serveur", false);
+        done();
+      })
+      .apiAdminLoadPeriod(pid);
+  });
+}
+
+  function renderGroupTable(){
+    const tb = document.getElementById("groupTable");
+    const g = CURRENT.group || [];
+    if(!g.length){
+      tb.innerHTML = `<tr><td class="ghost" colspan="2">Aucun agent dans le groupe.</td></tr>`;
+      return;
+    }
+    tb.innerHTML = g.map(a=>`
+      <tr>
+        <td>${esc(a.nom)}</td>
+        <td class="right"><button class="btn small danger" onclick="adminRemoveFromGroup('${esc(a.agent_id)}')">Retirer</button></td>
+      </tr>`).join("");
+  }
+
+ function adminAddToGroup(btn){
+  if(!ADMIN_OK) return;
+  clearToast("groupToast");
+  const pid = document.getElementById("periodeSel").value;
+  const aid = document.getElementById("addToGroupSel").value;
+  if(!pid || !aid){ showToast("groupToast","Choisis période + agent.", false); return; }
+
+  withLoading(btn, done=>{
+    google.script.run
+      .withSuccessHandler(res=>{
+        if(!res || !res.ok){ showToast("groupToast",(res&&res.message)||"Erreur", false); done(); return; }
+        showToast("groupToast", res.message || "Agent ajouté.", true);
+        adminLoadPeriod(); // recharge complet
+        done();
+      })
+      .withFailureHandler(e=>{
+        showToast("groupToast", (e && e.message) ? e.message : "Erreur serveur", false);
+        done();
+      })
+      .apiAdminAddAgentToGroup(pid, aid);
+  });
+}
+
+
+  function adminRemoveFromGroup(aid){
+  if(!ADMIN_OK) return;
+  clearToast("groupToast");
+
+  const pid = document.getElementById("periodeSel").value;
+  if(!pid || !aid) return;
+
+  // ===== UI INSTANTANÉE =====
+  CURRENT.group = (CURRENT.group||[]).filter(x => x.agent_id !== aid);
+
+  // Si c’était le responsable, on l’enlève aussi côté UI
+  if(CURRENT.responsable && CURRENT.responsable.agent_id === aid){
+    CURRENT.responsable = null;
+    document.getElementById("respPill").textContent = "Responsable : —";
+  }
+
+  renderGroupTable();
+
+  const rsel = document.getElementById("responsableSel");
+  rsel.innerHTML = `<option value="">— Choisir responsable —</option>` +
+    (CURRENT.group||[]).map(a=>`<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`).join("");
+
+  showToast("groupToast","Retrait instantané ✅ (sync…)", true);
+
+  // ===== SYNC SERVEUR =====
+  google.script.run.withSuccessHandler(res=>{
+    if(!res || !res.ok){
+      showToast("groupToast", (res && res.message) ? res.message : "Erreur retrait serveur", false);
+    }
+    scheduleReloadPeriod();
+  }).apiAdminRemoveAgentFromGroup(pid, aid);
+}
+
+ function adminSetResponsable(btn){
+  if(!ADMIN_OK) return;
+  clearToast("groupToast");
+  const pid = document.getElementById("periodeSel").value;
+  const aid = document.getElementById("responsableSel").value;
+  if(!pid || !aid){ showToast("groupToast","Choisis un responsable.", false); return; }
+
+  withLoading(btn, done=>{
+    google.script.run
+      .withSuccessHandler(res=>{
+        if(!res || !res.ok){ showToast("groupToast",(res&&res.message)||"Erreur", false); done(); return; }
+        showToast("groupToast", res.message || "OK", true);
+        adminLoadPeriod();
+        done();
+      })
+      .withFailureHandler(e=>{
+        showToast("groupToast", (e && e.message) ? e.message : "Erreur serveur", false);
+        done();
+      })
+      .apiAdminSetResponsable(pid, aid);
+  });
+}
+
+
+  // ----- Missions du mois -----
+  function adminLoadMonthMissions(silent){
+    if(!ADMIN_OK) return;
+    const pid = document.getElementById("periodeSel").value;
+    if(!pid){
+      const box = document.getElementById("missionsBox");
+      box.innerHTML = `<div class="ghost" style="padding:10px">Sélectionne une période puis “Charger”.</div>`;
+      return;
+    }
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok){ if(!silent) showToast("monthToast",(res&&res.message)||"Erreur", false); return; }
+      const all = res.missionsAll || [];
+      const on = new Set((res.missionsOn||[]).map(x=>String(x.mission_id)));
+      // render left checkbox list
+      const box = document.getElementById("missionsBox");
+      if(!all.length){
+        box.innerHTML = `<div class="ghost" style="padding:10px">Aucune mission catalogue.</div>`;
+      } else {
+        box.innerHTML = all.map(m=>`
+  <div class="checkRow">
+    <input type="checkbox"
+      data-mid="${esc(m.mission_id)}"
+      ${on.has(String(m.mission_id)) ? "checked":""}
+    />
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+        ${esc(m.libelle)}
       </div>
     </div>
   </div>
+`).join("");
+
+      }
+      // render right active list
+      renderMonthActiveTable(res.missionsOn || []);
+      if(!silent) showToast("monthToast","Missions chargées ✅", true);
+    }).apiAdminGetMonthMissions(pid);
+  }
+
+  function adminSaveMonthMissions(){
+  if(!ADMIN_OK) return;
+  clearToast("monthToast");
+
+  const pid = document.getElementById("periodeSel").value;
+  if(!pid){ showToast("monthToast","Choisis une période.", false); return; }
+
+  const btn = event?.target; // bouton Enregistrer cliqué
+  const box = document.getElementById("missionsBox");
+  const checks = Array.from(box.querySelectorAll('input[type="checkbox"][data-mid]'));
+  const ids = checks.filter(c=>c.checked).map(c=>c.getAttribute("data-mid"));
+
+  withBtnLoading(btn, () => {
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok){
+        showToast("monthToast",(res && res.message) || "Erreur", false);
+        setBtnLoading(btn, false);
+        return;
+      }
+      showToast("monthToast", res.message || "OK", true);
+
+      // MAJ immédiate tableau droite
+      renderMonthActiveTable(res.missionsOn || []);
+
+      setBtnLoading(btn, false);
+    }).withFailureHandler(err=>{
+      showToast("monthToast", "Erreur sauvegarde.", false);
+      setBtnLoading(btn, false);
+    }).apiAdminSaveMonthMissions(pid, ids);
+  });
+}
+
+  function renderMonthActiveTable(list){
+    const tb = document.getElementById("monthActiveTable");
+    if(!list || !list.length){
+      tb.innerHTML = `<tr><td class="ghost">—</td></tr>`;
+      return;
+    }
+    tb.innerHTML = list.map(m=>`<tr><td>${esc(m.libelle)}<div class="ghost" style="font-size:12px">${esc(m.mission_id||"")}</div></td></tr>`).join("");
+  }
+
+  // ----- Retours -----
+  function adminLoadRetours(silent){
+    if(!ADMIN_OK) return;
+    const pid = document.getElementById("periodeSel").value;
+    if(!pid) return;
+    google.script.run.withSuccessHandler(res=>{
+      if(!res || !res.ok){ if(!silent) showToast("retoursToast",(res&&res.message)||"Erreur", false); return; }
+      const tb = document.getElementById("retoursTable");
+      const items = res.items || [];
+      if(!items.length){
+        tb.innerHTML = `<tr><td class="ghost" colspan="5">Aucun retour (tout est fait).</td></tr>`;
+        return;
+      }
+      tb.innerHTML = items.map(it=>`
+        <tr>
+          <td>${esc(pid)}</td>
+          <td>${esc(it.agent)}</td>
+          <td>${esc(it.mission)}</td>
+          <td>${esc(it.declaration)}</td>
+          <td>${esc(it.justificatif)}</td>
+        </tr>`).join("");
+      if(!silent) showToast("retoursToast","Retours chargés ✅", true);
+    }).apiAdminRetours(pid);
+  }
+
+  /* ===========================
+   AGENT (V1 fonctionnel)
+   dépend de Code.gs:
+   - apiAgentLogin(agentId, code)
+   - apiAgentLoadPeriod(agentId, periodId)
+   - apiAgentSaveDeclarations(agentId, periodId, items)
+=========================== */
+
+let AGENT = { ok:false, agent_id:"", nom:"", periods:[] };
+let AGENT_PERIOD = "";
+
+function elByIds(...ids){
+  for(const id of ids){
+    const el = document.getElementById(id);
+    if(el) return el;
+  }
+  return null;
+}
+
+function setAgentStatus(ok, txt){
+  const st = elByIds("agentStatus");
+  if(!st) return;
+  st.textContent = txt;
+  st.className = "status " + (ok ? "ok":"bad");
+}
+
+function agentLogin(){
+  // Tolérant si tu as "agentSel" ou "agentsSel"
+  const sel = elByIds("agentSel","agentsSel");
+  const inp = elByIds("agentCode");
+  const agentId = sel ? sel.value : "";
+  const code = inp ? inp.value : "";
+
+  if(!agentId || !code){
+    setAgentStatus(false, "Agent : sélection + code requis");
+    return;
+  }
+
+  google.script.run.withSuccessHandler(res=>{
+    if(!res || !res.ok){
+      AGENT = { ok:false, agent_id:"", nom:"", periods:[] };
+      setAgentStatus(false, "Agent : code incorrect");
+      // vide période + missions
+      const psel = elByIds("agentPeriodSel");
+      if(psel){ psel.innerHTML = `<option value="">—</option>`; psel.disabled = true; }
+      const body = elByIds("agentMissionsBody");
+      if(body){ body.innerHTML = `<tr><td class="ghost" colspan="4">Aucune mission.</td></tr>`; }
+      return;
+    }
+
+    AGENT.ok = true;
+    AGENT.agent_id = res.agent.agent_id;
+    AGENT.nom = res.agent.nom;
+    AGENT.periods = res.periods || [];
+
+    setAgentStatus(true, "Agent : " + AGENT.nom);
+
+    // Remplit la liste des périodes autorisées
+    const psel = elByIds("agentPeriodSel");
+    if(psel){
+      psel.disabled = false;
+      psel.innerHTML = `<option value="">— Choisir période —</option>` +
+        AGENT.periods.map(p => `<option value="${esc(p.period_id)}">${esc(p.libelle || p.period_id)}</option>`).join("");
+    }
+
+    // On efface l’ancien tableau
+    const body = elByIds("agentMissionsBody");
+    if(body){
+      body.innerHTML = `<tr><td class="ghost" colspan="4">Choisis une période puis “Charger”.</td></tr>`;
+    }
+  }).apiAgentLogin(agentId, code);
+}
+
+function agentLoadPeriod(){
+  const psel = elByIds("agentPeriodSel");
+  const pid = psel ? psel.value : "";
+  if(!AGENT.ok){
+    setAgentStatus(false, "Agent : connecte-toi d’abord");
+    return;
+  }
+  if(!pid){
+    setAgentStatus(true, "Agent : " + AGENT.nom);
+    return;
+  }
+
+  google.script.run.withSuccessHandler(res=>{
+    if(!res || !res.ok){
+      // message clair demandé : agent pas affecté à la période
+      setAgentStatus(false, (res && res.message) ? res.message : "Période interdite");
+      const body = elByIds("agentMissionsBody");
+      if(body){ body.innerHTML = `<tr><td class="ghost" colspan="4">Aucune mission.</td></tr>`; }
+      return;
+    }
+
+    setAgentStatus(true, "Agent : " + AGENT.nom);
+    AGENT_PERIOD = pid;
+
+    // Responsable affiché
+    const resp = elByIds("agentResp");
+    if(resp) resp.textContent = res.responsable || "—";
+
+    // Table missions
+    const body = elByIds("agentMissionsBody");
+    const list = res.missions || [];
+    if(!body) return;
+
+    if(!list.length){
+      body.innerHTML = `<tr><td class="ghost" colspan="4">Aucune mission attribuée.</td></tr>`;
+      return;
+    }
+
+    body.innerHTML = list.map(m => `
+      <tr data-mid="${esc(m.mission_id)}">
+        <td><b>${esc(m.libelle)}</b></td>
+        <td>
+          <select class="agentDecSel">
+            <option value="" ${m.declaration===""?"selected":""}>—</option>
+            <option value="Fait" ${m.declaration==="Fait"?"selected":""}>Fait</option>
+            <option value="Partiel" ${m.declaration==="Partiel"?"selected":""}>Partiel</option>
+            <option value="Non fait" ${m.declaration==="Non fait"?"selected":""}>Non fait</option>
+          </select>
+        </td>
+        <td>
+          <input class="agentJustif" placeholder="Justificatif si Partiel/Non fait"
+                 value="${esc(m.justificatif||"")}" />
+        </td>
+        <td class="right">
+          <span class="ghost mono">${esc(m.mission_id)}</span>
+        </td>
+      </tr>
+    `).join("");
+  }).apiAgentLoadPeriod(AGENT.agent_id, pid);
+}
+
+function agentSave(){
+  if(!AGENT.ok || !AGENT_PERIOD){
+    setAgentStatus(false, "Agent : connecte-toi + choisis une période");
+    return;
+  }
+  const body = elByIds("agentMissionsBody");
+  if(!body) return;
+
+  const rows = Array.from(body.querySelectorAll("tr[data-mid]"));
+  const items = rows.map(tr=>{
+    const mid = tr.getAttribute("data-mid");
+    const decSel = tr.querySelector(".agentDecSel");
+    const justif = tr.querySelector(".agentJustif");
+    return {
+      mission_id: mid,
+      declaration: decSel ? decSel.value : "",
+      justificatif: justif ? justif.value : ""
+    };
+  });
+
+  google.script.run.withSuccessHandler(res=>{
+    if(!res || !res.ok){
+      setAgentStatus(false, (res && res.message) ? res.message : "Erreur enregistrement");
+      return;
+    }
+    setAgentStatus(true, "Enregistré ✅");
+  }).apiAgentSaveDeclarations(AGENT.agent_id, AGENT_PERIOD, items);
+}
+
+/* Bonus: Entrée = valider (agent) */
+document.addEventListener("keydown", (e)=>{
+  if(e.key !== "Enter") return;
+  // si focus dans un input/select de la zone agent, on sauvegarde
+  const vAgent = elByIds("viewAgent");
+  if(!vAgent) return;
+  if(vAgent.contains(document.activeElement)){
+    e.preventDefault();
+    // si pas connecté => login, sinon save
+    if(!AGENT.ok) agentLogin();
+    else agentSave();
+  }
+});
+
+function adminLoadMonthMissions(silent){
+  if(!ADMIN_OK) return;
+
+  const pid = document.getElementById("periodeSel").value;
+  const box = document.getElementById("missionsBox");
+
+  if(!pid){
+    box.innerHTML = `<div class="ghost" style="padding:10px">
+      Sélectionne une période puis “Charger”.
+    </div>`;
+    return;
+  }
+
+  google.script.run.withSuccessHandler(res=>{
+    if(!res || !res.ok){
+      if(!silent) showToast("monthToast", (res && res.message) || "Erreur", false);
+      return;
+    }
+
+    const all = res.missionsAll || [];
+    const activeIds = new Set((res.missionsOn || []).map(m => String(m.mission_id)));
+
+    if(!all.length){
+      box.innerHTML = `<div class="ghost" style="padding:10px">
+        Aucune mission catalogue.
+      </div>`;
+    } else {
+      box.innerHTML = all.map(m => `
+        <label class="checkRow" style="cursor:pointer">
+          <input type="checkbox"
+                 data-mid="${esc(m.mission_id)}"
+                 ${activeIds.has(String(m.mission_id)) ? "checked" : ""}>
+          <div style="flex:1">
+            <div style="font-weight:900">${esc(m.libelle)}</div>
+          </div>
+        </label>
+      `).join("");
+    }
+
+    renderMonthActiveTable(res.missionsOn || []);
+
+    if(!silent) showToast("monthToast","Missions chargées ✅", true);
+
+  }).apiAdminGetMonthMissions(pid);
+}
+
+  // init
+  bootstrap();
+
+  window.adminLoadPeriod = adminLoadPeriod;
+window.adminAddToGroup = adminAddToGroup;
+window.adminSetResponsable = adminSetResponsable;
+window.adminRemoveFromGroup = adminRemoveFromGroup;
+
+// ===== Refresh serveur (debounce) =====
+let _reloadTimer = null;
+function scheduleReloadPeriod(){
+  // évite 3 appels serveurs à la suite
+  if(_reloadTimer) clearTimeout(_reloadTimer);
+  _reloadTimer = setTimeout(()=> {
+    // Recharge "propre" depuis Sheets (corrige les cas où l'UI locale diverge)
+    if(typeof adminLoadPeriod === "function") adminLoadPeriod();
+  }, 400);
+}
+
+</script>
 </body>
 </html>
+
+
