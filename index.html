@@ -212,6 +212,48 @@
 @media (min-width: 901px){
   .agentCards{ display:none; }
 }
+/* ===== PATCH SMARTPHONE : tout en une colonne, plein écran ===== */
+@media (max-width: 700px){
+
+  /* Le conteneur principal doit prendre toute la largeur */
+  .wrap{
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 12px !important;
+  }
+
+  /* Les cartes/panels doivent s'étirer */
+  .card, .panel, .box, .content, .content-card{
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Les layouts en 2 colonnes doivent s'empiler */
+  .row, .grid, .cols, .split, .twoCols, .two-col, .layout{
+    display: block !important;
+  }
+
+  /* Si tu as une zone gauche/droite */
+  .left, .right{
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Boutons et champs en plein largeur */
+  input, select, textarea, button, .btn{
+    width: 100% !important;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  /* Evite les coupures */
+  body { overflow-x: hidden !important; }
+  .wrap, .card, .panel { overflow: visible !important; }
+
+  /* Tables/listes larges : scroll horizontal plutôt que disparaître */
+  table { display:block; overflow-x:auto; width:100%; }
+}
 
   </style>
 </head>
