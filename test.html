@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>JTUB Test API</title>
+  <style>
+    body{margin:0;font-family:Arial;background:#0b0f14;color:#e8eef9;padding:16px}
+    button{min-height:44px;width:100%;font-weight:900;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#e8eef9}
+    pre{white-space:pre-wrap;word-break:break-word;margin-top:12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;background:rgba(0,0,0,.18)}
+    .muted{color:rgba(232,238,249,.72);font-size:12px}
+  </style>
+
+  <!-- ✅ charge ton adaptateur -->
+  <script src="./adapter.js"></script>
+</head>
+
+<body>
+  <h2>JTUB – Test API (isolé)</h2>
+  <div class="muted">But : voir si GitHub peut appeler Apps Script. Ne touche pas à index.html.</div>
+
+  <button id="btnAgents">Charger agents (api_getAgents)</button>
+  <pre id="out">Prêt.</pre>
+
+  <script>
+    const out = document.getElementById("out");
+
+    document.getElementById("btnAgents").onclick = () => {
+      out.textContent = "Appel en cours...";
+      try{
+        google.script.run
+          .withSuccessHandler((res)=>{ out.textContent = "OK ✅\n\n" + JSON.stringify(res, null, 2); })
+          .withFailureHandler((err)=>{ out.textContent = "ERREUR ❌\n\n" + JSON.stringify(err, null, 2); })
+          .api_getAgents();
+      }catch(e){
+        out.textContent = "ERREUR JS ❌\n\n" + String(e);
+      }
+    };
+  </script>
+</body>
+</html>
