@@ -1,31 +1,61 @@
-doctype html>
+<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>JTUB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Entretien CS Consenvoye</title>
   <style>
-    body{margin:0;font-family:Arial;background:#0b0f14;color:#e8eef9;padding:16px}
-    .card{max-width:700px;margin:0 auto;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;background:rgba(255,255,255,.04)}
-    a.btn{display:block;text-align:center;text-decoration:none;margin-top:12px;padding:14px;border-radius:12px;
-          border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#e8eef9;font-weight:900}
-    .muted{color:rgba(232,238,249,.72)}
-    .small{font-size:12px}
+    html,body{height:100%;margin:0;background:#0b0f14;}
+    .bar{
+      position:fixed;top:0;left:0;right:0;z-index:10;
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      padding:10px 12px;background:rgba(11,15,20,.92);backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(255,255,255,.12);
+      font-family:Arial,sans-serif;color:#e8eef9;
+    }
+    .bar .title{font-weight:900}
+    .bar a{
+      text-decoration:none;color:#e8eef9;font-weight:900;
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);
+    }
+    .frame{
+      position:fixed;left:0;right:0;bottom:0;top:54px; /* hauteur barre */
+      width:100%;height:calc(100% - 54px);
+      border:0;
+    }
+    .hint{
+      position:fixed;left:12px;right:12px;bottom:12px;z-index:11;
+      font-family:Arial,sans-serif;color:rgba(232,238,249,.75);
+      background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;padding:10px 12px;display:none;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Entretien CS Consenvoye</h2>
-    <div class="muted">Accès rapide à l’application (Sheets / Apps Script).</div>
-
-    <!-- ✅ COLLE ICI TON URL /exec BASE 186 -->
-    <a class="btn" href="https://script.google.com/macros/s/AKfycbx7mITnDrovMdJcIsVJxMgEsfU_itJxGGoDE4ypvZtb-N1e-tNFN83VuozZL2Wyt1ZV/exec" target="_blank" rel="noopener">
-      Ouvrir l’application
-    </a>
-
-    <div class="muted small" style="margin-top:10px;">
-      Astuce : ajoute cette page à l’écran d’accueil du téléphone.
-    </div>
+  <div class="bar">
+    <div class="title">Entretien CS Consenvoye</div>
+    <!-- ✅ ton URL Apps Script (même que celui qui marche) -->
+    <a id="open" href="https://script.google.com/macros/s/AKfycbx7mITnDrovMdJcIsVJxMgEsfU_itJxGGoDE4ypvZtb-N1e-tNFN83VuozZL2Wyt1ZV/exec" target="_blank" rel="noopener">Ouvrir en plein onglet</a>
   </div>
+
+  <iframe id="app" class="frame" src="https://script.google.com/macros/s/AKfycbx7mITnDrovMdJcIsVJxMgEsfU_itJxGGoDE4ypvZtb-N1e-tNFN83VuozZL2Wyt1ZV/exec"></iframe>
+
+  <div id="hint" class="hint">
+    Si l’application ne s’affiche pas dans la page, utilise “Ouvrir en plein onglet”.
+  </div>
+
+  <script>
+    // Si le chargement iframe est bloqué par Google (rare), on affiche une aide.
+    const hint = document.getElementById("hint");
+    const iframe = document.getElementById("app");
+
+    let loaded = false;
+    iframe.addEventListener("load", ()=>{ loaded = true; });
+
+    setTimeout(()=>{
+      if(!loaded) hint.style.display = "block";
+    }, 4000);
+  </script>
 </body>
 </html>
