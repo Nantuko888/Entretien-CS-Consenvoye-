@@ -77,39 +77,50 @@
   </div>
 
 <script>
-/* 🔴 REMPLACE CETTE URL PAR TON URL /exec APPS SCRIPT 🔴 */
-const API_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
+const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
 
-function adminLogin(){
+function adminLogin() {
   const code = document.getElementById("adminCode").value.trim();
   const status = document.getElementById("status");
 
-  status.textContent = "Connexion...";
-  status.className = "status";
-
-  if(!code){
+  if (!code) {
     status.textContent = "Code requis";
-    status.classList.add("bad");
+    status.className = "status bad";
     return;
   }
 
-  fetch(API_URL + "?action=adminLogin&code=" + encodeURIComponent(code))
-    .then(r => r.json())
-    .then(res => {
-      if(res && res.ok){
-        status.textContent = "Admin connecté ✅";
-        status.classList.add("ok");
-      }else{
-        status.textContent = "Code incorrect ❌";
-        status.classList.add("bad");
-      }
-    })
-    .catch(err => {
-      status.textContent = "Erreur serveur";
-      status.classList.add("bad");
-      console.error(err);
-    });
+  status.textContent = "Connexion…";
+  status.className = "status";
+
+  const cb = "cb_admin_" + Date.now();
+
+  window[cb] = (res) => {
+    delete window[cb];
+    if (res && res.ok === true) {
+      status.textContent = "Admin connecté ✅";
+      status.className = "status ok";
+    } else {
+      status.textContent = "Code incorrect ❌";
+      status.className = "status bad";
+    }
+  };
+
+  const s = document.createElement("script");
+  s.src =
+    API_EXEC +
+    "?action=adminLogin" +
+    "&CODE=" + encodeURIComponent(code) +
+    "&callback=" + cb;
+
+  s.onerror = () => {
+    status.textContent = "Erreur serveur";
+    status.className = "status bad";
+    delete window[cb];
+  };
+
+  document.head.appendChild(s);
 }
+
 </script>
 
 </body>
