@@ -1,6 +1,6 @@
 // ====== CONFIG : colle ici l'URL /exec du projet API (celle que tu viens de déployer) ======
-const API_EXEC = "https://script.google.com/macros/s/AKfycbzMUix_H0xDuvV4bE5yMIPyZOKtYX0-3U0YNg1rReryNXXcgZSa4VpgSaFS81XP0Y39/exec";
-
+const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
+                  
 // Appel RPC en JSONP : /exec?mode=rpc&fn=...&args=...&callback=...
 function rpcCall(fn, args) {
   return new Promise((resolve, reject) => {
