@@ -75,7 +75,18 @@
 
     <div id="status" class="status"></div>
   </div>
+<div id="adminPanel" style="display:none; max-width:760px; margin:20px auto;">
+  <div style="padding:16px; border-radius:16px; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.12);">
+    <h2 style="margin:0 0 10px 0;">Panneau admin</h2>
 
+    <button style="width:100%; padding:12px; border-radius:999px; border:none; font-weight:900; cursor:pointer;"
+            onclick="loadAgents()">
+      Charger les agents
+    </button>
+
+    <div id="agentsBox" style="margin-top:12px;"></div>
+  </div>
+</div>
 <script>
 const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
 
@@ -91,6 +102,9 @@ function adminLogin() {
 
   status.textContent = "Connexion…";
   status.className = "status";
+
+  document.getElementById("adminPanel").style.display = "";
+document.getElementById("loginBox").style.display = "none";
 
   const cb = "cb_admin_" + Date.now();
 
@@ -119,6 +133,50 @@ function adminLogin() {
   };
 
   document.head.appendChild(s);
+}
+function loadAgents(){
+  const box = document.getElementById("agentsBox");
+  box.textContent = "Chargement…";
+
+  const code = document.getElementById("adminCode").value.trim();
+  const cb = "cb_agents_" + Date.now();
+
+  window[cb] = (res)=>{
+    delete window[cb];
+
+    if(!res || !res.ok){
+      box.textContent = "Erreur chargement agents";
+      return;
+    }
+
+    const list = res.agents || [];
+    if(!list.length){
+      box.textContent = "Aucun agent.";
+      return;
+    }
+
+    box.innerHTML = list.map(a=>`
+      <div style="padding:10px; margin-bottom:8px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18);">
+        <b>${escapeHtml(a.nom)}</b>
+        <div style="opacity:.75;font-size:13px;">${a.actif ? "Actif ✅" : "Inactif ❌"}</div>
+      </div>
+    `).join("");
+  };
+
+  const s = document.createElement("script");
+  s.src = API_EXEC
+    + "?action=listAgents"
+    + "&CODE=" + encodeURIComponent(code)
+    + "&callback=" + cb;
+
+  s.onerror = ()=>{ box.textContent = "Erreur réseau"; delete window[cb]; };
+  document.head.appendChild(s);
+}
+
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
 }
 
 </script>
