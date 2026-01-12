@@ -126,16 +126,43 @@
     </div>
 
     <!-- ADMIN PANEL -->
-    <div id="adminPanel" class="card" style="display:none">
-      <div class="h2">Panneau admin</div>
-      <div class="small">Connecté ✅ — prochain objectif : charger les agents</div>
+   <div id="adminPanel" class="card" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div>
+      <div class="h2" style="margin-bottom:4px;">Panneau admin</div>
+      <div class="small" id="adminInfo">Connecté ✅</div>
+    </div>
+    <button class="btn2" style="max-width:220px;" onclick="loadAgents()">Recharger</button>
+  </div>
 
-      <div class="panel">
-        <button class="btn2" onclick="loadAgents()">Charger les agents</button>
-        <div id="agentsBox" style="margin-top:12px;"></div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="row" style="margin-bottom:10px;">
+      <div class="listItem">
+        <div class="small">Total</div>
+        <div style="font-weight:900;font-size:20px;" id="statTotal">—</div>
+      </div>
+      <div class="listItem">
+        <div class="small">Actifs</div>
+        <div style="font-weight:900;font-size:20px;color:var(--ok);" id="statActifs">—</div>
+      </div>
+      <div class="listItem">
+        <div class="small">Inactifs</div>
+        <div style="font-weight:900;font-size:20px;color:var(--bad);" id="statInactifs">—</div>
       </div>
     </div>
+
+    <label>Recherche</label>
+    <input id="searchAgents" placeholder="Tape un nom (ex: Venante)..." oninput="renderAgents()" />
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+      <button class="btn2" style="max-width:160px;" onclick="setFilter('all')">Tous</button>
+      <button class="btn2" style="max-width:160px;" onclick="setFilter('actif')">Actifs</button>
+      <button class="btn2" style="max-width:160px;" onclick="setFilter('inactif')">Inactifs</button>
+    </div>
+
+    <div id="agentsBox" style="margin-top:14px;"></div>
   </div>
+</div>
 
 <script>
 /* 🔴 Mets ici TON URL /exec Apps Script (celle qui marche) */
@@ -229,6 +256,8 @@ function loadAgents(){
         box.textContent = "Erreur chargement agents";
         return;
       }
+      AGENTS_CACHE = res.agents || [];
+renderAgents();
       const list = res.agents || [];
       if(!list.length){
         box.textContent = "Aucun agent.";
@@ -245,6 +274,54 @@ function loadAgents(){
       box.textContent = "Erreur: " + err.message;
     });
 }
+  let AGENTS_CACHE = [];
+let AGENTS_FILTER = "all"; // all | actif | inactif
+
+function setFilter(v){
+  AGENTS_FILTER = v;
+  renderAgents();
+}
+
+function renderAgents(){
+  const box = document.getElementById("agentsBox");
+  const q = (document.getElementById("searchAgents")?.value || "").trim().toLowerCase();
+
+  let list = [...AGENTS_CACHE];
+
+  // filtre actif/inactif
+  if(AGENTS_FILTER === "actif") list = list.filter(a => a.actif);
+  if(AGENTS_FILTER === "inactif") list = list.filter(a => !a.actif);
+
+  // recherche
+  if(q) list = list.filter(a => String(a.nom||"").toLowerCase().includes(q));
+
+  // stats
+  document.getElementById("statTotal").textContent = String(AGENTS_CACHE.length);
+  document.getElementById("statActifs").textContent = String(AGENTS_CACHE.filter(a=>a.actif).length);
+  document.getElementById("statInactifs").textContent = String(AGENTS_CACHE.filter(a=>!a.actif).length);
+
+  if(!list.length){
+    box.innerHTML = `<div class="small">Aucun résultat.</div>`;
+    return;
+  }
+
+  box.innerHTML = list.map(a => {
+    const badge = a.actif
+      ? `<span style="padding:6px 10px;border-radius:999px;border:1px solid rgba(31,211,107,.35);background:rgba(31,211,107,.12);color:#bdf6d2;font-weight:900;">Actif ✅</span>`
+      : `<span style="padding:6px 10px;border-radius:999px;border:1px solid rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd;font-weight:900;">Inactif ❌</span>`;
+
+    return `
+      <div class="listItem" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <div>
+          <div style="font-weight:900;font-size:16px;">${escapeHtml(a.nom)}</div>
+          <div class="small">ID: ${escapeHtml(a.id ?? a.agent_id ?? "")}</div>
+        </div>
+        ${badge}
+      </div>
+    `;
+  }).join("");
+}
+
 </script>
 
 </body>
