@@ -37,9 +37,26 @@ function rpcCall(fn, args) {
       return (...fnArgs) => {
         rpcCall(String(prop), fnArgs)
           .then(res => {
-            if (res && res.ok) handlers.success && handlers.success(res.result);
-            else handlers.failure ? handlers.failure(res) : console.error(res);
-          })
+  // ✅ cas 1: RPC enveloppé {ok:true, result:...}
+  // ✅ cas 2: réponse directe {ok:true}
+  // ✅ cas 3: réponse booléenne true/false (on encapsule)
+  if (res === true) {
+    handlers.success && handlers.success({ ok: true });
+    return;
+  }
+  if (res === false) {
+    handlers.success && handlers.success({ ok: false });
+    return;
+  }
+
+  if (res && res.ok === true) {
+    const payload = (typeof res.result !== "undefined") ? res.result : res;
+    handlers.success && handlers.success(payload);
+  } else {
+    handlers.failure ? handlers.failure(res) : console.error(res);
+  }
+})
+
           .catch(err => handlers.failure ? handlers.failure(err) : console.error(err));
       };
     }
