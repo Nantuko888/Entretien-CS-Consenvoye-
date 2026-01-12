@@ -593,6 +593,8 @@
   </div>
 
 <script>
+  const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
+
   let DATA = { agents:[], catalog:[], periodes:[] };
   let ADMIN_OK = false;
   let CURRENT = { period_id:"", group:[], responsable:null, missionsOn:[] };
@@ -667,37 +669,49 @@ function withBtnLoading(btn, fnCall){
     });
   }
 
-  function adminLogin() {
-  const code = document.getElementById("adminCode").value.trim();
-  if (!code) return;
+  function adminLogin(){
+  clearToast("adminLoginToast");
 
+  const code = document.getElementById("adminCode").value.trim();
+  if(!code){
+    showToast("adminLoginToast","Saisis un code.", false);
+    return;
+  }
+
+  // JSONP callback unique
   const cbName = "cb_adminLogin_" + Date.now();
 
-  window[cbName] = function (res) {
+  window[cbName] = function(res){
     delete window[cbName];
 
-    if (res && res.ok === true) {
-      document.getElementById("adminStatus").textContent = "Admin connecté";
-      document.getElementById("adminStatus").className = "ok";
-      document.getElementById("adminError").style.display = "none";
+    ADMIN_OK = !!(res && res.ok);
+
+    if(ADMIN_OK){
+      document.getElementById("adminStatus").textContent = "Admin : connecté";
+      document.getElementById("adminStatus").className = "status ok";
+      document.getElementById("adminBody").style.display = "";
+      showToast("adminLoginToast","Admin connecté ✅", true);
+
+      // refresh lists
+      adminRefreshAgents();
+      adminRefreshMissions();
     } else {
-      document.getElementById("adminError").style.display = "block";
+      showToast("adminLoginToast","Erreur connexion admin.", false);
     }
   };
 
   const s = document.createElement("script");
   s.src =
-    "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"
+    API_EXEC
     + "?action=adminLogin"
     + "&CODE=" + encodeURIComponent(code)
     + "&callback=" + cbName;
 
-  s.onerror = () => {
-    document.getElementById("adminError").style.display = "block";
-  };
+  s.onerror = ()=> showToast("adminLoginToast","Erreur réseau (load_error).", false);
 
-  document.body.appendChild(s);
+  document.head.appendChild(s);
 }
+
 </script>
 
 
