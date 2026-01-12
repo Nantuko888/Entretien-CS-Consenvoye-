@@ -1,184 +1,250 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Entretien CS – Admin</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Entretien CS Consenvoye</title>
 
   <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#111b2b;
+      --stroke:rgba(255,255,255,.12);
+      --text:#e8eef9;
+      --muted:rgba(232,238,249,.72);
+      --accent:#ff7a00;
+      --accent2:#ffb000;
+      --ok:#1fd36b;
+      --bad:#ff3b30;
+      --r:18px;
+      --shadow:0 12px 30px rgba(0,0,0,.35);
+      --font:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,"Noto Sans",sans-serif;
+    }
+    *{box-sizing:border-box}
     body{
-      font-family: system-ui, sans-serif;
-      background:#0b0f14;
-      color:#e8eef9;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
-      margin:0;
+      margin:0; font-family:var(--font); color:var(--text); min-height:100vh;
+      background:
+        radial-gradient(900px 420px at 20% 20%, rgba(255,122,0,.18), transparent 65%),
+        radial-gradient(900px 420px at 80% 10%, rgba(255,176,0,.12), transparent 60%),
+        linear-gradient(180deg,#06080b,var(--bg));
     }
+    .wrap{max-width:900px;margin:0 auto;padding:22px 14px 46px}
+    h1{margin:0;text-align:center;font-size:30px;font-weight:900;color:#ff8d1a;text-shadow:0 2px 14px rgba(255,122,0,.18)}
+    .subtitle{margin:8px 0 22px;text-align:center;color:var(--muted);font-size:13px}
     .card{
-      background:#111b2b;
-      padding:24px;
-      border-radius:16px;
-      width:100%;
-      max-width:360px;
-      box-shadow:0 10px 30px rgba(0,0,0,.4);
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border-radius:var(--r);
+      padding:18px;
+      box-shadow:var(--shadow);
+      max-width:520px;
+      margin:0 auto;
     }
-    h1{
-      text-align:center;
-      margin-top:0;
-      color:#ff8d1a;
-    }
-    label{
-      font-size:14px;
-      opacity:.8;
-    }
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
     input{
       width:100%;
       padding:12px;
-      margin-top:6px;
-      margin-bottom:16px;
-      border-radius:10px;
-      border:none;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
       font-size:16px;
     }
-    button{
+    .btn{
+      width:100%;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:999px;
+      border:0;
+      cursor:pointer;
+      font-weight:900;
+      font-size:15px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:#0b0f14;
+      box-shadow:0 12px 26px rgba(255,122,0,.18);
+    }
+    .status{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.02);
+      color:var(--muted);
+      font-weight:900;
+      text-align:center;
+    }
+    .status.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
+    .status.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
+    .panel{
+      margin-top:18px;
+      border-radius:16px;
+      padding:16px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+    }
+    .h2{margin:0 0 10px;font-size:16px;font-weight:900}
+    .small{font-size:12px;color:var(--muted)}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row > *{flex:1;min-width:220px}
+    .btn2{
       width:100%;
       padding:12px;
       border-radius:999px;
-      border:none;
-      font-size:16px;
-      font-weight:700;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:900;
       cursor:pointer;
-      background:linear-gradient(90deg,#ff7a00,#ffb000);
-      color:#0b0f14;
     }
-    .status{
-      margin-top:16px;
-      text-align:center;
-      font-weight:700;
+    .listItem{
+      padding:10px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.16);
+      margin-bottom:10px;
     }
-    .ok{ color:#1fd36b; }
-    .bad{ color:#ff3b30; }
   </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <h1>Entretien CS Consenvoye</h1>
+    <div class="subtitle">Admin (GitHub) → API Apps Script</div>
 
-  <div class="card">
-    <h1>Connexion admin</h1>
+    <!-- LOGIN -->
+    <div id="loginBox" class="card">
+      <div class="h2">Connexion admin</div>
 
-    <label>Code admin</label>
-    <input id="adminCode" type="password" placeholder="Code admin">
+      <label>Code admin</label>
+      <input id="adminCode" type="password" placeholder="Code admin" />
 
-    <button onclick="adminLogin()">Se connecter</button>
+      <button class="btn" onclick="adminLogin()">Se connecter</button>
 
-    <div id="status" class="status"></div>
+      <div id="status" class="status">Admin : non connecté</div>
+      <div class="small" style="text-align:center;margin-top:8px;">(si ça reste en attente → API/JSONP pas OK)</div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="card" style="display:none">
+      <div class="h2">Panneau admin</div>
+      <div class="small">Connecté ✅ — prochain objectif : charger les agents</div>
+
+      <div class="panel">
+        <button class="btn2" onclick="loadAgents()">Charger les agents</button>
+        <div id="agentsBox" style="margin-top:12px;"></div>
+      </div>
+    </div>
   </div>
-<div id="adminPanel" style="display:none; max-width:760px; margin:20px auto;">
-  <div style="padding:16px; border-radius:16px; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.12);">
-    <h2 style="margin:0 0 10px 0;">Panneau admin</h2>
 
-    <button style="width:100%; padding:12px; border-radius:999px; border:none; font-weight:900; cursor:pointer;"
-            onclick="loadAgents()">
-      Charger les agents
-    </button>
-
-    <div id="agentsBox" style="margin-top:12px;"></div>
-  </div>
-</div>
 <script>
+/* 🔴 Mets ici TON URL /exec Apps Script (celle qui marche) */
 const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
 
-function adminLogin() {
-  const code = document.getElementById("adminCode").value.trim();
-  const status = document.getElementById("status");
-
-  if (!code) {
-    status.textContent = "Code requis";
-    status.className = "status bad";
-    return;
-  }
-
-  status.textContent = "Connexion…";
-  status.className = "status";
-
-  document.getElementById("adminPanel").style.display = "";
-document.getElementById("loginBox").style.display = "none";
-
-  const cb = "cb_admin_" + Date.now();
-
-  window[cb] = (res) => {
-    delete window[cb];
-    if (res && res.ok === true) {
-      status.textContent = "Admin connecté ✅";
-      status.className = "status ok";
-    } else {
-      status.textContent = "Code incorrect ❌";
-      status.className = "status bad";
-    }
-  };
-
-  const s = document.createElement("script");
-  s.src =
-    API_EXEC +
-    "?action=adminLogin" +
-    "&CODE=" + encodeURIComponent(code) +
-    "&callback=" + cb;
-
-  s.onerror = () => {
-    status.textContent = "Erreur serveur";
-    status.className = "status bad";
-    delete window[cb];
-  };
-
-  document.head.appendChild(s);
+/* Petit helper */
+function setStatus(txt, kind){
+  const el = document.getElementById("status");
+  el.textContent = txt;
+  el.className = "status" + (kind ? " " + kind : "");
 }
-function loadAgents(){
-  const box = document.getElementById("agentsBox");
-  box.textContent = "Chargement…";
-
-  const code = document.getElementById("adminCode").value.trim();
-  const cb = "cb_agents_" + Date.now();
-
-  window[cb] = (res)=>{
-    delete window[cb];
-
-    if(!res || !res.ok){
-      box.textContent = "Erreur chargement agents";
-      return;
-    }
-
-    const list = res.agents || [];
-    if(!list.length){
-      box.textContent = "Aucun agent.";
-      return;
-    }
-
-    box.innerHTML = list.map(a=>`
-      <div style="padding:10px; margin-bottom:8px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18);">
-        <b>${escapeHtml(a.nom)}</b>
-        <div style="opacity:.75;font-size:13px;">${a.actif ? "Actif ✅" : "Inactif ❌"}</div>
-      </div>
-    `).join("");
-  };
-
-  const s = document.createElement("script");
-  s.src = API_EXEC
-    + "?action=listAgents"
-    + "&CODE=" + encodeURIComponent(code)
-    + "&callback=" + cb;
-
-  s.onerror = ()=>{ box.textContent = "Erreur réseau"; delete window[cb]; };
-  document.head.appendChild(s);
-}
-
 function escapeHtml(s){
   return String(s ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[m]));
 }
 
+/* JSONP générique + timeout */
+function jsonp(params, timeoutMs=6000){
+  return new Promise((resolve, reject)=>{
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    params.callback = cb;
+
+    let done = false;
+    const timer = setTimeout(()=>{
+      if(done) return;
+      done = true;
+      cleanup();
+      reject(new Error("timeout"));
+    }, timeoutMs);
+
+    function cleanup(){
+      clearTimeout(timer);
+      try{ delete window[cb]; }catch(_){}
+      if(s && s.parentNode) s.parentNode.removeChild(s);
+    }
+
+    window[cb] = (data)=>{
+      if(done) return;
+      done = true;
+      cleanup();
+      resolve(data);
+    };
+
+    const qs = new URLSearchParams(params).toString();
+    const s = document.createElement("script");
+    s.src = API_EXEC + "?" + qs;
+    s.onerror = ()=>{
+      if(done) return;
+      done = true;
+      cleanup();
+      reject(new Error("load_error"));
+    };
+
+    document.head.appendChild(s);
+  });
+}
+
+/* ✅ Admin login */
+function adminLogin(){
+  const code = document.getElementById("adminCode").value.trim();
+  if(!code){ setStatus("Code requis", "bad"); return; }
+
+  setStatus("Connexion…", "");
+
+  jsonp({ action:"adminLogin", CODE: code })
+    .then(res=>{
+      if(res && res.ok === true){
+        setStatus("Admin connecté ✅", "ok");
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("adminPanel").style.display = "";
+      }else{
+        setStatus("Code incorrect ❌", "bad");
+      }
+    })
+    .catch(err=>{
+      setStatus("Erreur: " + err.message, "bad");
+    });
+}
+
+/* (Étape 3.3) — pour l’instant ça affichera une erreur tant que l’API listAgents n’existe pas */
+function loadAgents(){
+  const box = document.getElementById("agentsBox");
+  box.textContent = "Chargement…";
+
+  const code = document.getElementById("adminCode").value.trim();
+
+  jsonp({ action:"listAgents", CODE: code })
+    .then(res=>{
+      if(!res || !res.ok){
+        box.textContent = "Erreur chargement agents";
+        return;
+      }
+      const list = res.agents || [];
+      if(!list.length){
+        box.textContent = "Aucun agent.";
+        return;
+      }
+      box.innerHTML = list.map(a=>`
+        <div class="listItem">
+          <b>${escapeHtml(a.nom)}</b>
+          <div class="small">${a.actif ? "Actif ✅" : "Inactif ❌"}</div>
+        </div>
+      `).join("");
+    })
+    .catch(err=>{
+      box.textContent = "Erreur: " + err.message;
+    });
+}
 </script>
 
 </body>
