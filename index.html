@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+</body><!DOCTYPE html>
 <html lang="fr">
 <head>
   <script src="./adapter.js"></script>
@@ -667,24 +667,40 @@ function withBtnLoading(btn, fnCall){
     });
   }
 
-  function adminLogin(){
-  clearToast("adminLoginToast");
-  const code = document.getElementById("adminCode").value;
-  const btn = event?.target; // le bouton cliqué
+  <script>
+function adminLogin() {
+  const code = document.getElementById("adminCode").value.trim();
+  if (!code) return;
 
-  withBtnLoading(btn, () => {
-    google.script.run.withSuccessHandler(res=>{
-      ADMIN_OK = !!(res && res.ok);
+  const cbName = "cb_adminLogin_" + Date.now();
 
-      document.getElementById("adminStatus").textContent = ADMIN_OK ? "Admin : connecté" : "Admin : non connecté";
-      document.getElementById("adminStatus").className = "status " + (ADMIN_OK ? "ok":"bad");
+  window[cbName] = function (res) {
+    delete window[cbName];
 
-      if(!ADMIN_OK){
-        showToast("adminLoginToast","Code admin incorrect.", false);
-        document.getElementById("adminBody").style.display = "none";
-        setBtnLoading(btn, false);
-        return;
-      }
+    if (res && res.ok === true) {
+      document.getElementById("adminStatus").textContent = "Admin connecté";
+      document.getElementById("adminStatus").className = "ok";
+      document.getElementById("adminError").style.display = "none";
+    } else {
+      document.getElementById("adminError").style.display = "block";
+    }
+  };
+
+  const s = document.createElement("script");
+  s.src =
+    "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"
+    + "?action=adminLogin"
+    + "&CODE=" + encodeURIComponent(code)
+    + "&callback=" + cbName;
+
+  s.onerror = () => {
+    document.getElementById("adminError").style.display = "block";
+  };
+
+  document.body.appendChild(s);
+}
+</script>
+
 
       showToast("adminLoginToast","Admin connecté ✅", true);
       document.getElementById("adminBody").style.display = "";
