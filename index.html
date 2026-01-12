@@ -1,582 +1,263 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Entretien CS Consenvoye</title>
-  <style>
-    :root{
-      --bg:#0b0f14; --panel:#0f1724; --panel2:#111b2b;
-      --stroke:rgba(255,255,255,.12);
-      --text:#e8eef9; --muted:rgba(232,238,249,.72);
-      --accent:#ff7a00; --accent2:#ffb000;
-      --danger:#ff3b30; --ok:#1fd36b;
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --r:18px;
-      --font: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, "Noto Sans", sans-serif;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;font-family:var(--font);color:var(--text);
-      background:
-        radial-gradient(900px 420px at 20% 20%, rgba(255,122,0,.18), transparent 65%),
-        radial-gradient(900px 420px at 80% 10%, rgba(255,176,0,.12), transparent 60%),
-        linear-gradient(180deg, #06080b, var(--bg));
-      min-height:100vh;
-    }
-    .wrap{max-width:1200px;margin:0 auto;padding:18px 14px 46px}
-    h1{margin:0;font-size:30px;font-weight:950;letter-spacing:.2px;color:#ff8d1a;text-shadow:0 2px 14px rgba(255,122,0,.18);text-align:center;}
-    .subtitle{margin:6px 0 0;color:var(--muted);font-size:12px;text-align:center}
-    .tabsCenter{margin:14px 0 18px;display:flex;justify-content:center;}
-    .tabs{display:flex;gap:8px;align-items:center;border:1px solid var(--stroke);background:rgba(255,255,255,.02);padding:6px;border-radius:999px;box-shadow:var(--shadow);}
-    .tab{border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:999px;cursor:pointer;font-weight:950;font-size:13px;}
-    .tab.active{background:linear-gradient(90deg, rgba(255,122,0,.26), rgba(255,176,0,.18));color:var(--text);}
-    .btn{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.03);color:var(--text);
-      border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:950;font-size:13px;
-      transition:.15s transform ease,.15s background ease,.15s border-color ease;white-space:nowrap;}
-    .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
-    .btn.primary{background:linear-gradient(90deg, var(--accent), var(--accent2));border-color:transparent;color:#0b0f14;box-shadow:0 12px 26px rgba(255,122,0,.18);}
-    .btn.ghost{background:rgba(255,255,255,.02)}
-    .btn.danger{background:rgba(255,59,48,.14);border-color:rgba(255,59,48,.35);color:#ffd0cd}
-    .btn.small{padding:8px 12px;font-size:12px}
-    .btn.loading{cursor:wait!important;opacity:.95}
-    .btn.loading::after{content:" ⏳";font-weight:950}
-    .card{border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border-radius:var(--r);padding:16px;box-shadow:var(--shadow);}
-    .headRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-    .h2{margin:0;font-size:15px;font-weight:950}
-    .status{font-size:12px;font-weight:950;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
-    .status.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
-    .status.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
-    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
-    input, select, textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--stroke);background:rgba(0,0,0,.25);color:var(--text);outline:none;font-size:14px;}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-    .row > *{flex:1;min-width:220px}
-    .divider{height:1px;background:rgba(255,255,255,.09);margin:14px 0}
-    .grid3{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
-    @media(max-width:900px){ .grid3{grid-template-columns:1fr} }
-    .kpi{padding:14px;border-radius:14px;border:1px solid var(--stroke);background:rgba(0,0,0,.18)}
-    .kpi .t{font-size:12px;color:var(--muted);font-weight:900}
-    .kpi .v{font-size:26px;font-weight:950;margin-top:4px}
-    .kpi .v.ok{color:#bdf6d2}
-    .kpi .v.bad{color:#ffd0cd}
-    .kpi .v.warn{color:#ffe2b8}
-    .pillRow{display:flex;gap:8px;flex-wrap:wrap}
-    .pill{border:1px solid var(--stroke);background:rgba(255,255,255,.03);padding:9px 12px;border-radius:999px;font-weight:950;font-size:13px;cursor:pointer}
-    .pill.active{background:linear-gradient(90deg, rgba(255,122,0,.26), rgba(255,176,0,.18))}
-    .list{margin-top:10px;display:grid;gap:10px}
-    .item{border:1px solid var(--stroke);background:rgba(0,0,0,.18);border-radius:14px;padding:12px;display:flex;justify-content:space-between;gap:12px;align-items:center}
-    .item .name{font-weight:950}
-    .item .meta{font-size:12px;color:var(--muted);margin-top:2px}
-    .tag{font-size:12px;font-weight:950;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.02)}
-    .tag.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
-    .tag.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
-    .rightBtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .toast{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);font-size:13px;display:none}
-    .toast.show{display:block}
-    .toast.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.08);color:#c9f9db}
-    .toast.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.08);color:#ffd0cd}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entretien CS Consenvoye</title>
 
-    /* mobile friendly */
-    @media(max-width:700px){
-      .wrap{max-width:none;width:100%;padding:12px}
-      .row > *{min-width:100%}
-      input,select,textarea,button,.btn{width:100%;min-height:44px;font-size:16px}
-      .rightBtns{justify-content:stretch}
-      .rightBtns .btn{width:100%}
-    }
-  </style>
+<style>
+:root{
+  --bg:#0b0f14; --panel:#0f1724;
+  --stroke:rgba(255,255,255,.12);
+  --text:#e8eef9; --muted:rgba(232,238,249,.65);
+  --accent:#ff7a00; --accent2:#ffb000;
+  --danger:#ff3b30; --ok:#1fd36b;
+  --r:16px;
+  --font:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:var(--font);color:var(--text);
+  background:linear-gradient(180deg,#06080b,var(--bg));
+}
+.wrap{max-width:1100px;margin:auto;padding:16px}
+h1{text-align:center;color:var(--accent);margin:0}
+.tabs{display:flex;justify-content:center;gap:8px;margin:16px 0}
+.tab{padding:10px 16px;border-radius:999px;border:1px solid var(--stroke);
+background:transparent;color:var(--muted);cursor:pointer;font-weight:800}
+.tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#000}
+.card{background:rgba(255,255,255,.03);border:1px solid var(--stroke);
+border-radius:var(--r);padding:16px;margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:200px}
+input,select,textarea,button{
+  width:100%;padding:10px;border-radius:12px;border:1px solid var(--stroke);
+  background:#000;color:var(--text)
+}
+button.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));
+color:#000;font-weight:900;border:0;cursor:pointer}
+button.danger{background:rgba(255,59,48,.2);color:#ffd0cd}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:8px;border-bottom:1px solid rgba(255,255,255,.1)}
+.status{font-weight:900}
+.ok{color:var(--ok)} .bad{color:var(--danger)}
+@media(max-width:800px){
+  .wrap{padding:10px}
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <h1>Entretien CS Consenvoye</h1>
-    <div class="subtitle">Agent : saisie • Admin : configuration • (Mode GitHub local, sans API)</div>
+<div class="wrap">
+<h1>Entretien CS Consenvoye</h1>
 
-    <div class="tabsCenter">
-      <div class="tabs">
-        <button class="tab active" id="tabAgent" onclick="UI.show('agent')">🧑‍🚒 Agent</button>
-        <button class="tab" id="tabAdmin" onclick="UI.show('admin')">🛡️ Admin</button>
-        <button class="btn" onclick="APP.resetDemo()">Réinitialiser démo</button>
-      </div>
-    </div>
+<div class="tabs">
+  <button class="tab active" onclick="show('agent')">🧑‍🚒 Agent</button>
+  <button class="tab" onclick="show('admin')">🛡️ Admin</button>
+</div>
 
-    <!-- AGENT -->
-    <div id="viewAgent" class="card">
-      <div class="headRow">
-        <div class="h2">Connexion agent</div>
-        <div class="status" id="agentStatus">Agent : non connecté</div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Agent</label>
-          <select id="agentSel"></select>
-        </div>
-        <div>
-          <label>Code</label>
-          <input id="agentCode" placeholder="Code agent" inputmode="numeric" />
-        </div>
-        <div>
-          <button class="btn primary" onclick="AGENT.login()">Se connecter</button>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div id="agentArea" style="display:none">
-        <div class="headRow">
-          <div class="h2">Mes missions</div>
-          <div class="status" id="agentPeriodPill">Période : —</div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Période</label>
-            <select id="agentPeriodSel"></select>
-          </div>
-          <div>
-            <button class="btn primary" onclick="AGENT.load()">Charger</button>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div id="agentMissions" class="list"></div>
-
-        <div class="divider"></div>
-
-        <div class="rightBtns">
-          <button class="btn primary" onclick="AGENT.save()">Enregistrer</button>
-          <button class="btn" onclick="AGENT.logout()">Déconnexion</button>
-        </div>
-
-        <div id="agentToast" class="toast"></div>
-      </div>
-
-      <div id="agentHint" class="toast show">
-        Mode démo : connecte-toi en agent (ex: <b>Vénante Pierre</b> / code <b>0000</b>).  
-        Ensuite tu choisis une période et tu coches “Fait / Partiel / Non fait”.
-      </div>
-    </div>
-
-    <!-- ADMIN -->
-    <div id="viewAdmin" class="card" style="display:none">
-      <div class="headRow">
-        <div class="h2">Connexion admin</div>
-        <div class="status" id="adminStatus">Admin : non connecté</div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Code admin</label>
-          <input id="adminCode" placeholder="Code admin" inputmode="numeric" />
-        </div>
-        <div>
-          <button class="btn primary" onclick="ADMIN.login()">Se connecter</button>
-        </div>
-      </div>
-
-      <div id="adminToast" class="toast"></div>
-
-      <div id="adminArea" style="display:none">
-        <div class="divider"></div>
-
-        <div class="grid3">
-          <div class="kpi">
-            <div class="t">Total agents</div>
-            <div class="v" id="kpiTotal">0</div>
-          </div>
-          <div class="kpi">
-            <div class="t">Actifs</div>
-            <div class="v ok" id="kpiActifs">0</div>
-          </div>
-          <div class="kpi">
-            <div class="t">Inactifs</div>
-            <div class="v bad" id="kpiInactifs">0</div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="headRow">
-          <div class="h2">Gestion des agents</div>
-          <div class="rightBtns">
-            <button class="btn" onclick="ADMIN.refresh()">Recharger</button>
-            <button class="btn" onclick="ADMIN.logout()">Déconnexion</button>
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Recherche</label>
-            <input id="searchAgent" placeholder="Tape un nom (ex: Venante)..." oninput="ADMIN.render()" />
-          </div>
-          <div>
-            <label>Filtres</label>
-            <div class="pillRow">
-              <div class="pill active" id="pillAll" onclick="ADMIN.setFilter('all')">Tous</div>
-              <div class="pill" id="pillOn" onclick="ADMIN.setFilter('on')">Actifs</div>
-              <div class="pill" id="pillOff" onclick="ADMIN.setFilter('off')">Inactifs</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="row">
-          <div>
-            <label>Ajouter agent (démo)</label>
-            <input id="newAgentName" placeholder="Nom Prénom" />
-          </div>
-          <div>
-            <label>Code</label>
-            <input id="newAgentCode" value="0000" inputmode="numeric" />
-          </div>
-          <div>
-            <button class="btn primary" onclick="ADMIN.addAgent()">Ajouter</button>
-          </div>
-        </div>
-
-        <div id="adminList" class="list"></div>
-      </div>
-
-      <div id="adminHint" class="toast show">
-        Mode démo : code admin <b>1234</b>.  
-        Tu peux activer/désactiver des agents et tester la recherche/filtres.
-      </div>
-    </div>
-
+<!-- ================= AGENT ================= -->
+<div id="agent" class="card">
+  <div class="status" id="agentStatus">Agent non connecté</div>
+  <div class="row">
+    <select id="agentSelect"></select>
+    <input id="agentCode" placeholder="Code agent">
+    <button class="primary" onclick="agentLogin()">Connexion</button>
   </div>
 
+  <div id="agentBody" style="display:none">
+    <hr>
+    <select id="agentPeriod"></select>
+    <button class="primary" onclick="loadAgentMissions()">Charger missions</button>
+    <div id="agentMissions"></div>
+    <button class="primary" onclick="saveAgent()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- ================= ADMIN ================= -->
+<div id="admin" class="card" style="display:none">
+  <div class="status" id="adminStatus">Admin non connecté</div>
+  <div class="row">
+    <input id="adminCode" placeholder="Code admin">
+    <button class="primary" onclick="adminLogin()">Connexion</button>
+  </div>
+
+  <div id="adminBody" style="display:none">
+
+    <h3>Changer code admin</h3>
+    <div class="row">
+      <input id="newAdminCode" placeholder="Nouveau code">
+      <button class="primary" onclick="changeAdminCode()">Changer</button>
+    </div>
+
+    <h3>Agents</h3>
+    <div class="row">
+      <input id="newAgentName" placeholder="Nom agent">
+      <input id="newAgentCode" placeholder="Code">
+      <button class="primary" onclick="addAgent()">Ajouter</button>
+    </div>
+    <table class="table" id="agentTable"></table>
+
+    <h3>Périodes</h3>
+    <div class="row">
+      <input id="newPeriod" placeholder="YYYY-MM">
+      <button class="primary" onclick="addPeriod()">Ajouter</button>
+    </div>
+    <ul id="periodList"></ul>
+
+    <h3>Missions</h3>
+    <div class="row">
+      <input id="newMission" placeholder="Libellé mission">
+      <button class="primary" onclick="addMission()">Ajouter</button>
+    </div>
+    <ul id="missionList"></ul>
+
+    <h3>Missions actives par période</h3>
+    <select id="adminPeriod"></select>
+    <div id="adminMissionChecks"></div>
+
+    <h3>Retours agents</h3>
+    <table class="table" id="retoursTable"></table>
+
+    <h3>Sauvegarde</h3>
+    <button class="primary" onclick="exportData()">Exporter JSON</button>
+    <input type="file" onchange="importData(this)">
+  </div>
+</div>
+</div>
+
 <script>
-  const LS_KEY = "csv_demo_state_v1";
+/* ================= CONFIG & DATA ================= */
+const STORE="cs_entretien_full_v1";
+let DB=JSON.parse(localStorage.getItem(STORE))||{
+  adminCode:"1234",
+  agents:[
+    {id:1,name:"Durand",code:"1111",active:true},
+    {id:2,name:"Martin",code:"2222",active:true},
+    {id:3,name:"Bernard",code:"3333",active:true}
+  ],
+  periods:["2025-01","2025-02"],
+  missions:["Vérif VSAV","Nettoyage FPT","Contrôle ARI","Pression pneus","Inventaire"],
+  active:{},
+  declarations:{}
+};
+function save(){localStorage.setItem(STORE,JSON.stringify(DB))}
 
-  const DEMO_DEFAULT = {
-    admin_code: "1234",
-    agents: [
-      { agent_id:"A-3476b9ab", nom:"Vénante Pierre", code:"0000", actif:true },
-      { agent_id:"A-6c290cae", nom:"Laleuuw Franck", code:"0000", actif:true },
-      { agent_id:"A-7a8a4f8d", nom:"Bammé Melody", code:"0000", actif:true },
-      { agent_id:"A-2c37da4d", nom:"Sénéchal Benjar", code:"0000", actif:true },
-      { agent_id:"A-4a69df6d", nom:"Michel Marianne", code:"0000", actif:true },
-      { agent_id:"A-aaaa1111", nom:"Martin Luc", code:"0000", actif:false },
-    ],
-    periodes: [
-      { period_id:"2026-01", libelle:"Janvier 2026" },
-      { period_id:"2026-02", libelle:"Février 2026" },
-      { period_id:"2026-03", libelle:"Mars 2026" },
-    ],
-    catalog: [
-      { mission_id:"M-1", libelle:"Boire un coup", actif:true },
-      { mission_id:"M-2", libelle:"Laver vitres", actif:true },
-      { mission_id:"M-3", libelle:"Nettoyage communs", actif:true },
-      { mission_id:"M-4", libelle:"Pression véhicules", actif:true },
-      { mission_id:"M-5", libelle:"Vérif EPI", actif:true },
-    ],
-    // missions actives par période (démo)
-    monthMissions: {
-      "2026-01": ["M-1","M-2","M-3"],
-      "2026-02": ["M-2","M-4"],
-      "2026-03": ["M-1","M-5"]
-    },
-    // déclarations agent: { "agent_id|period_id|mission_id": {declaration, justificatif} }
-    declarations: {}
-  };
+/* ================= UI ================= */
+function show(v){
+  document.getElementById("agent").style.display=v==="agent"?"":"none";
+  document.getElementById("admin").style.display=v==="admin"?"":"none";
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  event.target.classList.add("active");
+}
 
-  const APP = {
-    state: null,
-    loadState(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        this.state = raw ? JSON.parse(raw) : structuredClone(DEMO_DEFAULT);
-      }catch(e){
-        this.state = structuredClone(DEMO_DEFAULT);
-      }
-    },
-    saveState(){
-      localStorage.setItem(LS_KEY, JSON.stringify(this.state));
-    },
-    resetDemo(){
-      if(!confirm("Réinitialiser la démo (agents + missions) ?")) return;
-      this.state = structuredClone(DEMO_DEFAULT);
-      this.saveState();
-      UI.hardRefresh();
+/* ================= AGENT ================= */
+let CUR_AGENT=null;
+function agentLogin(){
+  const id=document.getElementById("agentSelect").value;
+  const code=document.getElementById("agentCode").value;
+  const a=DB.agents.find(x=>x.id==id&&x.code==code&&x.active);
+  if(!a){agentStatus.textContent="Code incorrect";agentStatus.className="bad";return;}
+  CUR_AGENT=a;
+  agentStatus.textContent="Connecté : "+a.name;
+  agentStatus.className="ok";
+  agentBody.style.display="";
+  fillAgentPeriods();
+}
+function fillAgentPeriods(){
+  agentPeriod.innerHTML=DB.periods.map(p=>`<option>${p}</option>`).join("");
+}
+function loadAgentMissions(){
+  const p=agentPeriod.value;
+  const list=(DB.active[p]||[]);
+  agentMissions.innerHTML=list.map(m=>`
+    <div>
+      <b>${m}</b>
+      <select data-m="${m}">
+        <option></option>
+        <option>Fait</option>
+        <option>Partiel</option>
+        <option>Non fait</option>
+      </select>
+      <input placeholder="Justificatif">
+    </div>`).join("");
+}
+function saveAgent(){
+  const p=agentPeriod.value;
+  DB.declarations[CUR_AGENT.id]=DB.declarations[CUR_AGENT.id]||{};
+  DB.declarations[CUR_AGENT.id][p]=[...agentMissions.querySelectorAll("div")].map(d=>{
+    return{
+      mission:d.querySelector("b").textContent,
+      etat:d.querySelector("select").value,
+      justif:d.querySelector("input").value
     }
-  };
+  });
+  save(); alert("Enregistré");
+}
 
-  const UI = {
-    show(which){
-      document.getElementById("tabAgent").classList.toggle("active", which==="agent");
-      document.getElementById("tabAdmin").classList.toggle("active", which==="admin");
-      document.getElementById("viewAgent").style.display = (which==="agent") ? "" : "none";
-      document.getElementById("viewAdmin").style.display = (which==="admin") ? "" : "none";
-    },
-    toast(id, msg, ok){
-      const el = document.getElementById(id);
-      el.className = "toast show " + (ok ? "ok":"bad");
-      el.innerHTML = msg;
-    },
-    status(id, ok, txt){
-      const el = document.getElementById(id);
-      el.textContent = txt;
-      el.className = "status " + (ok ? "ok":"bad");
-    },
-    hardRefresh(){
-      // recharge UI depuis state
-      ADMIN.refresh(true);
-      AGENT.refresh(true);
-    }
-  };
-
-  const ADMIN = {
-    ok:false,
-    filter:"all",
-    login(){
-      const code = (document.getElementById("adminCode").value || "").trim();
-      const good = APP.state.admin_code;
-      if(!code){
-        UI.status("adminStatus", false, "Admin : code requis");
-        UI.toast("adminToast", "Entre le code admin.", false);
-        return;
-      }
-      if(code !== good){
-        this.ok = false;
-        document.getElementById("adminArea").style.display = "none";
-        document.getElementById("adminHint").style.display = "";
-        UI.status("adminStatus", false, "Admin : non connecté");
-        UI.toast("adminToast", "Erreur : code admin incorrect.", false);
-        return;
-      }
-      this.ok = true;
-      document.getElementById("adminArea").style.display = "";
-      document.getElementById("adminHint").style.display = "none";
-      UI.status("adminStatus", true, "Admin : connecté");
-      UI.toast("adminToast", "Connecté ✅", true);
-      this.refresh(true);
-    },
-    logout(){
-      this.ok = false;
-      document.getElementById("adminArea").style.display = "none";
-      document.getElementById("adminHint").style.display = "";
-      UI.status("adminStatus", false, "Admin : non connecté");
-      UI.toast("adminToast", "", true);
-    },
-    setFilter(v){
-      this.filter = v;
-      document.getElementById("pillAll").classList.toggle("active", v==="all");
-      document.getElementById("pillOn").classList.toggle("active", v==="on");
-      document.getElementById("pillOff").classList.toggle("active", v==="off");
-      this.render();
-    },
-    refresh(silent=false){
-      if(!this.ok) return;
-      const list = APP.state.agents;
-      const total = list.length;
-      const on = list.filter(a=>a.actif).length;
-      const off = total - on;
-      document.getElementById("kpiTotal").textContent = total;
-      document.getElementById("kpiActifs").textContent = on;
-      document.getElementById("kpiInactifs").textContent = off;
-      this.render();
-      if(!silent) UI.toast("adminToast","Rechargé ✅", true);
-    },
-    addAgent(){
-      if(!this.ok) return;
-      const name = (document.getElementById("newAgentName").value||"").trim();
-      const code = (document.getElementById("newAgentCode").value||"0000").trim() || "0000";
-      if(!name){
-        UI.toast("adminToast","Nom requis.", false);
-        return;
-      }
-      const id = "A-" + Math.random().toString(16).slice(2,10);
-      APP.state.agents.unshift({agent_id:id, nom:name, code, actif:true});
-      APP.saveState();
-      document.getElementById("newAgentName").value="";
-      document.getElementById("newAgentCode").value="0000";
-      this.refresh(true);
-      AGENT.refresh(true);
-      UI.toast("adminToast","Agent ajouté ✅ (démo)", true);
-    },
-    toggle(id){
-      if(!this.ok) return;
-      const a = APP.state.agents.find(x=>x.agent_id===id);
-      if(!a) return;
-      a.actif = !a.actif;
-      APP.saveState();
-      this.refresh(true);
-      AGENT.refresh(true);
-    },
-    render(){
-      if(!this.ok) return;
-      const q = (document.getElementById("searchAgent").value||"").trim().toLowerCase();
-      let list = APP.state.agents.slice();
-
-      if(this.filter==="on") list = list.filter(a=>a.actif);
-      if(this.filter==="off") list = list.filter(a=>!a.actif);
-      if(q) list = list.filter(a=>a.nom.toLowerCase().includes(q));
-
-      const box = document.getElementById("adminList");
-      if(!list.length){
-        box.innerHTML = `<div class="toast show">Aucun résultat.</div>`;
-        return;
-      }
-      box.innerHTML = list.map(a=>{
-        const badge = a.actif
-          ? `<span class="tag ok">Actif ✅</span>`
-          : `<span class="tag bad">Inactif ❌</span>`;
-        return `
-          <div class="item">
-            <div>
-              <div class="name">${escapeHtml(a.nom)}</div>
-              <div class="meta">${escapeHtml(a.agent_id)} • code: ${escapeHtml(a.code)}</div>
-            </div>
-            <div class="rightBtns" style="width:auto">
-              ${badge}
-              <button class="btn small" onclick="ADMIN.toggle('${escapeAttr(a.agent_id)}')">${a.actif?"Désactiver":"Activer"}</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-  };
-
-  const AGENT = {
-    ok:false,
-    agent_id:"",
-    refresh(silent=false){
-      const sel = document.getElementById("agentSel");
-      const agents = APP.state.agents.filter(a=>a.actif);
-      sel.innerHTML = `<option value="">— Choisir agent —</option>` +
-        agents.map(a=>`<option value="${escapeAttr(a.agent_id)}">${escapeHtml(a.nom)}</option>`).join("");
-
-      // périodes
-      const psel = document.getElementById("agentPeriodSel");
-      psel.innerHTML = `<option value="">— Choisir période —</option>` +
-        APP.state.periodes.map(p=>`<option value="${escapeAttr(p.period_id)}">${escapeHtml(p.libelle)}</option>`).join("");
-
-      if(!silent){
-        UI.toast("agentToast","", true);
-      }
-    },
-    login(){
-      const aid = (document.getElementById("agentSel").value||"").trim();
-      const code = (document.getElementById("agentCode").value||"").trim();
-
-      if(!aid || !code){
-        UI.status("agentStatus", false, "Agent : sélection + code requis");
-        return;
-      }
-      const a = APP.state.agents.find(x=>x.agent_id===aid);
-      if(!a || !a.actif){
-        UI.status("agentStatus", false, "Agent : introuvable / inactif");
-        return;
-      }
-      if(code !== a.code){
-        UI.status("agentStatus", false, "Agent : code incorrect");
-        return;
-      }
-
-      this.ok = true;
-      this.agent_id = aid;
-      document.getElementById("agentArea").style.display = "";
-      document.getElementById("agentHint").style.display = "none";
-      UI.status("agentStatus", true, "Agent : " + a.nom);
-      UI.toast("agentToast","Connecté ✅", true);
-    },
-    logout(){
-      this.ok = false;
-      this.agent_id = "";
-      document.getElementById("agentArea").style.display = "none";
-      document.getElementById("agentHint").style.display = "";
-      UI.status("agentStatus", false, "Agent : non connecté");
-      document.getElementById("agentCode").value = "";
-      document.getElementById("agentMissions").innerHTML = "";
-    },
-    load(){
-      if(!this.ok) return;
-      const pid = (document.getElementById("agentPeriodSel").value||"").trim();
-      if(!pid){
-        UI.toast("agentToast","Choisis une période.", false);
-        return;
-      }
-      document.getElementById("agentPeriodPill").textContent = "Période : " + pid;
-
-      const activeIds = new Set((APP.state.monthMissions[pid]||[]).filter(Boolean));
-      const missions = APP.state.catalog.filter(m=>m.actif && activeIds.has(m.mission_id));
-
-      const box = document.getElementById("agentMissions");
-      if(!missions.length){
-        box.innerHTML = `<div class="toast show">Aucune mission active sur cette période.</div>`;
-        return;
-      }
-
-      box.innerHTML = missions.map(m=>{
-        const k = this.agent_id + "|" + pid + "|" + m.mission_id;
-        const saved = APP.state.declarations[k] || {declaration:"", justificatif:""};
-        return `
-          <div class="item" style="align-items:flex-start">
-            <div style="flex:1">
-              <div class="name">${escapeHtml(m.libelle)}</div>
-              <div class="meta">Mission : ${escapeHtml(m.mission_id)}</div>
-              <div class="row" style="margin-top:10px">
-                <div style="min-width:220px">
-                  <label>Déclaration</label>
-                  <select data-k="${escapeAttr(k)}" data-field="declaration">
-                    <option value="" ${saved.declaration===""?"selected":""}>—</option>
-                    <option value="Fait" ${saved.declaration==="Fait"?"selected":""}>Fait</option>
-                    <option value="Partiel" ${saved.declaration==="Partiel"?"selected":""}>Partiel</option>
-                    <option value="Non fait" ${saved.declaration==="Non fait"?"selected":""}>Non fait</option>
-                  </select>
-                </div>
-                <div style="min-width:220px">
-                  <label>Justificatif (si Partiel/Non fait)</label>
-                  <input data-k="${escapeAttr(k)}" data-field="justificatif" value="${escapeAttr(saved.justificatif||"")}" placeholder="Ex : véhicule absent, météo, etc." />
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-              <span class="tag ${saved.declaration==="Fait"?"ok":(saved.declaration? "bad":"")}">
-                ${saved.declaration ? escapeHtml(saved.declaration) : "—"}
-              </span>
-            </div>
-          </div>
-        `;
-      }).join("");
-    },
-    save(){
-      if(!this.ok) return;
-      const pid = (document.getElementById("agentPeriodSel").value||"").trim();
-      if(!pid){
-        UI.toast("agentToast","Choisis une période avant d’enregistrer.", false);
-        return;
-      }
-
-      // lis tous les inputs/select qui ont data-k
-      const fields = document.querySelectorAll('[data-k][data-field]');
-      fields.forEach(el=>{
-        const k = el.getAttribute("data-k");
-        const f = el.getAttribute("data-field");
-        APP.state.declarations[k] = APP.state.declarations[k] || {declaration:"", justificatif:""};
-        APP.state.declarations[k][f] = (el.value||"").trim();
-      });
-
-      APP.saveState();
-      UI.toast("agentToast","Enregistré ✅ (démo)", true);
-      // refresh badges
-      this.load();
-    }
-  };
-
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+/* ================= ADMIN ================= */
+function adminLogin(){
+  if(adminCode.value!==DB.adminCode){
+    adminStatus.textContent="Code incorrect";adminStatus.className="bad";return;
   }
-  function escapeAttr(s){
-    return escapeHtml(s).replace(/`/g,"&#96;");
+  adminStatus.textContent="Admin connecté";adminStatus.className="ok";
+  adminBody.style.display="";
+  refreshAdmin();
+}
+function changeAdminCode(){DB.adminCode=newAdminCode.value;save();alert("Code changé")}
+function addAgent(){
+  DB.agents.push({id:Date.now(),name:newAgentName.value,code:newAgentCode.value,active:true});
+  save();refreshAdmin();
+}
+function addPeriod(){DB.periods.push(newPeriod.value);save();refreshAdmin()}
+function addMission(){DB.missions.push(newMission.value);save();refreshAdmin()}
+function refreshAdmin(){
+  agentTable.innerHTML=DB.agents.map(a=>`
+    <tr><td>${a.name}</td><td>${a.code}</td></tr>`).join("");
+  periodList.innerHTML=DB.periods.map(p=>`<li>${p}</li>`).join("");
+  missionList.innerHTML=DB.missions.map(m=>`<li>${m}</li>`).join("");
+  adminPeriod.innerHTML=DB.periods.map(p=>`<option>${p}</option>`).join("");
+  refreshChecks();
+  refreshRetours();
+}
+function refreshChecks(){
+  const p=adminPeriod.value;
+  adminMissionChecks.innerHTML=DB.missions.map(m=>{
+    const c=(DB.active[p]||[]).includes(m)?"checked":"";
+    return `<label><input type=checkbox ${c} onchange="toggleMission('${p}','${m}',this.checked)"> ${m}</label>`;
+  }).join("<br>");
+}
+function toggleMission(p,m,on){
+  DB.active[p]=DB.active[p]||[];
+  if(on) DB.active[p].push(m);
+  else DB.active[p]=DB.active[p].filter(x=>x!==m);
+  save();
+}
+function refreshRetours(){
+  let rows="";
+  for(const aid in DB.declarations){
+    for(const p in DB.declarations[aid]){
+      DB.declarations[aid][p].forEach(d=>{
+        if(d.etat==="Partiel"||d.etat==="Non fait")
+          rows+=`<tr><td>${aid}</td><td>${p}</td><td>${d.mission}</td><td>${d.etat}</td><td>${d.justif}</td></tr>`;
+      })
+    }
   }
+  retoursTable.innerHTML=rows;
+}
+function exportData(){
+  const a=document.createElement("a");
+  a.href="data:text/json,"+encodeURIComponent(JSON.stringify(DB,null,2));
+  a.download="sauvegarde.json";a.click();
+}
+function importData(inp){
+  const r=new FileReader();
+  r.onload=e=>{DB=JSON.parse(e.target.result);save();location.reload()};
+  r.readAsText(inp.files[0]);
+}
 
-  // init
-  APP.loadState();
-  AGENT.refresh(true);
-  ADMIN.setFilter("all");
+/* INIT */
+agentSelect.innerHTML=DB.agents.filter(a=>a.active).map(a=>`<option value=${a.id}>${a.name}</option>`).join("");
 </script>
 </body>
 </html>
