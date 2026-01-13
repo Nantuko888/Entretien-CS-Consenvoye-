@@ -778,6 +778,21 @@ async function adminLoadRetours(silent){
 }
 
 showView("agent");
+  // === rendre les fonctions accessibles aux boutons HTML ===
+window.agentLogin = agentLogin;
+window.agentLogout = agentLogout;
+window.agentLoadPeriod = agentLoadPeriod;
+window.agentSave = agentSave;
+window.agentChangePassword = agentChangePassword;
+
+window.adminLogin = adminLogin;
+window.adminLogout = adminLogout;
+window.adminChangePassword = adminChangePassword;
+window.adminLoad = adminLoad;
+window.adminAddAgent = adminAddAgent;
+window.adminRemoveAgent = adminRemoveAgent;
+window.adminAddMission = adminAddMission;
+window.adminToggleMission = adminToggleMission;
 </script>
 </body>
 </html>
