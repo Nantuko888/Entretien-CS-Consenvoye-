@@ -1,68 +1,47 @@
-// ====== CONFIG : colle ici l'URL /exec du projet API (celle que tu viens de déployer) ======
-const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec";
-                  
-// Appel RPC en JSONP : /exec?mode=rpc&fn=...&args=...&callback=...
-function rpcCall(fn, args) {
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Math.random().toString(36).slice(2);
-    window[cb] = (payload) => { cleanup(); resolve(payload); };
-
-    const s = document.createElement("script");
-    s.onerror = () => { cleanup(); reject(new Error("load_error")); };
-
-    function cleanup() {
-      delete window[cb];
-      s.remove();
-    }
-
-    const qs = new URLSearchParams({
-      mode: "rpc",
-      fn: String(fn),
-      args: JSON.stringify(args || []),
-      callback: cb
-    });
-
-    s.src = API_EXEC + "?" + qs.toString();
-    document.head.appendChild(s);
-  });
-}
-
-// Emule google.script.run.withSuccessHandler().withFailureHandler().apiXxx(...)
-(function () {
-  const chain = (handlers = {}) => new Proxy({}, {
-    get(_t, prop) {
-      if (prop === "withSuccessHandler") return (fn) => chain({ ...handlers, success: fn });
-      if (prop === "withFailureHandler") return (fn) => chain({ ...handlers, failure: fn });
-
-      return (...fnArgs) => {
-        rpcCall(String(prop), fnArgs)
-          .then(res => {
-  // ✅ cas 1: RPC enveloppé {ok:true, result:...}
-  // ✅ cas 2: réponse directe {ok:true}
-  // ✅ cas 3: réponse booléenne true/false (on encapsule)
-  if (res === true) {
-    handlers.success && handlers.success({ ok: true });
-    return;
-  }
-  if (res === false) {
-    handlers.success && handlers.success({ ok: false });
-    return;
+// adapter.js — JSONP propre (pas de eval), compatible GitHub Pages
+(function(){
+  function escQS(v){
+    return encodeURIComponent(String(v ?? ""));
   }
 
-  if (res && res.ok === true) {
-    const payload = (typeof res.result !== "undefined") ? res.result : res;
-    handlers.success && handlers.success(payload);
-  } else {
-    handlers.failure ? handlers.failure(res) : console.error(res);
-  }
-})
+  // baseUrl = URL /exec
+  // params = { action, ... }
+  window.jsonpRequest = function(baseUrl, params){
+    return new Promise((resolve, reject) => {
+      if(!baseUrl || baseUrl.includes("https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec")){
+        reject(new Error("missing_api_exec"));
+        return;
+      }
 
-          .catch(err => handlers.failure ? handlers.failure(err) : console.error(err));
+      const cb = "cb_" + Math.random().toString(36).slice(2) + "_" + Date.now();
+      const safeCb = cb.replace(/[^a-zA-Z0-9_]/g, "");
+
+      const q = [];
+      for(const k in (params||{})){
+        q.push(escQS(k) + "=" + escQS(params[k]));
+      }
+      q.push("callback=" + escQS(safeCb));
+
+      const url = baseUrl + (baseUrl.includes("?") ? "&" : "?") + q.join("&");
+
+      const s = document.createElement("script");
+      s.async = true;
+      s.defer = true;
+
+      window[safeCb] = (data) => {
+        try { delete window[safeCb]; } catch(e){}
+        try { s.remove(); } catch(e){}
+        resolve(data);
       };
-    }
-  });
 
-  window.google = window.google || {};
-  window.google.script = window.google.script || {};
-  window.google.script.run = chain();
+      s.onerror = () => {
+        try { delete window[safeCb]; } catch(e){}
+        try { s.remove(); } catch(e){}
+        reject(new Error("load_error"));
+      };
+
+      s.src = url;
+      document.head.appendChild(s);
+    });
+  };
 })();
