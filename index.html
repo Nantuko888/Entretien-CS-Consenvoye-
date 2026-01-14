@@ -1483,7 +1483,7 @@ $("doneImg").addEventListener("touchend", (e)=>{
   window.__lastTap = now;
 });
 
-/* =============================
+* =============================
    INIT
    ============================= */
 (function init(){
@@ -1500,8 +1500,9 @@ $("doneImg").addEventListener("touchend", (e)=>{
   if(MODE_DEMO){
     demoInitData();
     renderAgentsPublics(STATE.data.agents);
-}
-}();
+  }
+})(); // ✅ IMPORTANT : parenthèse + point virgule
+
 </script>
 </body>
 </html>
