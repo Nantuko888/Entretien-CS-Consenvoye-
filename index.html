@@ -700,7 +700,12 @@ async function adminsLoadPeriods(ev){
   setLoading(btn,true);
   try{
     const res = await apiJsonp("adminLoadPeriod", { admin_code: STATE.admins.code, period_id: pid });
-    if(!res || !res.ok){ showToast("toastAdminsPeriod",(res&&res.message)||"Erreur", false); return; }
+
+if(!res || !res.ok){
+  showToast("toastAdminsPeriod", (res && res.message) || "Erreur", false);
+  return; // ✅ IMPORTANT : on stoppe ici
+}
+
     STATE.current.period_id = pid;
     STATE.data.group = res.group || [];
     setPill("pillResponsable","Responsable : " + (res.responsable_name || "—"), res.responsable_name ? "ok" : "");
