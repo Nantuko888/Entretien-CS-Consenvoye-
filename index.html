@@ -584,15 +584,40 @@ function apiUrls(action, params){
   return API_EXEC + "?" + q.toString();
 }
 
-async function apiCalls(action, params){
-  if(MODE_DEMO){
-    return demoCalls(action, params);
-  }
-  if(!API_EXEC || API_EXEC.includes("COLLE_TON_URL")){
-    throw new Error("api_missing");
-  }
-  const url = apiUrls(action, params);
-  return await jsonps(url);
+// --- Appels API (Apps Script) en JSONP : compatible GitHub Pages ---
+function apiCalls(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+
+    // callback global
+    window[cb] = (data) => {
+      try { delete window[cb]; } catch(e){}
+      try { script.remove(); } catch(e){}
+      resolve(data);
+    };
+
+    const q = new URLSearchParams();
+    q.set("action", action);
+
+    // ajoute params dans l'URL
+    Object.entries(params || {}).forEach(([k, v]) => {
+      if (v === undefined || v === null) return;
+      q.set(k, String(v));
+    });
+
+    q.set("callback", cb);
+
+    const script = document.createElement("script");
+    script.src = API_EXEC + "?" + q.toString();
+    script.onerror = () => {
+      try { delete window[cb]; } catch(e){}
+      reject(new Error("jsonp_error"));
+    };
+
+    document.head.appendChild(script);
+  });
+}
+;
 }
 
 /* =============================
