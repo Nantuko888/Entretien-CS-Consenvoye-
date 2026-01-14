@@ -1317,8 +1317,17 @@ async function agentsBootstraps(){
 async function agentsLogins(ev){
   hideToasts("toastAgentsLogin");
   const btn = ev?.target || $("btnAgentsLogin");
-  const agent_id = $("agentsSel").value;
-  const code = $("agentsCode").value.trim();
+  const sel = document.querySelector('#agentsSel');
+const inp = document.querySelector('#agentsCode');
+
+if(!sel || !inp){
+  showToasts("toastAgentsLogin","Interface agent non prête",false);
+  return;
+}
+
+const agent_id = sel.value;
+const code = inp.value.trim();
+
   if(!agent_id || !code){ showToasts("toastAgentsLogin","Sélection + code requis.",false); return; }
 
   setLoadings(btn,true);
