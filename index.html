@@ -807,11 +807,15 @@ async function demoCalls(action, params){
    RENDER
    ============================= */
 function renderAgentsPublics(agents){
-  const sel = $("agentsSel");
-  sel.innerHTML = `<option value="">— Choisir agent —</option>` + (agents||[])
-    .filter(a=>a.active)
-    .map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`)
+  const sel = $("agentSel");
+sel.innerHTML =
+  `<option value="">— Choisir agent —</option>` +
+  (DATA.agents || [])
+    .map(normAgent)
+    .filter(a => a.actif)
+    .map(a => `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`)
     .join("");
+
 }
 
 function renderAdminsAgents(agents){
