@@ -248,7 +248,7 @@
               <label>Période</label>
               <select id="periodeSel"></select>
             </div>
-            <div><button class="btn primary" id="btnLoadPeriod" onclick="adminLoadPeriod()">Charger</button></div>
+            <div><button class="btn primary" id="btnLoadPeriod" onclick="adminLoadPeriods()">Charger</button></div>
           </div>
 
           <div class="divider"></div>
@@ -459,12 +459,12 @@
   }
 
   async function adminBootstrap(){
-    await adminLoadPeriodes();
+    await adminLoadPeriods();
     await adminListAgents();
     await adminListCatalog();
   }
 
-  async function adminLoadPeriodes(){
+  async function adminLoadPeriods(){
     const sel = document.getElementById("periodeSel");
     sel.innerHTML = `<option value="">Chargement…</option>`;
     try{
@@ -609,14 +609,14 @@
     if(CURRENT_PERIOD) await adminGetMonthMissions();
   }
 
-  async function adminLoadPeriod(){
+  async function adminLoadPeriods(){
     clearToast("adminGroupToast");
     const pid = document.getElementById("periodeSel").value;
     const btn = document.getElementById("btnLoadPeriod");
     if(!pid){ setToast("adminGroupToast","Choisis une période.", false); return; }
     setLoading(btn,true);
     try{
-      const res = await jsonp({ action:"adminLoadPeriod", admin_code: ADMIN.code, period_id: pid });
+      const res = await jsonp({ action:"adminLoadPeriods", admin_code: ADMIN.code, period_id: pid });
       if(!res || !res.ok) throw new Error("bad");
       CURRENT_PERIOD = pid;
 
@@ -651,48 +651,70 @@
   }
 
   async function adminAddToGroup(){
-    const pid = document.getElementById("periodeSel").value;
-    const aid = document.getElementById("addToGroupSel").value;
-    const btn = document.getElementById("btnAddToGroup");
-    if(!pid || !aid) { setToast("adminGroupToast","Période + agent requis.", false); return; }
-    setLoading(btn,true);
-    try{
-      const res = await jsonp({ action:"adminAddToGroup", admin_code: ADMIN.code, period_id: pid, agent_id: aid });
-      if(res && res.ok){
-        await adminLoadPeriod();
-      }else{
-        setToast("adminGroupToast","Erreur ajout.", false);
-      }
-    }catch(e){
-      setToast("adminGroupToast","Erreur réseau.", false);
-    }finally{
-      setLoading(btn,false);
-    }
+  const btn=document.getElementById("btnAddToGroup");
+  const period_id=document.getElementById("periodeSel").value;
+  const agent_id=document.getElementById("addToGroupSel").value;
+
+  if(!period_id || !agent_id){
+    setToast("adminGroupToast","Période + agent requis.", false);
+    return;
   }
+
+  setLoading(btn,true);
+  try{
+    const res = await jsonp({ action:"adminAddToGroup", admin_code: ADMIN.code, period_id, agent_id });
+    if(!res || !res.ok){
+      setToast("adminGroupToast", (res && res.message) ? res.message : "Erreur ajout", false);
+      return;
+    }
+
+    // ✅ rafraîchit vraiment l'UI (groupe + responsable + missions actives)
+    await adminLoadPeriods(true);
+    setToast("adminGroupToast","Agent ajouté ✅", true);
+
+  }catch(e){
+    setToast("adminGroupToast","Erreur réseau.", false);
+  }finally{
+    setLoading(btn,false);
+  }
+}
+
 
   async function adminRemoveFromGroup(agent_id){
     const pid = document.getElementById("periodeSel").value;
     await jsonp({ action:"adminRemoveFromGroup", admin_code: ADMIN.code, period_id: pid, agent_id });
-    await adminLoadPeriod();
+    await adminLoadPeriods();
   }
 
   async function adminSetResponsable(){
-    const pid = document.getElementById("periodeSel").value;
-    const aid = document.getElementById("responsableSel").value;
-    const btn = document.getElementById("btnSetResp");
-    if(!pid || !aid){ setToast("adminGroupToast","Choisis un responsable.", false); return; }
-    setLoading(btn,true);
-    try{
-      const res = await jsonp({ action:"adminSetResponsable", admin_code: ADMIN.code, period_id: pid, agent_id: aid });
-      if(res && res.ok){
-        await adminLoadPeriod();
-      }else{
-        setToast("adminGroupToast","Erreur responsable.", false);
-      }
-    }finally{
-      setLoading(btn,false);
-    }
+  const btn=document.getElementById("btnSetResp");
+  const period_id=document.getElementById("periodeSel").value;
+  const agent_id=document.getElementById("responsableSel").value;
+
+  if(!period_id || !agent_id){
+    setToast("adminGroupToast","Choisis un responsable.", false);
+    return;
   }
+
+  setLoading(btn,true);
+  try{
+    const res = await jsonp({ action:"adminSetResponsable", admin_code: ADMIN.code, period_id, agent_id });
+    if(!res || !res.ok){
+      setToast("adminGroupToast", (res && res.message) ? res.message : "Erreur responsable", false);
+      return;
+    }
+
+    // ✅ relit la période pour mettre à jour le badge responsable
+    await adminLoadPeriods(true);
+    setToast("adminGroupToast","Responsable mis à jour ✅", true);
+
+  }catch(e){
+    setToast("adminGroupToast","Erreur réseau.", false);
+  }finally{
+    setLoading(btn,false);
+  }
+}
+
 
   // missions actives
   async function adminGetMonthMissions(){
