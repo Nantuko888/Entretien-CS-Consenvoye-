@@ -2,18 +2,18 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Entretien CS Consenvoye</title>
   <style>
     :root{
-      --bg:#0b0f14; --panel:#0f1724; --panel2:#111b2b;
+      --bg:#0b0f14; --panel:#0f1724;
       --stroke:rgba(255,255,255,.12);
       --text:#e8eef9; --muted:rgba(232,238,249,.72);
       --accent:#ff7a00; --accent2:#ffb000;
-      --danger:#ff3b30; --ok:#1fd36b;
-      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --ok:#1fd36b; --bad:#ff3b30;
       --r:18px;
-      --font: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, "Noto Sans", sans-serif;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --font:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,"Noto Sans",sans-serif;
     }
     *{box-sizing:border-box}
     body{
@@ -21,112 +21,97 @@
       background:
         radial-gradient(900px 420px at 20% 20%, rgba(255,122,0,.18), transparent 65%),
         radial-gradient(900px 420px at 80% 10%, rgba(255,176,0,.12), transparent 60%),
-        linear-gradient(180deg, #06080b, var(--bg));
+        linear-gradient(180deg,#06080b,var(--bg));
       min-height:100vh;
+      overflow-x:hidden;
     }
-    .wrap{max-width:1200px;margin:0 auto;padding:22px 14px 46px}
-    h1{margin:0;font-size:30px;font-weight:900;letter-spacing:.2px;color:#ff8d1a;text-shadow:0 2px 14px rgba(255,122,0,.18);text-align:center;}
-    .subtitle{margin:6px 0 0;color:var(--muted);font-size:12px;text-align:center}
-
-    .tabsCenter{margin:14px 0 18px;display:flex;justify-content:center;}
-    .tabs{display:flex;gap:8px;align-items:center;border:1px solid var(--stroke);background:rgba(255,255,255,.02);padding:6px;border-radius:999px;box-shadow:var(--shadow);}
-    .tab{border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:999px;cursor:pointer;font-weight:900;font-size:13px;}
-    .tab.active{background:linear-gradient(90deg, rgba(255,122,0,.26), rgba(255,176,0,.18));color:var(--text);}
-
-    .btn{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.03);color:var(--text);
-      border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:900;font-size:13px;transition:.15s transform ease,.15s background ease,.15s border-color ease;white-space:nowrap;}
-    .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
-    .btn.primary{background:linear-gradient(90deg, var(--accent), var(--accent2));border-color:transparent;color:#0b0f14;box-shadow:0 12px 26px rgba(255,122,0,.18);}
-    .btn.danger{background:rgba(255,59,48,.14);border-color:rgba(255,59,48,.35);color:#ffd0cd}
-    .btn.small{padding:8px 12px;font-size:12px}
-
-    /* bouton "loading" -> VERT */
-    .btn.loading,.btn.primary.loading{
-      background: linear-gradient(90deg, #1fd36b, #7dff9c) !important;
-      border-color: transparent !important;
-      color:#0b0f14 !important;
-      box-shadow: 0 12px 26px rgba(31,211,107,.18) !important;
-      cursor: wait !important;
-      opacity: .95;
+    .wrap{max-width:1100px;margin:0 auto;padding:18px 14px 40px}
+    h1{margin:0;text-align:center;font-weight:900;color:#ff8d1a;text-shadow:0 2px 14px rgba(255,122,0,.18)}
+    .sub{margin:6px 0 12px;text-align:center;color:var(--muted);font-size:12px}
+    .tabs{display:flex;justify-content:center;gap:10px;margin:12px 0 18px}
+    .tab{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      padding:10px 14px;border-radius:999px;
+      font-weight:900;cursor:pointer;
     }
-    .btn.loading::after{content:" ⏳"; font-weight:900;}
-    .btn[disabled]{opacity:.6;cursor:not-allowed;}
-
+    .tab.active{background:linear-gradient(90deg, rgba(255,122,0,.26), rgba(255,176,0,.18));color:var(--text)}
     .card{border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border-radius:var(--r);padding:16px;box-shadow:var(--shadow);}
-    .headRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-    .h2{margin:0;font-size:15px;font-weight:900}
-    .status{font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);
-      background:rgba(255,255,255,.02);color:var(--muted);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
+      border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+    .row>*{flex:1;min-width:210px}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
+    input,select,textarea{
+      width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--stroke);
+      background:rgba(0,0,0,.25);color:var(--text);outline:none;font-size:14px;
+    }
+    textarea{min-height:90px;resize:vertical}
+    .btn{
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;cursor:pointer;
+      transition:.15s;
+      white-space:nowrap;
+    }
+    .btn.primary{border-color:transparent;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0b0f14}
+    .btn.ghost{background:transparent}
+    .btn.bad{background:rgba(255,59,48,.12);border-color:rgba(255,59,48,.35);color:#ffd0cd}
+    .btn.ok{background:rgba(31,211,107,.12);border-color:rgba(31,211,107,.35);color:#bdf6d2}
+    .btn.loading{background:linear-gradient(90deg,#1fd36b,#7dff9c)!important;color:#0b0f14!important;border-color:transparent!important;cursor:wait!important}
+    .btn.loading::after{content:" ⏳"}
+    .status{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--stroke);background:rgba(255,255,255,.02);
+      border-radius:999px;padding:6px 10px;color:var(--muted);font-weight:900;font-size:12px}
     .status.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
     .status.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
-
-    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
-    input, select, textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--stroke);
-      background:rgba(0,0,0,.25);color:var(--text);outline:none;font-size:13px;}
-
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-    .row > *{flex:1;min-width:220px}
-    .divider{height:1px;background:rgba(255,255,255,.09);margin:14px 0}
-
-    .twoColBlock{display:grid;gap:12px}
-    @media(min-width:1000px){ .twoColBlock{grid-template-columns: 1fr 1.2fr;} }
-
-    /* MOBILE: tout empilé */
-    @media(max-width:900px){ .row > *{min-width:100%} .twoColBlock{grid-template-columns:1fr;} }
-
-    .scrollBox{max-height:260px;overflow:auto;border-radius:14px;border:1px solid var(--stroke);background:rgba(0,0,0,.18)}
-    .listItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
-    .listItem:last-child{border-bottom:0}
-    .ghost{color:rgba(232,238,249,.55)}
-    .pill{font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted)}
-    .pill.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
-    .pill.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
-
-    .toast{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);font-size:13px;display:none}
+    .head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+    .h2{font-weight:900}
+    .toolRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .keybtn{border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--text);
+      border-radius:999px;padding:8px 10px;font-weight:900;cursor:pointer}
+    .toast{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);display:none}
     .toast.show{display:block}
     .toast.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.08);color:#c9f9db}
     .toast.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.08);color:#ffd0cd}
-
-    .keyBtn{
-      border:1px solid var(--stroke); background:rgba(255,255,255,.03);
-      color:var(--text); border-radius:999px; padding:8px 10px; cursor:pointer; font-weight:900;
-      display:inline-flex; align-items:center; gap:8px;
-    }
-
-    /* Overlay image missions accomplies */
-    #doneOverlay{
-      position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-      background:rgba(0,0,0,.65); z-index:9999; padding:14px;
-    }
-    #doneOverlay img{
-      max-width:min(520px, 92vw);
-      border-radius:18px;
-      box-shadow:0 20px 60px rgba(0,0,0,.55);
-      border:1px solid rgba(255,255,255,.14);
-    }
+    .divider{height:1px;background:rgba(255,255,255,.09);margin:12px 0}
+    .grid2{display:grid;gap:12px}
+    @media(min-width:1000px){.grid2{grid-template-columns:1fr 1fr}}
+    .scrollBox{border:1px solid var(--stroke);background:rgba(0,0,0,.18);border-radius:14px;max-height:280px;overflow:auto}
+    .listRow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .listRow:last-child{border-bottom:0}
+    .name{font-weight:900}
+    .muted{color:rgba(232,238,249,.62);font-size:12px}
+    .checks{padding:6px}
+    .checkRow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .checkRow:last-child{border-bottom:0}
+    .checkRow input{width:22px;height:22px}
+    .checkLabel{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* overlay image missions accomplies */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:14px;z-index:9999}
+    .overlay.show{display:flex}
+    .overlay img{max-width:min(92vw,560px);max-height:88vh;border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.55)}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Entretien du centre de secours de Consenvoye</h1>
-    <div class="subtitle">JTUB (GitHub) • Sheets (moteur)</div>
+    <h1>Entretien CS Consenvoye</h1>
+    <div class="sub">JTUB (GitHub) • Sheets (moteur)</div>
 
-    <div class="tabsCenter">
-      <div class="tabs">
-        <button class="tab active" id="tabAgent" onclick="showView('agent')">🧑‍🚒 Agent</button>
-        <button class="tab" id="tabAdmin" onclick="showView('admin')">🛡️ Admin</button>
-        <button class="btn" id="btnReload" onclick="bootstrap()">Recharger</button>
-      </div>
+    <div class="tabs">
+      <button class="tab active" id="tabAgent" onclick="showView('agent')">🧑‍🚒 Agent</button>
+      <button class="tab" id="tabAdmin" onclick="showView('admin')">🛡️ Admin</button>
     </div>
 
-    <!-- ===== AGENT ===== -->
+    <!-- AGENT -->
     <div id="viewAgent" class="card">
-      <div class="headRow">
+      <div class="head">
         <div class="h2">Espace agent</div>
-        <div style="display:flex; gap:8px; align-items:center">
-          <button class="keyBtn" id="btnAgentKey" style="display:none" onclick="toggleBox('agentKeyBox')">🔑</button>
-          <button class="btn danger small" id="btnAgentLogout" style="display:none" onclick="agentLogout()">Déconnexion</button>
+        <div class="toolRow">
+          <button class="keybtn" id="agentKey" title="Changer mon code" onclick="toggleAgentKey()" style="display:none;">🔑</button>
+          <button class="btn bad" id="agentLogout" onclick="agentLogout()" style="display:none;">Déconnexion</button>
           <div class="status" id="agentStatus">Agent : non connecté</div>
         </div>
       </div>
@@ -140,27 +125,26 @@
           <label>Code</label>
           <input id="agentCode" placeholder="Code agent" />
         </div>
-        <div class="right">
-          <button class="btn primary" id="btnAgentLogin" onclick="agentLogin(event)">Se connecter</button>
+        <div>
+          <button class="btn primary" id="btnAgentLogin" onclick="agentLogin()">Se connecter</button>
         </div>
       </div>
 
       <div id="agentToast" class="toast"></div>
 
-      <div id="agentKeyBox" style="display:none; margin-top:12px">
+      <div id="agentKeyBox" style="display:none;margin-top:12px;">
         <div class="divider"></div>
-        <div class="h2">Changer mon code</div>
-        <div class="row" style="margin-top:10px">
-          <div><label>Ancien code</label><input id="agentOld" placeholder="Ancien code"/></div>
-          <div><label>Nouveau code (min 4)</label><input id="agentNew" placeholder="Nouveau code"/></div>
-          <div class="right"><button class="btn primary" id="btnAgentChange" onclick="agentChangePassword(event)">Valider</button></div>
+        <div class="h2" style="margin-bottom:8px;">Changer mon code</div>
+        <div class="row">
+          <div><label>Ancien code</label><input id="agentOldCode" /></div>
+          <div><label>Nouveau code (min 4)</label><input id="agentNewCode" /></div>
+          <div><button class="btn primary" id="btnAgentChangeCode" onclick="agentChangeCode()">Valider</button></div>
         </div>
         <div id="agentChangeToast" class="toast"></div>
       </div>
 
-      <div id="agentWork" style="display:none">
+      <div id="agentWork" style="display:none;">
         <div class="divider"></div>
-
         <div class="row">
           <div>
             <label>Période</label>
@@ -168,41 +152,36 @@
               <option value="">— Choisir période —</option>
             </select>
           </div>
-          <div class="right">
-            <button class="btn primary" id="btnAgentLoad" onclick="agentLoadPeriod(event)">Charger</button>
+          <div>
+            <button class="btn primary" id="btnAgentLoad" onclick="agentLoadPeriod()">Charger</button>
           </div>
         </div>
 
         <div class="divider"></div>
-
         <label>Remarque générale (facultatif)</label>
-        <textarea id="agentGeneral" rows="3" placeholder="Remarque générale…"></textarea>
+        <textarea id="agentRemark" placeholder="Remarque générale…"></textarea>
 
         <div class="divider"></div>
-
-        <div class="scrollBox" id="agentMissionsBox">
-          <div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="row">
-          <div class="right">
-            <button class="btn primary" id="btnAgentSave" onclick="agentSave(event)">Enregistrer</button>
+        <div class="h2">Missions du mois</div>
+        <div class="scrollBox">
+          <div id="agentMissions" class="checks">
+            <div class="muted" style="padding:10px">Choisis une période puis “Charger”.</div>
           </div>
         </div>
 
+        <div class="divider"></div>
+        <button class="btn primary" id="btnAgentSave" onclick="agentSave()">Enregistrer</button>
         <div id="agentSaveToast" class="toast"></div>
       </div>
     </div>
 
-    <!-- ===== ADMIN ===== -->
-    <div id="viewAdmin" class="card" style="display:none">
-      <div class="headRow">
+    <!-- ADMIN -->
+    <div id="viewAdmin" class="card" style="display:none;margin-top:14px;">
+      <div class="head">
         <div class="h2">Espace admin</div>
-        <div style="display:flex; gap:8px; align-items:center">
-          <button class="keyBtn" id="btnAdminKey" style="display:none" onclick="toggleBox('adminKeyBox')">🔑</button>
-          <button class="btn danger small" id="btnAdminLogout" style="display:none" onclick="adminLogout()">Déconnexion</button>
+        <div class="toolRow">
+          <button class="keybtn" id="adminKey" title="Changer le code admin" onclick="toggleAdminKey()" style="display:none;">🔑</button>
+          <button class="btn bad" id="adminLogout" onclick="adminLogout()" style="display:none;">Déconnexion</button>
           <div class="status" id="adminStatus">Admin : non connecté</div>
         </div>
       </div>
@@ -210,725 +189,778 @@
       <div class="row">
         <div>
           <label>Code admin</label>
-          <input id="adminCode" placeholder="Code admin"/>
+          <input id="adminCode" placeholder="Code admin" />
         </div>
-        <div class="right">
-          <button class="btn primary" id="btnAdminLogin" onclick="adminLogin(event)">Se connecter</button>
+        <div>
+          <button class="btn primary" id="btnAdminLogin" onclick="adminLogin()">Se connecter</button>
         </div>
       </div>
       <div id="adminToast" class="toast"></div>
 
-      <div id="adminKeyBox" style="display:none; margin-top:12px">
+      <div id="adminKeyBox" style="display:none;margin-top:12px;">
         <div class="divider"></div>
-        <div class="h2">Changer le code admin</div>
-        <div class="row" style="margin-top:10px">
-          <div><label>Ancien code</label><input id="adminOld" placeholder="Ancien code"/></div>
-          <div><label>Nouveau code (min 4)</label><input id="adminNew" placeholder="Nouveau code"/></div>
-          <div class="right"><button class="btn primary" id="btnAdminChange" onclick="adminChangePassword(event)">Valider</button></div>
+        <div class="h2" style="margin-bottom:8px;">Changer le code admin</div>
+        <div class="row">
+          <div><label>Nouveau code (min 4)</label><input id="adminNewCode"/></div>
+          <div><button class="btn primary" id="btnAdminChange" onclick="adminChangeCode()">Valider</button></div>
         </div>
         <div id="adminChangeToast" class="toast"></div>
       </div>
 
-      <div id="adminWork" style="display:none; margin-top:12px">
+      <div id="adminBody" style="display:none;margin-top:12px;">
+        <div class="divider"></div>
 
-        <div class="twoColBlock">
-
-          <!-- COL GAUCHE : actions -->
+        <div class="grid2">
           <div class="card">
-            <div class="h2">Agents</div>
-            <div class="row" style="margin-top:10px">
-              <div><label>Nom</label><input id="newAgentName" placeholder="Nom Prénom"/></div>
-              <div><label>Code</label><input id="newAgentPass" value="0000"/></div>
-              <div class="right"><button class="btn primary" id="btnAddAgent" onclick="adminAddAgent(event)">Ajouter</button></div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="h2">Catalogue missions</div>
-            <div class="row" style="margin-top:10px">
-              <div><label>Libellé</label><input id="newMissionLib" placeholder="Ex : Nettoyage"/></div>
-              <div class="right"><button class="btn primary" id="btnAddMission" onclick="adminAddMission(event)">Ajouter</button></div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="h2">Période / Groupe / Missions actives / Retours</div>
-            <div class="row" style="margin-top:10px">
-              <div><label>Période</label><select id="periodeSel"></select></div>
-              <div class="right"><button class="btn primary" id="btnLoadPeriod" onclick="adminLoadPeriod(event)">Charger</button></div>
-            </div>
-
-            <div class="row" style="margin-top:10px">
-              <div><label>Ajouter au groupe</label><select id="addToGroupSel"></select></div>
-              <div class="right"><button class="btn primary" id="btnAddToGroup" onclick="adminAddToGroup(event)">Ajouter</button></div>
-            </div>
-
-            <div class="row" style="margin-top:10px">
-              <div><label>Responsable</label><select id="responsableSel"></select></div>
-              <div class="right"><button class="btn primary" id="btnSetResp" onclick="adminSetResponsable(event)">Définir</button></div>
-            </div>
-
-            <div class="divider"></div>
-
+            <div class="head"><div class="h2">Agents</div></div>
             <div class="row">
-              <div class="right"><button class="btn primary" id="btnLoadMonth" onclick="adminLoadMonth(event)">Charger missions actives</button></div>
+              <div><label>Nom</label><input id="newAgentName" placeholder="Nom Prénom"/></div>
+              <div><label>Code</label><input id="newAgentCode" value="0000"/></div>
+              <div><button class="btn primary" id="btnAddAgent" onclick="adminAddAgent()">Ajouter</button></div>
             </div>
-
-            <div class="row" style="margin-top:10px">
-              <div class="right"><button class="btn primary" id="btnSaveMonth" onclick="adminSaveMonth(event)">Enregistrer missions actives</button></div>
-            </div>
-
-            <div class="row" style="margin-top:10px">
-              <div class="right"><button class="btn" id="btnLoadRetours" onclick="adminLoadRetours(event)">Charger retours</button></div>
-            </div>
-
-            <div id="adminWorkToast" class="toast"></div>
+            <div id="adminAgentToast" class="toast"></div>
+            <div class="divider"></div>
+            <div class="scrollBox" id="adminAgentsBox"></div>
           </div>
 
-          <!-- COL DROITE : listes -->
           <div class="card">
-            <div class="h2">Liste agents</div>
-            <div class="scrollBox" style="margin-top:10px" id="agentsBox">
-              <div class="ghost" style="padding:10px">—</div>
+            <div class="head"><div class="h2">Catalogue missions</div></div>
+            <div class="row">
+              <div><label>Libellé</label><input id="newMissionLib" placeholder="Ex : Nettoyage"/></div>
+              <div><button class="btn primary" id="btnAddMission" onclick="adminAddMission()">Ajouter</button></div>
+            </div>
+            <div id="adminMissionToast" class="toast"></div>
+            <div class="divider"></div>
+            <div class="scrollBox" id="adminMissionsBox"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card">
+          <div class="head">
+            <div class="h2">Période / Groupe / Missions actives / Retours</div>
+            <div class="status" id="respStatus">Responsable : —</div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Période</label>
+              <select id="periodeSel"></select>
+            </div>
+            <div><button class="btn primary" id="btnLoadPeriod" onclick="adminLoadPeriod()">Charger</button></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="grid2">
+            <div class="card">
+              <div class="h2">Groupe</div>
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label>Ajouter au groupe</label>
+                  <select id="addToGroupSel"></select>
+                </div>
+                <div><button class="btn primary" id="btnAddToGroup" onclick="adminAddToGroup()">Ajouter</button></div>
+              </div>
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label>Responsable</label>
+                  <select id="responsableSel"></select>
+                </div>
+                <div><button class="btn primary" id="btnSetResp" onclick="adminSetResponsable()">Définir</button></div>
+              </div>
+              <div id="adminGroupToast" class="toast"></div>
+              <div class="divider"></div>
+              <div class="scrollBox" id="adminGroupBox"></div>
             </div>
 
-            <div class="divider"></div>
-
-            <div class="h2">Liste missions</div>
-            <div class="scrollBox" style="margin-top:10px" id="missionsBox">
-              <div class="ghost" style="padding:10px">—</div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="h2">Groupe</div>
-            <div class="scrollBox" style="margin-top:10px" id="groupBox">
-              <div class="ghost" style="padding:10px">—</div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="h2">Missions actives</div>
-            <div class="scrollBox" style="margin-top:10px" id="monthBox">
-              <div class="ghost" style="padding:10px">—</div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="h2">Retours (Partiel / Non fait)</div>
-            <div class="scrollBox" style="margin-top:10px" id="retoursBox">
-              <div class="ghost" style="padding:10px">—</div>
+            <div class="card">
+              <div class="h2">Missions actives</div>
+              <div class="muted" style="margin:6px 0 10px">Coche/décoche pour la période.</div>
+              <div class="scrollBox"><div id="monthBox" class="checks"></div></div>
+              <div class="divider"></div>
+              <button class="btn primary" id="btnSaveMonth" onclick="adminSaveMonthMissions()">Enregistrer missions actives</button>
+              <div id="adminMonthToast" class="toast"></div>
             </div>
           </div>
 
+          <div class="divider"></div>
+
+          <div class="card">
+            <div class="head"><div class="h2">Retours (Partiel / Non fait)</div></div>
+            <button class="btn" id="btnRetours" onclick="adminLoadRetours()">Charger retours</button>
+            <div class="divider"></div>
+            <div class="scrollBox" id="retoursBox"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Overlay image missions accomplies -->
-  <div id="doneOverlay" ondblclick="hideDone()">
-    <!-- mets ton image à la racine plus tard : missions-accomplies.jpg -->
-    <img src="missions-accomplies.jpg" alt="Missions accomplies"/>
+  <!-- overlay missions accomplies -->
+  <div class="overlay" id="doneOverlay" ondblclick="hideDone()">
+    <img src="./missions-accomplies.jpg" alt="Missions accomplies"/>
   </div>
 
 <script>
-/*** === CONFIG === ***/
-const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // <- remplace par ton /exec
+  /********************
+   * 1) METS TON URL /exec ICI (OBLIGATOIRE)
+   ********************/
+  const API_EXEC = "COLLE_ICI_TON_URL_EXEC"; // ex: https://script.google.com/macros/s/XXXXX/exec
 
-/*** === Utils === ***/
-function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  // JSONP sans eval (OK CSP)
+  function jsonp(params){
+    return new Promise((resolve, reject)=>{
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      const url = API_EXEC + "?" + new URLSearchParams({ ...params, callback: cb }).toString();
+      const s = document.createElement("script");
+      let done = false;
 
-function showView(v){
-  document.getElementById("tabAgent").classList.toggle("active", v==="agent");
-  document.getElementById("tabAdmin").classList.toggle("active", v==="admin");
-  document.getElementById("viewAgent").style.display = (v==="agent") ? "" : "none";
-  document.getElementById("viewAdmin").style.display = (v==="admin") ? "" : "none";
-}
+      window[cb] = (data)=>{
+        done = true;
+        cleanup();
+        resolve(data);
+      };
 
-function toast(id, msg, ok){
-  const el = document.getElementById(id);
-  el.className = "toast show " + (ok ? "ok":"bad");
-  el.textContent = msg || "";
-}
-function clearToast(id){
-  const el = document.getElementById(id);
-  el.className = "toast";
-  el.textContent = "";
-}
-
-function setLoading(btn, on){
-  if(!btn) return;
-  btn.classList.toggle("loading", !!on);
-  btn.disabled = !!on;
-}
-
-function toggleBox(id){
-  const el = document.getElementById(id);
-  el.style.display = (el.style.display === "none" || !el.style.display) ? "block" : "none";
-}
-
-/*** JSONP (pas de CORS, pas d'eval) ***/
-function jsonp(action, params={}){
-  return new Promise((resolve, reject)=>{
-    const cb = "CB_" + Math.random().toString(36).slice(2);
-    const url = new URL(API_EXEC);
-    url.searchParams.set("action", action);
-    url.searchParams.set("callback", cb);
-    Object.entries(params).forEach(([k,v])=> url.searchParams.set(k, (typeof v === "string" ? v : JSON.stringify(v))));
-
-    const s = document.createElement("script");
-    window[cb] = (data)=>{
-      try { resolve(data); }
-      finally {
-        delete window[cb];
-        s.remove();
+      function cleanup(){
+        try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+        if (s && s.parentNode) s.parentNode.removeChild(s);
       }
-    };
-    s.onerror = ()=>{
-      delete window[cb];
-      s.remove();
-      reject(new Error("load_error"));
-    };
-    s.src = url.toString();
-    document.head.appendChild(s);
-  });
-}
 
-/*** === STATE === ***/
-let DATA = { agents:[], periodes:[] };
-let ADMIN = { ok:false, code:"" };
-let AGENT = { ok:false, agent_id:"", nom:"", code:"" };
+      s.onerror = ()=>{
+        if(done) return;
+        cleanup();
+        reject(new Error("load_error"));
+      };
 
-/*** === BOOTSTRAP === ***/
-async function bootstrap(){
-  const btn = document.getElementById("btnReload");
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("bootstrapPublic", {});
-    if(!res || !res.ok) throw new Error("bootstrap_failed");
-    DATA.agents = res.agents || [];
-    DATA.periodes = res.periodes || [];
-    fillAgentSelect();
-    fillPeriodeSelect();
-    // si admin connecté -> refresh
-    if(ADMIN.ok){
-      await adminRefreshLists();
+      document.head.appendChild(s);
+      s.src = url;
+    });
+  }
+
+  function setToast(id, msg, ok){
+    const el = document.getElementById(id);
+    el.className = "toast show " + (ok ? "ok":"bad");
+    el.textContent = msg;
+  }
+  function clearToast(id){
+    const el = document.getElementById(id);
+    el.className = "toast";
+    el.textContent = "";
+  }
+  function setLoading(btn, on){
+    if(!btn) return;
+    btn.classList.toggle("loading", !!on);
+    btn.disabled = !!on;
+  }
+
+  function showView(v){
+    document.getElementById("tabAgent").classList.toggle("active", v==="agent");
+    document.getElementById("tabAdmin").classList.toggle("active", v==="admin");
+    document.getElementById("viewAgent").style.display = (v==="agent") ? "" : "none";
+    document.getElementById("viewAdmin").style.display = (v==="admin") ? "" : "none";
+  }
+
+  // ---------------- STATE
+  let ADMIN = { ok:false, code:"" };
+  let AGENT = { ok:false, agent_id:"", nom:"", code:"", must_change:false };
+  let DATA = { agents:[], catalog:[], periodes:[] };
+  let CURRENT_PERIOD = "";
+
+  // ---------------- INIT
+  (async function init(){
+    await loadPublicAgents();
+    showView("agent");
+  })();
+
+  async function loadPublicAgents(){
+    const sel = document.getElementById("agentSel");
+    sel.innerHTML = `<option value="">Chargement…</option>`;
+    try{
+      const res = await jsonp({ action:"listAgentsPublic" });
+      if(!res || !res.ok) throw new Error("bad");
+      DATA.agents = res.agents || [];
+      sel.innerHTML = `<option value="">— Choisir agent —</option>` +
+        DATA.agents.map(a=>`<option value="${a.agent_id}">${a.nom}</option>`).join("");
+    }catch(e){
+      sel.innerHTML = `<option value="">— Erreur chargement —</option>`;
     }
-  }catch(e){
-    // rien
-  }finally{
-    setLoading(btn, false);
   }
-}
 
-function fillAgentSelect(){
-  const sel = document.getElementById("agentSel");
-  sel.innerHTML = `<option value="">— Choisir agent —</option>`;
-  (DATA.agents||[]).filter(a=>a.actif).forEach(a=>{
-    sel.innerHTML += `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`;
-  });
-}
-function fillPeriodeSelect(){
-  const sel = document.getElementById("periodeSel");
-  sel.innerHTML = `<option value="">— Choisir période —</option>`;
-  (DATA.periodes||[]).forEach(p=>{
-    if(!p.actif) return;
-    sel.innerHTML += `<option value="${esc(p.period_id)}">${esc(p.libelle || p.period_id)}</option>`;
-  });
-}
+  // ---------------- ADMIN
+  async function adminLogin(){
+    clearToast("adminToast");
+    const code = document.getElementById("adminCode").value.trim();
+    const btn = document.getElementById("btnAdminLogin");
+    if(!code){ setToast("adminToast","Code requis.", false); return; }
+    setLoading(btn,true);
 
-/*** === ADMIN === ***/
-async function adminLogin(ev){
-  clearToast("adminToast");
-  const btn = document.getElementById("btnAdminLogin");
-  const code = document.getElementById("adminCode").value.trim();
-  if(!code) return;
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("adminLogin", { code });
-    if(!res || !res.ok){
-      ADMIN = { ok:false, code:"" };
-      document.getElementById("adminStatus").className = "status bad";
-      document.getElementById("adminStatus").textContent = "Admin : non connecté";
-      toast("adminToast", "Code admin incorrect.", false);
-      return;
+    try{
+      const res = await jsonp({ action:"adminLogin", admin_code: code });
+      if(res && res.ok){
+        ADMIN = { ok:true, code };
+        document.getElementById("adminStatus").className = "status ok";
+        document.getElementById("adminStatus").textContent = "Admin : connecté";
+        document.getElementById("adminBody").style.display = "";
+        document.getElementById("adminKey").style.display = "";
+        document.getElementById("adminLogout").style.display = "";
+        setToast("adminToast","Admin connecté ✅", true);
+        await adminBootstrap();
+      }else{
+        ADMIN = { ok:false, code:"" };
+        document.getElementById("adminStatus").className = "status bad";
+        document.getElementById("adminStatus").textContent = "Admin : non connecté";
+        setToast("adminToast","Code admin incorrect.", false);
+      }
+    }catch(e){
+      setToast("adminToast","Erreur réseau (load_error).", false);
+    }finally{
+      setLoading(btn,false);
     }
-    ADMIN = { ok:true, code };
-    document.getElementById("adminStatus").className = "status ok";
-    document.getElementById("adminStatus").textContent = "Admin : connecté ✅";
-    document.getElementById("btnAdminLogout").style.display = "";
-    document.getElementById("btnAdminKey").style.display = "";
-    document.getElementById("adminWork").style.display = "";
-    toast("adminToast", "Admin connecté ✅", true);
-    await adminRefreshLists();
-  }catch(e){
-    toast("adminToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
   }
-}
 
-function adminLogout(){
-  ADMIN = { ok:false, code:"" };
-  document.getElementById("adminStatus").className = "status";
-  document.getElementById("adminStatus").textContent = "Admin : non connecté";
-  document.getElementById("btnAdminLogout").style.display = "none";
-  document.getElementById("btnAdminKey").style.display = "none";
-  document.getElementById("adminWork").style.display = "none";
-}
-
-async function adminChangePassword(ev){
-  clearToast("adminChangeToast");
-  const btn = document.getElementById("btnAdminChange");
-  const oldC = document.getElementById("adminOld").value.trim();
-  const nextC = document.getElementById("adminNew").value.trim();
-  if(!oldC || !nextC) return;
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("adminChangePassword", { CODE: ADMIN.code, old: oldC, next: nextC });
-    if(!res || !res.ok){ toast("adminChangeToast", res?.message || "Erreur", false); return; }
-    toast("adminChangeToast", res.message || "OK", true);
-    // met à jour le code admin en mémoire
-    ADMIN.code = nextC;
-    document.getElementById("adminCode").value = nextC;
-  }catch(e){
-    toast("adminChangeToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
+  function adminLogout(){
+    ADMIN = { ok:false, code:"" };
+    document.getElementById("adminBody").style.display = "none";
+    document.getElementById("adminKey").style.display = "none";
+    document.getElementById("adminLogout").style.display = "none";
+    document.getElementById("adminStatus").className = "status";
+    document.getElementById("adminStatus").textContent = "Admin : non connecté";
+    clearToast("adminToast");
   }
-}
 
-async function adminRefreshLists(){
-  await Promise.all([adminListAgents(), adminListCatalog()]);
-}
+  function toggleAdminKey(){
+    const box = document.getElementById("adminKeyBox");
+    box.style.display = (box.style.display === "none" || !box.style.display) ? "" : "none";
+  }
 
-async function adminListAgents(){
-  const res = await jsonp("adminListAgents", { CODE: ADMIN.code });
-  const box = document.getElementById("agentsBox");
-  if(!res || !res.ok){ box.innerHTML = `<div class="ghost" style="padding:10px">Erreur.</div>`; return; }
-  const list = (res.agents||[]);
-  // select addToGroup
-  const addSel = document.getElementById("addToGroupSel");
-  addSel.innerHTML = `<option value="">— Choisir agent —</option>` +
-    list.filter(a=>a.actif).map(a=>`<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`).join("");
+  async function adminChangeCode(){
+    clearToast("adminChangeToast");
+    const new_code = document.getElementById("adminNewCode").value.trim();
+    const btn = document.getElementById("btnAdminChange");
+    if(!ADMIN.ok) return;
+    if(new_code.length < 4){ setToast("adminChangeToast","Min 4 caractères.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"adminChangeCode", admin_code: ADMIN.code, new_code });
+      if(res && res.ok){
+        ADMIN.code = new_code;
+        document.getElementById("adminCode").value = new_code;
+        setToast("adminChangeToast","Code admin modifié ✅", true);
+      } else {
+        setToast("adminChangeToast","Erreur modification.", false);
+      }
+    }catch(e){
+      setToast("adminChangeToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
 
-  box.innerHTML = list.map(a=>`
-    <div class="listItem">
-      <div><b>${esc(a.nom)}</b><div class="ghost" style="font-size:12px">${a.actif?"Actif ✅":"Inactif ❌"}</div></div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end">
-        <button class="btn small" onclick="adminToggleAgent('${esc(a.agent_id)}', ${a.actif ? "false":"true"})">${a.actif?"Désactiver":"Activer"}</button>
-        <button class="btn small" onclick="adminResetAgent('${esc(a.agent_id)}')">Reset 0000</button>
-        <button class="btn small danger" onclick="adminDeleteAgent('${esc(a.agent_id)}')">Supprimer</button>
-      </div>
-    </div>
-  `).join("") || `<div class="ghost" style="padding:10px">Aucun agent.</div>`;
-}
-
-async function adminAddAgent(ev){
-  clearToast("adminWorkToast");
-  const btn = document.getElementById("btnAddAgent");
-  const nom = document.getElementById("newAgentName").value.trim();
-  const code = document.getElementById("newAgentPass").value.trim() || "0000";
-  if(!nom) return;
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("adminAddAgent", { CODE: ADMIN.code, nom, code });
-    if(!res || !res.ok){ toast("adminWorkToast", res?.message || "Erreur", false); return; }
-    toast("adminWorkToast", res.message || "OK", true);
-    document.getElementById("newAgentName").value="";
-    document.getElementById("newAgentPass").value="0000";
+  async function adminBootstrap(){
+    await adminLoadPeriodes();
     await adminListAgents();
-    await bootstrap();
-  }catch(e){
-    toast("adminWorkToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
-  }
-}
-
-async function adminToggleAgent(agent_id, actif){
-  await jsonp("adminToggleAgent", { CODE: ADMIN.code, agent_id, actif: String(actif) });
-  await adminListAgents();
-  await bootstrap();
-}
-
-async function adminResetAgent(agent_id){
-  await jsonp("adminResetAgent", { CODE: ADMIN.code, agent_id });
-  await adminListAgents();
-}
-
-async function adminDeleteAgent(agent_id){
-  if(!confirm("Supprimer définitivement cet agent ?")) return;
-  await jsonp("adminDeleteAgent", { CODE: ADMIN.code, agent_id });
-  await adminListAgents();
-  await bootstrap();
-}
-
-async function adminListCatalog(){
-  const res = await jsonp("adminListCatalog", { CODE: ADMIN.code });
-  const box = document.getElementById("missionsBox");
-  if(!res || !res.ok){ box.innerHTML = `<div class="ghost" style="padding:10px">Erreur.</div>`; return; }
-  const list = (res.catalog||[]);
-  box.innerHTML = list.map(m=>`
-    <div class="listItem">
-      <div><b>${esc(m.libelle)}</b><div class="ghost" style="font-size:12px">${m.actif?"Active ✅":"Inactive ❌"}</div></div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end">
-        <button class="btn small" onclick="adminToggleMission('${esc(m.mission_id)}', ${m.actif ? "false":"true"})">${m.actif?"Désactiver":"Activer"}</button>
-        <button class="btn small danger" onclick="adminDeleteMission('${esc(m.mission_id)}')">Supprimer</button>
-      </div>
-    </div>
-  `).join("") || `<div class="ghost" style="padding:10px">Aucune mission.</div>`;
-}
-
-async function adminAddMission(ev){
-  clearToast("adminWorkToast");
-  const btn = document.getElementById("btnAddMission");
-  const libelle = document.getElementById("newMissionLib").value.trim();
-  if(!libelle) return;
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("adminAddMission", { CODE: ADMIN.code, libelle });
-    if(!res || !res.ok){ toast("adminWorkToast", res?.message || "Erreur", false); return; }
-    toast("adminWorkToast", res.message || "OK", true);
-    document.getElementById("newMissionLib").value="";
     await adminListCatalog();
-  }catch(e){
-    toast("adminWorkToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
   }
-}
 
-async function adminToggleMission(mission_id, actif){
-  await jsonp("adminToggleMission", { CODE: ADMIN.code, mission_id, actif: String(actif) });
-  await adminListCatalog();
-}
-
-async function adminDeleteMission(mission_id){
-  if(!confirm("Supprimer définitivement cette mission ?")) return;
-  await jsonp("adminDeleteMission", { CODE: ADMIN.code, mission_id });
-  await adminListCatalog();
-}
-
-async function adminLoadPeriod(ev){
-  clearToast("adminWorkToast");
-  const btn = document.getElementById("btnLoadPeriod");
-  const period_id = document.getElementById("periodeSel").value;
-  if(!period_id) return;
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("adminLoadPeriod", { CODE: ADMIN.code, period_id });
-    if(!res || !res.ok){ toast("adminWorkToast", res?.message || "Erreur", false); return; }
-
-    // responsable select
-    const rsel = document.getElementById("responsableSel");
-    rsel.innerHTML = `<option value="">— Choisir —</option>` +
-      (res.group||[]).map(a=>`<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`).join("");
-
-    // group box
-    const gbox = document.getElementById("groupBox");
-    gbox.innerHTML = (res.group||[]).map(a=>`
-      <div class="listItem">
-        <div><b>${esc(a.nom)}</b></div>
-        <button class="btn small danger" onclick="adminRemoveFromGroup('${esc(res.period_id)}','${esc(a.agent_id)}')">Retirer</button>
-      </div>
-    `).join("") || `<div class="ghost" style="padding:10px">Aucun agent.</div>`;
-
-    // month box = missions actives (check)
-    await adminLoadMonth({noBtn:true});
-    await adminLoadRetours({noBtn:true});
-
-    toast("adminWorkToast", "Période chargée ✅", true);
-  }catch(e){
-    toast("adminWorkToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
-  }
-}
-
-async function adminAddToGroup(ev){
-  clearToast("adminWorkToast");
-  const btn = document.getElementById("btnAddToGroup");
-  const period_id = document.getElementById("periodeSel").value;
-  const agent_id = document.getElementById("addToGroupSel").value;
-  if(!period_id || !agent_id) return;
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("adminAddToGroup", { CODE: ADMIN.code, period_id, agent_id });
-    if(!res || !res.ok){ toast("adminWorkToast", res?.message || "Erreur", false); return; }
-    toast("adminWorkToast", res.message || "OK", true);
-    await adminLoadPeriod({}); // recharge
-  }catch(e){
-    toast("adminWorkToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
-  }
-}
-
-async function adminRemoveFromGroup(period_id, agent_id){
-  await jsonp("adminRemoveFromGroup", { CODE: ADMIN.code, period_id, agent_id });
-  await adminLoadPeriod({});
-}
-
-async function adminSetResponsable(ev){
-  clearToast("adminWorkToast");
-  const btn = document.getElementById("btnSetResp");
-  const period_id = document.getElementById("periodeSel").value;
-  const agent_id = document.getElementById("responsableSel").value;
-  if(!period_id || !agent_id) return;
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("adminSetResponsable", { CODE: ADMIN.code, period_id, agent_id });
-    if(!res || !res.ok){ toast("adminWorkToast", res?.message || "Erreur", false); return; }
-    toast("adminWorkToast", res.message || "OK", true);
-  }catch(e){
-    toast("adminWorkToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
-  }
-}
-
-async function adminLoadMonth(opts={}){
-  const btn = opts.noBtn ? null : document.getElementById("btnLoadMonth");
-  if(btn) setLoading(btn, true);
-  try{
-    const period_id = document.getElementById("periodeSel").value;
-    if(!period_id) return;
-    const res = await jsonp("adminGetMonthMissions", { CODE: ADMIN.code, period_id });
-    const box = document.getElementById("monthBox");
-    if(!res || !res.ok){ box.innerHTML = `<div class="ghost" style="padding:10px">Erreur.</div>`; return; }
-
-    const on = new Set((res.missionsOn||[]).map(x=>x.mission_id));
-    box.innerHTML = (res.missionsAll||[]).map(m=>`
-      <div class="listItem">
-        <div><b>${esc(m.libelle)}</b></div>
-        <input type="checkbox" data-mid="${esc(m.mission_id)}" ${on.has(m.mission_id)?"checked":""}/>
-      </div>
-    `).join("") || `<div class="ghost" style="padding:10px">—</div>`;
-  }finally{
-    if(btn) setLoading(btn, false);
-  }
-}
-
-async function adminSaveMonth(ev){
-  clearToast("adminWorkToast");
-  const btn = document.getElementById("btnSaveMonth");
-  const period_id = document.getElementById("periodeSel").value;
-  if(!period_id) return;
-  setLoading(btn, true);
-  try{
-    const checks = Array.from(document.querySelectorAll("#monthBox input[type=checkbox][data-mid]"));
-    const ids = checks.filter(c=>c.checked).map(c=>c.getAttribute("data-mid"));
-    const res = await jsonp("adminSaveMonthMissions", { CODE: ADMIN.code, period_id, ids });
-    if(!res || !res.ok){ toast("adminWorkToast", res?.message || "Erreur", false); return; }
-    toast("adminWorkToast", res.message || "OK", true);
-    await adminLoadMonth({noBtn:true});
-  }catch(e){
-    toast("adminWorkToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
-  }
-}
-
-async function adminLoadRetours(opts={}){
-  const btn = opts.noBtn ? null : document.getElementById("btnLoadRetours");
-  if(btn) setLoading(btn, true);
-  try{
-    const period_id = document.getElementById("periodeSel").value;
-    if(!period_id) return;
-    const res = await jsonp("adminRetours", { CODE: ADMIN.code, period_id });
-    const box = document.getElementById("retoursBox");
-    if(!res || !res.ok){ box.innerHTML = `<div class="ghost" style="padding:10px">Erreur.</div>`; return; }
-    const items = res.items || [];
-    box.innerHTML = items.map(it=>`
-      <div class="listItem">
-        <div>
-          <b>${esc(it.agent)}</b>
-          <div class="ghost" style="font-size:12px">${esc(it.declaration)} • ${esc(it.justificatif||"")}</div>
-        </div>
-        <span class="pill ${it.declaration==="Non fait"?"bad":"ok"}">${esc(it.declaration)}</span>
-      </div>
-    `).join("") || `<div class="ghost" style="padding:10px">Aucun retour.</div>`;
-  }finally{
-    if(btn) setLoading(btn, false);
-  }
-}
-
-/*** === AGENT === ***/
-async function agentLogin(ev){
-  clearToast("agentToast");
-  const btn = document.getElementById("btnAgentLogin");
-  const agent_id = document.getElementById("agentSel").value;
-  const code = document.getElementById("agentCode").value.trim();
-  if(!agent_id || !code) return;
-
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("agentLogin", { agent_id, code });
-    if(!res || !res.ok){
-      AGENT = { ok:false, agent_id:"", nom:"", code:"" };
-      document.getElementById("agentStatus").className = "status bad";
-      document.getElementById("agentStatus").textContent = "Agent : non connecté";
-      toast("agentToast", "Code agent incorrect.", false);
-      return;
+  async function adminLoadPeriodes(){
+    const sel = document.getElementById("periodeSel");
+    sel.innerHTML = `<option value="">Chargement…</option>`;
+    try{
+      const res = await jsonp({ action:"adminListPeriodes", admin_code: ADMIN.code });
+      if(!res || !res.ok) throw new Error("bad");
+      DATA.periodes = res.periodes || [];
+      sel.innerHTML = `<option value="">— Choisir période —</option>` +
+        DATA.periodes.filter(p=>p.actif).map(p=>`<option value="${p.period_id}">${p.libelle}</option>`).join("");
+    }catch(e){
+      sel.innerHTML = `<option value="">— Erreur —</option>`;
     }
-    AGENT = { ok:true, agent_id, nom: res.agent.nom, code };
-    document.getElementById("agentStatus").className = "status ok";
-    document.getElementById("agentStatus").textContent = "Agent : " + res.agent.nom;
-    document.getElementById("btnAgentLogout").style.display = "";
-    document.getElementById("btnAgentKey").style.display = "";
-    document.getElementById("agentWork").style.display = "";
-
-    // périodes
-    const psel = document.getElementById("agentPeriodSel");
-    psel.innerHTML = `<option value="">— Choisir période —</option>` +
-      (res.periodes||[]).map(p=>`<option value="${esc(p.period_id)}">${esc(p.libelle)}</option>`).join("");
-
-    toast("agentToast", res.mustChange ? "Code = 0000 : change ton code 🔑 obligatoire." : "Connecté ✅", true);
-
-    // force change code si 0000
-    if(res.mustChange){
-      document.getElementById("agentKeyBox").style.display = "block";
-    }
-  }catch(e){
-    toast("agentToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
   }
-}
 
-function agentLogout(){
-  AGENT = { ok:false, agent_id:"", nom:"", code:"" };
-  document.getElementById("agentStatus").className = "status";
-  document.getElementById("agentStatus").textContent = "Agent : non connecté";
-  document.getElementById("btnAgentLogout").style.display = "none";
-  document.getElementById("btnAgentKey").style.display = "none";
-  document.getElementById("agentWork").style.display = "none";
-  document.getElementById("agentKeyBox").style.display = "none";
-}
+  async function adminListAgents(){
+    const box = document.getElementById("adminAgentsBox");
+    box.innerHTML = `<div class="muted" style="padding:10px">Chargement…</div>`;
+    try{
+      const res = await jsonp({ action:"adminListAgents", admin_code: ADMIN.code });
+      if(!res || !res.ok) throw new Error("bad");
+      const list = res.agents || [];
+      const addSel = document.getElementById("addToGroupSel");
+      addSel.innerHTML = `<option value="">— Choisir agent —</option>` +
+        list.filter(a=>a.actif).map(a=>`<option value="${a.agent_id}">${a.nom}</option>`).join("");
 
-async function agentChangePassword(ev){
-  clearToast("agentChangeToast");
-  const btn = document.getElementById("btnAgentChange");
-  const oldC = document.getElementById("agentOld").value.trim();
-  const nextC = document.getElementById("agentNew").value.trim();
-  if(!oldC || !nextC) return;
-
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("agentChangePassword", { agent_id: AGENT.agent_id, old: oldC, next: nextC });
-    if(!res || !res.ok){ toast("agentChangeToast", res?.message || "Erreur", false); return; }
-    toast("agentChangeToast", res.message || "OK", true);
-    // met à jour code en mémoire
-    AGENT.code = nextC;
-    document.getElementById("agentCode").value = nextC;
-    document.getElementById("agentOld").value = "";
-    document.getElementById("agentNew").value = "";
-    // replie si tu veux
-  }catch(e){
-    toast("agentChangeToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
-  }
-}
-
-async function agentLoadPeriod(ev){
-  clearToast("agentSaveToast");
-  const btn = document.getElementById("btnAgentLoad");
-  const period_id = document.getElementById("agentPeriodSel").value;
-  if(!AGENT.ok || !period_id) return;
-
-  setLoading(btn, true);
-  try{
-    const res = await jsonp("agentLoadPeriod", { agent_id: AGENT.agent_id, code: AGENT.code, period_id });
-    if(!res || !res.ok){
-      toast("agentSaveToast", res?.message || "Erreur", false);
-      return;
-    }
-
-    document.getElementById("agentGeneral").value = res.general_remarque || "";
-
-    const box = document.getElementById("agentMissionsBox");
-    const missions = res.missions || [];
-    if(!missions.length){
-      box.innerHTML = `<div class="ghost" style="padding:10px">Aucune mission active pour cette période.</div>`;
-      return;
-    }
-
-    box.innerHTML = missions.map(m=>`
-      <div class="listItem" data-mid="${esc(m.mission_id)}">
-        <div style="min-width:0">
-          <b style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.libelle)}</b>
-          <div class="ghost" style="font-size:12px">
-            <select class="decSel">
-              <option value="" ${m.declaration===""?"selected":""}>—</option>
-              <option value="Fait" ${m.declaration==="Fait"?"selected":""}>Fait</option>
-              <option value="Partiel" ${m.declaration==="Partiel"?"selected":""}>Partiel</option>
-              <option value="Non fait" ${m.declaration==="Non fait"?"selected":""}>Non fait</option>
-            </select>
+      box.innerHTML = list.map(a=>`
+        <div class="listRow">
+          <div>
+            <div class="name">${a.nom}</div>
+            <div class="muted">${a.actif ? "Actif ✅":"Inactif ❌"}</div>
+          </div>
+          <div class="toolRow">
+            <button class="btn ${a.actif?'ok':'ghost'}" onclick="adminToggleAgent('${a.agent_id}', ${a.actif?0:1})">${a.actif?'Actif':'Activer'}</button>
+            <button class="btn" onclick="adminResetAgentCode('${a.agent_id}')">Reset 0000</button>
+            <button class="btn bad" onclick="adminDeleteAgent('${a.agent_id}')">Supprimer</button>
           </div>
         </div>
-        <div style="min-width:220px;max-width:340px;width:100%">
-          <input class="justifInp" placeholder="Justificatif (si Partiel/Non fait)" value="${esc(m.justificatif||"")}"/>
+      `).join("");
+    }catch(e){
+      box.innerHTML = `<div class="muted" style="padding:10px">Erreur chargement.</div>`;
+    }
+  }
+
+  async function adminAddAgent(){
+    clearToast("adminAgentToast");
+    const nom = document.getElementById("newAgentName").value.trim();
+    const code = document.getElementById("newAgentCode").value.trim() || "0000";
+    const btn = document.getElementById("btnAddAgent");
+    if(!nom){ setToast("adminAgentToast","Nom requis.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"adminAddAgent", admin_code: ADMIN.code, nom, code });
+      if(res && res.ok){
+        setToast("adminAgentToast","Agent ajouté ✅", true);
+        document.getElementById("newAgentName").value="";
+        document.getElementById("newAgentCode").value="0000";
+        await adminListAgents();
+        await loadPublicAgents();
+      }else{
+        setToast("adminAgentToast","Erreur ajout.", false);
+      }
+    }catch(e){
+      setToast("adminAgentToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  async function adminToggleAgent(agent_id, toActive){
+    await jsonp({ action:"adminToggleAgent", admin_code: ADMIN.code, agent_id, actif: toActive ? "TRUE":"FALSE" });
+    await adminListAgents();
+    await loadPublicAgents();
+  }
+
+  async function adminDeleteAgent(agent_id){
+    if(!confirm("Supprimer définitivement ?")) return;
+    await jsonp({ action:"adminDeleteAgent", admin_code: ADMIN.code, agent_id });
+    await adminListAgents();
+    await loadPublicAgents();
+  }
+
+  async function adminResetAgentCode(agent_id){
+    await jsonp({ action:"adminResetAgentCode", admin_code: ADMIN.code, agent_id });
+    await adminListAgents();
+  }
+
+  async function adminListCatalog(){
+    const box = document.getElementById("adminMissionsBox");
+    box.innerHTML = `<div class="muted" style="padding:10px">Chargement…</div>`;
+    try{
+      const res = await jsonp({ action:"adminListCatalog", admin_code: ADMIN.code });
+      if(!res || !res.ok) throw new Error("bad");
+      const list = res.catalog || [];
+      box.innerHTML = list.map(m=>`
+        <div class="listRow">
+          <div>
+            <div class="name">${m.libelle}</div>
+            <div class="muted">${m.actif ? "Active ✅":"Inactive ❌"}</div>
+          </div>
+          <div class="toolRow">
+            <button class="btn ${m.actif?'ok':'ghost'}" onclick="adminToggleMission('${m.mission_id}', ${m.actif?0:1})">${m.actif?'Active':'Activer'}</button>
+            <button class="btn bad" onclick="adminDeleteMission('${m.mission_id}')">Supprimer</button>
+          </div>
+        </div>
+      `).join("");
+    }catch(e){
+      box.innerHTML = `<div class="muted" style="padding:10px">Erreur chargement.</div>`;
+    }
+  }
+
+  async function adminAddMission(){
+    clearToast("adminMissionToast");
+    const libelle = document.getElementById("newMissionLib").value.trim();
+    const btn = document.getElementById("btnAddMission");
+    if(!libelle){ setToast("adminMissionToast","Libellé requis.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"adminAddMission", admin_code: ADMIN.code, libelle });
+      if(res && res.ok){
+        setToast("adminMissionToast","Mission ajoutée ✅", true);
+        document.getElementById("newMissionLib").value="";
+        await adminListCatalog();
+        if(CURRENT_PERIOD) await adminGetMonthMissions();
+      }else{
+        setToast("adminMissionToast","Erreur ajout.", false);
+      }
+    }catch(e){
+      setToast("adminMissionToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  async function adminToggleMission(mission_id, toActive){
+    await jsonp({ action:"adminToggleMission", admin_code: ADMIN.code, mission_id, actif: toActive ? "TRUE":"FALSE" });
+    await adminListCatalog();
+    if(CURRENT_PERIOD) await adminGetMonthMissions();
+  }
+  async function adminDeleteMission(mission_id){
+    if(!confirm("Supprimer définitivement ?")) return;
+    await jsonp({ action:"adminDeleteMission", admin_code: ADMIN.code, mission_id });
+    await adminListCatalog();
+    if(CURRENT_PERIOD) await adminGetMonthMissions();
+  }
+
+  async function adminLoadPeriod(){
+    clearToast("adminGroupToast");
+    const pid = document.getElementById("periodeSel").value;
+    const btn = document.getElementById("btnLoadPeriod");
+    if(!pid){ setToast("adminGroupToast","Choisis une période.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"adminLoadPeriod", admin_code: ADMIN.code, period_id: pid });
+      if(!res || !res.ok) throw new Error("bad");
+      CURRENT_PERIOD = pid;
+
+      // responsable
+      document.getElementById("respStatus").className = "status " + (res.responsable ? "ok":"");
+      document.getElementById("respStatus").textContent = "Responsable : " + (res.responsable ? res.responsable.nom : "—");
+
+      // groupe list
+      const groupBox = document.getElementById("adminGroupBox");
+      const group = res.group || [];
+      groupBox.innerHTML = group.length ? group.map(a=>`
+        <div class="listRow">
+          <div class="name">${a.nom}</div>
+          <button class="btn bad" onclick="adminRemoveFromGroup('${a.agent_id}')">Retirer</button>
+        </div>
+      `).join("") : `<div class="muted" style="padding:10px">Aucun agent dans le groupe.</div>`;
+
+      // responsable select
+      const rsel = document.getElementById("responsableSel");
+      rsel.innerHTML = `<option value="">— Choisir —</option>` +
+        group.map(a=>`<option value="${a.agent_id}">${a.nom}</option>`).join("");
+
+      await adminGetMonthMissions();
+      await adminLoadRetours();
+
+      setToast("adminGroupToast","Période chargée ✅", true);
+    }catch(e){
+      setToast("adminGroupToast","Erreur chargement période.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  async function adminAddToGroup(){
+    const pid = document.getElementById("periodeSel").value;
+    const aid = document.getElementById("addToGroupSel").value;
+    const btn = document.getElementById("btnAddToGroup");
+    if(!pid || !aid) { setToast("adminGroupToast","Période + agent requis.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"adminAddToGroup", admin_code: ADMIN.code, period_id: pid, agent_id: aid });
+      if(res && res.ok){
+        await adminLoadPeriod();
+      }else{
+        setToast("adminGroupToast","Erreur ajout.", false);
+      }
+    }catch(e){
+      setToast("adminGroupToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  async function adminRemoveFromGroup(agent_id){
+    const pid = document.getElementById("periodeSel").value;
+    await jsonp({ action:"adminRemoveFromGroup", admin_code: ADMIN.code, period_id: pid, agent_id });
+    await adminLoadPeriod();
+  }
+
+  async function adminSetResponsable(){
+    const pid = document.getElementById("periodeSel").value;
+    const aid = document.getElementById("responsableSel").value;
+    const btn = document.getElementById("btnSetResp");
+    if(!pid || !aid){ setToast("adminGroupToast","Choisis un responsable.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"adminSetResponsable", admin_code: ADMIN.code, period_id: pid, agent_id: aid });
+      if(res && res.ok){
+        await adminLoadPeriod();
+      }else{
+        setToast("adminGroupToast","Erreur responsable.", false);
+      }
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  // missions actives
+  async function adminGetMonthMissions(){
+    const box = document.getElementById("monthBox");
+    box.innerHTML = `<div class="muted" style="padding:10px">Chargement…</div>`;
+    const res = await jsonp({ action:"adminGetMonthMissions", admin_code: ADMIN.code, period_id: CURRENT_PERIOD });
+    if(!res || !res.ok){ box.innerHTML = `<div class="muted" style="padding:10px">Erreur.</div>`; return; }
+
+    const on = new Set((res.missionsOn||[]).map(m=>m.mission_id));
+    box.innerHTML = (res.missionsAll||[]).map(m=>`
+      <div class="checkRow">
+        <input type="checkbox" data-mid="${m.mission_id}" ${on.has(m.mission_id)?"checked":""}/>
+        <div style="flex:1;min-width:0">
+          <div class="checkLabel">${m.libelle}</div>
         </div>
       </div>
     `).join("");
-
-    toast("agentSaveToast", "Missions chargées ✅", true);
-  }catch(e){
-    toast("agentSaveToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
   }
-}
 
-async function agentSave(ev){
-  clearToast("agentSaveToast");
-  const btn = document.getElementById("btnAgentSave");
-  const period_id = document.getElementById("agentPeriodSel").value;
-  if(!AGENT.ok || !period_id) return;
-
-  setLoading(btn, true);
-  try{
-    const rows = Array.from(document.querySelectorAll("#agentMissionsBox .listItem[data-mid]"));
-    const items = rows.map(r=>{
-      const mid = r.getAttribute("data-mid");
-      const dec = r.querySelector(".decSel")?.value || "";
-      const just = r.querySelector(".justifInp")?.value || "";
-      return { mission_id: mid, declaration: dec, justificatif: just };
-    });
-    const general = document.getElementById("agentGeneral").value || "";
-
-    const res = await jsonp("agentSave", { agent_id: AGENT.agent_id, code: AGENT.code, period_id, items, general });
-    if(!res || !res.ok){ toast("agentSaveToast", res?.message || "Erreur", false); return; }
-
-    toast("agentSaveToast", "Enregistré ✅", true);
-
-    // Si toutes missions = Fait => overlay image
-    const allDone = items.length && items.every(x => x.declaration === "Fait");
-    if(allDone){
-      showDone();
+  async function adminSaveMonthMissions(){
+    clearToast("adminMonthToast");
+    const btn = document.getElementById("btnSaveMonth");
+    setLoading(btn,true);
+    try{
+      const mids = Array.from(document.querySelectorAll('#monthBox input[type="checkbox"][data-mid]'))
+        .filter(c=>c.checked).map(c=>c.getAttribute("data-mid"));
+      const res = await jsonp({
+        action:"adminSaveMonthMissions",
+        admin_code: ADMIN.code,
+        period_id: CURRENT_PERIOD,
+        ids: mids.join(",")
+      });
+      if(res && res.ok){
+        setToast("adminMonthToast","Missions actives enregistrées ✅", true);
+      }else{
+        setToast("adminMonthToast","Erreur enregistrement.", false);
+      }
+    }catch(e){
+      setToast("adminMonthToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
     }
-  }catch(e){
-    toast("agentSaveToast", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
   }
-}
 
-/*** overlay image missions accomplies ***/
-function showDone(){
-  const ov = document.getElementById("doneOverlay");
-  ov.style.display = "flex";
-}
-function hideDone(){
-  const ov = document.getElementById("doneOverlay");
-  ov.style.display = "none";
-}
+  async function adminLoadRetours(){
+    const box = document.getElementById("retoursBox");
+    box.innerHTML = `<div class="muted" style="padding:10px">Chargement…</div>`;
+    try{
+      const res = await jsonp({ action:"adminGetRetours", admin_code: ADMIN.code, period_id: CURRENT_PERIOD });
+      if(!res || !res.ok){ box.innerHTML = `<div class="muted" style="padding:10px">Erreur.</div>`; return; }
+      const items = res.items || [];
+      if(!items.length){
+        box.innerHTML = `<div class="muted" style="padding:10px">Aucun retour.</div>`;
+        return;
+      }
+      box.innerHTML = items.map(it=>`
+        <div class="listRow">
+          <div>
+            <div class="name">${it.agent}</div>
+            <div class="muted">${it.mission}</div>
+          </div>
+          <div class="status bad">${it.declaration}</div>
+        </div>
+      `).join("");
+    }catch(e){
+      box.innerHTML = `<div class="muted" style="padding:10px">Erreur.</div>`;
+    }
+  }
 
-/*** init ***/
-bootstrap();
+  // ---------------- AGENT
+  function toggleAgentKey(){
+    const box = document.getElementById("agentKeyBox");
+    box.style.display = (box.style.display === "none" || !box.style.display) ? "" : "none";
+  }
+
+  function agentLogout(){
+    AGENT = { ok:false, agent_id:"", nom:"", code:"", must_change:false };
+    document.getElementById("agentStatus").className = "status";
+    document.getElementById("agentStatus").textContent = "Agent : non connecté";
+    document.getElementById("agentWork").style.display = "none";
+    document.getElementById("agentKey").style.display = "none";
+    document.getElementById("agentLogout").style.display = "none";
+    document.getElementById("agentKeyBox").style.display = "none";
+    document.getElementById("agentMissions").innerHTML = `<div class="muted" style="padding:10px">Choisis une période puis “Charger”.</div>`;
+    clearToast("agentToast");
+    clearToast("agentSaveToast");
+  }
+
+  async function agentLogin(){
+    clearToast("agentToast");
+    const btn = document.getElementById("btnAgentLogin");
+    const agent_id = document.getElementById("agentSel").value;
+    const code = document.getElementById("agentCode").value.trim();
+    if(!agent_id || !code){ setToast("agentToast","Sélection + code requis.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"agentLogin", agent_id, code });
+      if(!res || !res.ok){
+        setToast("agentToast", res && res.message ? res.message : "Erreur connexion.", false);
+        return;
+      }
+      AGENT = {
+        ok:true,
+        agent_id: res.agent.agent_id,
+        nom: res.agent.nom,
+        code,
+        must_change: !!res.agent.must_change
+      };
+
+      document.getElementById("agentStatus").className = "status ok";
+      document.getElementById("agentStatus").textContent = "Agent : " + AGENT.nom;
+      document.getElementById("agentWork").style.display = "";
+      document.getElementById("agentKey").style.display = "";
+      document.getElementById("agentLogout").style.display = "";
+
+      // périodes
+      const psel = document.getElementById("agentPeriodSel");
+      psel.innerHTML = `<option value="">— Choisir période —</option>` +
+        (res.periodes || []).map(p=>`<option value="${p.period_id}">${p.libelle}</option>`).join("");
+
+      // obligation 1ère connexion
+      if(AGENT.must_change){
+        setToast("agentToast","⚠️ Tu dois changer ton code (🔑) avant de continuer.", false);
+        document.getElementById("agentKeyBox").style.display = "";
+      }else{
+        setToast("agentToast","Connecté ✅", true);
+      }
+    }catch(e){
+      setToast("agentToast","Erreur réseau (load_error).", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  async function agentChangeCode(){
+    clearToast("agentChangeToast");
+    const old_code = document.getElementById("agentOldCode").value.trim();
+    const new_code = document.getElementById("agentNewCode").value.trim();
+    const btn = document.getElementById("btnAgentChangeCode");
+    if(!AGENT.ok) return;
+    if(new_code.length < 4){ setToast("agentChangeToast","Min 4 caractères.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"agentChangeCode", agent_id: AGENT.agent_id, old_code, new_code });
+      if(res && res.ok){
+        AGENT.code = new_code;
+        document.getElementById("agentCode").value = new_code;
+        setToast("agentChangeToast","Code modifié ✅", true);
+        document.getElementById("agentKeyBox").style.display = "none";
+      }else{
+        setToast("agentChangeToast", res && res.message ? res.message : "Erreur", false);
+      }
+    }catch(e){
+      setToast("agentChangeToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  async function agentLoadPeriod(){
+    clearToast("agentSaveToast");
+    const pid = document.getElementById("agentPeriodSel").value;
+    const btn = document.getElementById("btnAgentLoad");
+    if(!AGENT.ok) return;
+    if(AGENT.must_change){ setToast("agentSaveToast","Change ton code d’abord (🔑).", false); return; }
+    if(!pid){ setToast("agentSaveToast","Choisis une période.", false); return; }
+    setLoading(btn,true);
+    try{
+      const res = await jsonp({ action:"agentLoadPeriod", agent_id: AGENT.agent_id, code: AGENT.code, period_id: pid });
+      if(!res || !res.ok){ setToast("agentSaveToast", res && res.message ? res.message : "Erreur", false); return; }
+
+      document.getElementById("agentRemark").value = res.remarque || "";
+
+      const list = res.missions || [];
+      const box = document.getElementById("agentMissions");
+      if(!list.length){
+        box.innerHTML = `<div class="muted" style="padding:10px">Aucune mission active.</div>`;
+        return;
+      }
+
+      box.innerHTML = list.map(m=>`
+        <div class="checkRow" data-mid="${m.mission_id}">
+          <input type="checkbox" class="done" ${m.declaration==="Fait" ? "checked":""}/>
+          <div style="flex:1;min-width:0">
+            <div class="checkLabel">${m.libelle}</div>
+            <div class="muted">Déclaration :
+              <select class="dec">
+                <option value="" ${m.declaration===""?"selected":""}>—</option>
+                <option value="Fait" ${m.declaration==="Fait"?"selected":""}>Fait</option>
+                <option value="Partiel" ${m.declaration==="Partiel"?"selected":""}>Partiel</option>
+                <option value="Non fait" ${m.declaration==="Non fait"?"selected":""}>Non fait</option>
+              </select>
+            </div>
+            <div class="muted" style="margin-top:6px">
+              Justificatif :
+              <input class="justif" value="${(m.justificatif||"").replace(/"/g,"&quot;")}" placeholder="si Partiel/Non fait"/>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      // aligne checkbox <-> select (si check => Fait)
+      box.querySelectorAll(".checkRow").forEach(row=>{
+        const cb = row.querySelector(".done");
+        const sel = row.querySelector(".dec");
+        cb.addEventListener("change", ()=>{
+          if(cb.checked) sel.value = "Fait";
+          if(!cb.checked && sel.value==="Fait") sel.value = "";
+        });
+      });
+
+      setToast("agentSaveToast","Chargé ✅", true);
+    }catch(e){
+      setToast("agentSaveToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  async function agentSave(){
+    const btn = document.getElementById("btnAgentSave");
+    const pid = document.getElementById("agentPeriodSel").value;
+    if(!AGENT.ok || !pid) return;
+
+    setLoading(btn,true);
+    try{
+      const rows = Array.from(document.querySelectorAll("#agentMissions .checkRow[data-mid]"));
+      const items = rows.map(r=>{
+        return {
+          mission_id: r.getAttribute("data-mid"),
+          declaration: r.querySelector(".dec").value,
+          justificatif: r.querySelector(".justif").value
+        };
+      });
+      const remarque = document.getElementById("agentRemark").value.trim();
+
+      const res = await jsonp({
+        action:"agentSaveDeclarations",
+        agent_id: AGENT.agent_id,
+        code: AGENT.code,
+        period_id: pid,
+        items: JSON.stringify(items),
+        remarque
+      });
+
+      if(res && res.ok){
+        setToast("agentSaveToast","Enregistré ✅", true);
+        if(res.all_done){
+          showDone();
+        }
+      }else{
+        setToast("agentSaveToast", res && res.message ? res.message : "Erreur", false);
+      }
+    }catch(e){
+      setToast("agentSaveToast","Erreur réseau.", false);
+    }finally{
+      setLoading(btn,false);
+    }
+  }
+
+  function showDone(){
+    const ov = document.getElementById("doneOverlay");
+    ov.classList.add("show");
+  }
+  function hideDone(){
+    const ov = document.getElementById("doneOverlay");
+    ov.classList.remove("show");
+  }
 </script>
 </body>
 </html>
