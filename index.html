@@ -522,6 +522,7 @@ async function adminsLogins(ev){
     $("btnAdminsLogout").style.display="";
     showToast("toastAdminsLogin","Admin connecté ✅", true);
     await adminsBootstraps();
+    await adminsListPeriods();
   }catch(e){
     showToast("toastAdminsLogin","Erreur réseau.", false);
   }finally{
@@ -690,6 +691,27 @@ async function adminsDeleteMissions(mission_id){
   if(!confirm("Supprimer définitivement cette mission ?")) return;
   await apiJsonp("adminDeleteMission",{ admin_code: STATE.admins.code, mission_id });
   await adminsListMissions();
+}
+
+  async function adminsListPeriods(){
+  try{
+    const res = await apiJsonp("adminListPeriods", {
+      admin_code: STATE.admins.code
+    });
+
+    if(!res || !res.ok) return;
+
+    STATE.data.periods = res.periods || [];
+
+    $("adminsPeriodsSel").innerHTML =
+      `<option value="">— Choisir une période —</option>` +
+      STATE.data.periods.map(p =>
+        `<option value="${p.period_id}">${p.label}</option>`
+      ).join("");
+
+  }catch(e){
+    console.error("adminsListPeriods error", e);
+  }
 }
 
 async function adminsLoadPeriods(ev){
