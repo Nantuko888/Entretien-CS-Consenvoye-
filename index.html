@@ -526,6 +526,14 @@ const STATE = {
    ============================= */
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function $(id){return document.getElementById(id);}
+  function normAgent(a){
+  return {
+    agent_id: a?.agent_id ?? a?.id ?? "",
+    nom: a?.nom ?? a?.name ?? "",
+    actif: (a?.actif ?? a?.active) ? true : false
+  };
+}
+
 
 function showToasts(id,msg,ok){
   const el=$(id); if(!el) return;
