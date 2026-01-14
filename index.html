@@ -1497,7 +1497,7 @@ $("doneImg").addEventListener("touchend", (e)=>{
   setPills("pillAgentsStatus","Agent : non connecté","bad");
 
   // si demo, préremplit la liste agents aussi
-  if(MODE_DEMO){
+  if(MODE_DEMO)
     demoInitData();
     renderAgentsPublics(STATE.data.agents);
 }
