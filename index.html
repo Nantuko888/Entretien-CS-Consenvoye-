@@ -1298,7 +1298,7 @@ async function agentsLogins(ev){
 
   setLoadings(btn,true);
   try{
-    const res = await apiCalls("agentsLogins", { agent_id, code });
+    const res = await apiCalls("agentLogin", { agent_id, code });
     if(!res || !res.ok){
       showToasts("toastAgentsLogin",(res&&res.message)||"Erreur connexion.",false);
       setPills("pillAgentsStatus","Agent : non connecté","bad");
