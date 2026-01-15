@@ -290,32 +290,65 @@
 
         <div class="twoCol">
           <!-- period / group / responsable -->
-          <div class="card">
-            <div class="headRow">
-              <div class="h2">Période / Groupe / Responsable</div>
-              <div class="status" id="pillResponsable">Responsable : —</div>
-            </div>
-            <div class="row">
-              <div>
-                <label>Période</label>
-                <select id="adminsPeriodsSel"></select>
-              </div>
-              <div class="right">
-                <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriods(event)">Charger</button>
-              </div>
-            </div>
-            <div id="toastAdminsPeriod" class="toast"></div>
+<div class="twoCol">
+  <!-- Colonne GAUCHE : actions -->
+  <div class="card">
+    <div class="headRow">
+      <div class="h2">active missions / Responsable</div>
+    </div>
 
-            <div class="divider"></div>
-            <div class="row">
-              <div>
-                <label>Ajouter au groupe</label>
-                <select id="adminsAddToGroupsSel"></select>
-              </div>
-              <div class="right">
-                <button class="btn primary" id="btnAdminsAddToGroup" onclick="adminsAddToGroups(event)">Ajouter</button>
-              </div>
-            </div>
+    <div class="row">
+      <div>
+        <label>Période</label>
+        <select id="adminsPeriodsSel"></select>
+      </div>
+      <div class="right">
+        <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriods(event)">Charger</button>
+      </div>
+    </div>
+
+    <div id="toastAdminsPeriod" class="toast"></div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <div>
+        <label>Ajouter au groupe</label>
+        <select id="adminsAddToGroupsSel"></select>
+      </div>
+      <div class="right">
+        <button class="btn primary" id="btnAdminsAddToGroup" onclick="adminsAddToGroups(event)">Ajouter</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <div>
+        <label>Responsable</label>
+        <select id="adminsResponsablesSel"></select>
+      </div>
+      <div class="right">
+        <button class="btn primary" id="btnAdminsSetResponsable" onclick="adminsSetResponsables(event)">Définir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colonne DROITE : résultat -->
+  <div class="card">
+    <div class="headRow">
+      <div class="h2">Groupe</div>
+      <div class="status" id="pillResponsable">Responsable : —</div>
+    </div>
+
+    <div class="scrollBox" id="boxAdminsGroup">
+      <div class="listItem">
+        <div class="left">
+          <div class="title muted">Aucun groupe chargé.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
             <div class="row" style="margin-top:10px">
               <div>
@@ -334,41 +367,53 @@
           </div>
 
           <!-- active missions -->
-          <div class="card">
-            <div class="headRow"><div class="h2">Missions actives (par période)</div></div>
-            <div class="row">
-              <div class="right">
-                <button class="btn" id="btnAdminsLoadActive" onclick="adminsLoadActiveMissions(event)">Charger</button>
-              </div>
-              <div class="right">
-                <button class="btn primary" id="btnAdminsSaveActive" onclick="adminsSaveActiveMissions(event)">Enregistrer missions actives</button>
-              </div>
-            </div>
-            <div id="toastAdminsActive" class="toast"></div>
+<div class="twoCol">
+  <!-- Colonne GAUCHE : édition -->
+  <div class="card">
+    <div class="headRow">
+      <div class="h2">Missions actives (par période)</div>
+    </div>
 
-            <div class="divider"></div>
-            <div class="scrollBox" id="boxAdminsActiveMissions">
-              <div class="listItem"><div class="left"><div class="title">Charge une période, puis “Charger”.</div></div></div>
-            </div>
+    <div class="row">
+      <div class="right">
+        <button class="btn" id="btnAdminsLoadActive" onclick="adminsLoadActiveMissions(event)">Charger</button>
+      </div>
+      <div class="right">
+        <button class="btn primary" id="btnAdminsSaveActive" onclick="adminsSaveActiveMissions(event)">Enregistrer missions actives</button>
+      </div>
+    </div>
 
-            <div class="divider"></div>
-            <div class="h2" style="margin:0 0 8px 0">Retours (Partiel / Non fait)</div>
-            <div class="row">
-              <div class="right">
-                <button class="btn" id="btnAdminsLoadRetours" onclick="adminsLoadRetours(event)">Charger retours</button>
-              </div>
-            </div>
-            <div id="toastAdminsRetours" class="toast"></div>
-            <div class="divider"></div>
-            <div class="scrollBox" id="boxAdminsRetours">
-              <div class="listItem"><div class="left"><div class="title">—</div></div></div>
-            </div>
-          </div>
+    <div id="toastAdminsActive" class="toast"></div>
+
+    <div class="divider"></div>
+
+    <!-- LISTE CHECKBOX -->
+    <div class="scrollBox" id="boxAdminsActiveMissions">
+      <div class="listItem">
+        <div class="left">
+          <div class="title">Charge une période, puis “Charger”.</div>
         </div>
-
       </div>
     </div>
   </div>
+
+  <!-- Colonne DROITE : résumé -->
+  <div class="card">
+    <div class="headRow">
+      <div class="h2">Résumé (missions actives)</div>
+    </div>
+
+    <div class="scrollBox" id="boxAdminsActiveSummary">
+      <div class="listItem">
+        <div class="left">
+          <div class="title muted">—</div>
+          <div class="muted" style="font-size:13px">Le résumé se mettra à jour quand la liste est chargée.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <!-- Overlay missions accomplies -->
   <div class="overlay" id="doneOverlay" title="Double-clic pour fermer">
