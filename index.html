@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Entretien CS Consenvoye</title>
+  <title>Entretien CS Consenvoye — DEMO</title>
   <style>
     :root{
       --bg:#0b0f14; --panel:#0f1724; --panel2:#111b2b;
@@ -24,18 +24,25 @@
         linear-gradient(180deg, #06080b, var(--bg));
       min-height:100vh;
     }
-    .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 40px}
+    .wrap{max-width:1200px;margin:0 auto;padding:22px 14px 46px}
     h1{margin:0;font-size:30px;font-weight:900;letter-spacing:.2px;color:#ff8d1a;text-shadow:0 2px 14px rgba(255,122,0,.18);text-align:center;}
     .subtitle{margin:6px 0 0;color:var(--muted);font-size:12px;text-align:center}
     .tabsCenter{margin:14px 0 18px;display:flex;justify-content:center;}
     .tabs{display:flex;gap:8px;align-items:center;border:1px solid var(--stroke);background:rgba(255,255,255,.02);padding:6px;border-radius:999px;box-shadow:var(--shadow);}
     .tab{border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:999px;cursor:pointer;font-weight:900;font-size:13px;}
     .tab.active{background:linear-gradient(90deg, rgba(255,122,0,.26), rgba(255,176,0,.18));color:var(--text);}
-    .btn{appearance:none;border:1px solid var(--stroke);background:rgba(255,255,255,.03);color:var(--text);border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:900;font-size:13px;transition:.15s transform ease,.15s background ease,.15s border-color ease;white-space:nowrap;}
+    .btn{
+      appearance:none;border:1px solid var(--stroke);
+      background:rgba(255,255,255,.03);color:var(--text);
+      border-radius:999px;padding:10px 14px;cursor:pointer;
+      font-weight:900;font-size:13px;transition:.15s transform ease,.15s background ease,.15s border-color ease;
+      white-space:nowrap;
+    }
     .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
     .btn.primary{background:linear-gradient(90deg, var(--accent), var(--accent2));border-color:transparent;color:#0b0f14;box-shadow:0 12px 26px rgba(255,122,0,.18);}
     .btn.danger{background:rgba(255,59,48,.14);border-color:rgba(255,59,48,.35);color:#ffd0cd}
     .btn.small{padding:8px 12px;font-size:12px}
+    .btn.icon{padding:10px 12px; min-width:44px; display:inline-flex; align-items:center; justify-content:center}
     .btn.loading,
     .btn.primary.loading{
       background: linear-gradient(90deg, #1fd36b, #7dff9c) !important;
@@ -45,8 +52,9 @@
       cursor: wait !important;
       opacity: 0.95;
     }
-    .btn.loading::after{content:" ⏳";font-weight:900}
-    .btn[disabled]{opacity:.65;cursor:not-allowed}
+    .btn.loading::after{ content: " ⏳"; font-weight: 900; }
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+
     .card{border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border-radius:var(--r);padding:16px;box-shadow:var(--shadow);}
     .headRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
     .h2{margin:0;font-size:15px;font-weight:900}
@@ -54,79 +62,86 @@
     .status.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
     .status.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
     label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
-    input, select, textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--stroke);background:rgba(0,0,0,.25);color:var(--text);outline:none;font-size:13px;}
-    textarea{min-height:86px;resize:vertical}
+    input, select, textarea{
+      width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--stroke);
+      background:rgba(0,0,0,.25);color:var(--text);outline:none;font-size:13px;
+    }
+    textarea{min-height:88px; resize:vertical}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
     .row > *{flex:1;min-width:220px}
+    .right{display:flex;justify-content:flex-end;gap:8px;align-items:center}
     .divider{height:1px;background:rgba(255,255,255,.09);margin:14px 0}
+    .ghost{color:rgba(232,238,249,.55)}
     .twoCol{display:grid;gap:12px}
     @media(min-width:1000px){ .twoCol{grid-template-columns: 1fr 1fr;} }
+    .scrollBox{max-height:240px;overflow:auto;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.18)}
+    .listItem{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .listItem:last-child{border-bottom:0}
+    .listLeft{min-width:0}
+    .listTitle{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .listSub{font-size:12px;color:rgba(232,238,249,.6);margin-top:2px}
+    .pillRow{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;vertical-align:top}
+    .table th{color:var(--muted);text-align:left;font-weight:900}
+    .table tr:last-child td{border-bottom:0}
+
     .toast{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);font-size:13px;display:none}
     .toast.show{display:block}
     .toast.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.08);color:#c9f9db}
     .toast.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.08);color:#ffd0cd}
 
-    .scrollBox{
-      max-height:260px;
-      overflow:auto;
-      border-radius:14px;
-      border:1px solid var(--stroke);
-      background:rgba(0,0,0,.18);
-    }
-    .listItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
-    .listItem:last-child{border-bottom:0}
-    .left{min-width:0}
-    .title{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .sub{color:rgba(232,238,249,.55);font-size:12px;margin-top:2px}
-    .pillRow{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .pillBtn{border:1px solid var(--stroke);background:rgba(255,255,255,.03);color:var(--text);border-radius:999px;padding:8px 12px;font-weight:900;font-size:12px;cursor:pointer}
-    .pillBtn.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#c9f9db}
-    .pillBtn.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
-
-    /* Missions (agent) */
-    .missionRow{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
-    .missionRow:last-child{border-bottom:0}
-    .missionRow .mLeft{flex:1;min-width:0}
-    .missionRow .mTitle{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .missionRow select{max-width:180px}
-    .missionRow input{max-width:420px}
-
-    /* overlay done */
+    /* overlay "missions accomplies" */
     .overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.66);
-      display:none;align-items:center;justify-content:center;z-index:9999;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.70);
+      display:none; align-items:center; justify-content:center;
+      z-index:9999;
       padding:18px;
     }
     .overlay.show{display:flex}
-    .overlay img{
-      max-width:min(520px, 92vw);
+    .overlayCard{
+      max-width:560px; width:100%;
       border-radius:18px;
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow:0 18px 50px rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(15,23,36,.75);
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .overlayCard img{width:100%; display:block}
+    .overlayHint{padding:10px 12px; font-size:12px; color:rgba(232,238,249,.75)}
+    .overlayHint b{color:var(--text)}
+
+    /* Mobile: plus compact */
+    @media (max-width: 700px){
+      .wrap{padding:12px}
+      input, select, textarea, button, .btn{min-height:44px;font-size:16px}
+      .row > *{min-width:100%}
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <h1>Entretien du centre de secours de Consenvoye</h1>
-    <div class="subtitle">JTUB (GitHub) • Sheets (moteur)</div>
+    <div class="subtitle">DEMO (sans API) — Agent : saisie • Admin : configuration • Justificatif obligatoire si <b>Partiel</b> / <b>Non fait</b></div>
 
     <div class="tabsCenter">
       <div class="tabs">
-        <button class="tab active" id="tabAgents" onclick="showView('agents')">🧑‍🚒 Agent</button>
-        <button class="tab" id="tabAdmins" onclick="showView('admins')">🛡️ Admin</button>
-        <button class="btn" id="btnReload" onclick="bootAll()">Recharger</button>
+        <button class="tab active" id="tabAgents" onclick="showViews('agents')">🧑‍🚒 Agent</button>
+        <button class="tab" id="tabAdmins" onclick="showViews('admins')">🛡️ Admin</button>
+        <button class="btn" onclick="reloadDemo()">Recharger</button>
       </div>
     </div>
 
-    <!-- ===== AGENT ===== -->
+    <!-- ========================= AGENT ========================= -->
     <div id="viewAgents" class="card">
       <div class="headRow">
         <div class="h2">Espace agent</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <button class="btn small" id="btnAgentsKey" style="display:none" onclick="toggleAgentsKey()">🔑</button>
-          <button class="btn small danger" id="btnAgentsLogout" style="display:none" onclick="agentsLogouts()">Déconnexion</button>
-          <div class="status" id="pillAgentsStatus">Agent : non connecté</div>
+        <div class="right">
+          <button class="btn icon" id="btnAgentsKey" title="Changer mon code" onclick="toggleAgentsKey()" style="display:none">🔑</button>
+          <button class="btn danger" id="btnAgentsLogout" onclick="agentsLogouts()" style="display:none">Déconnexion</button>
+          <div class="status bad" id="pillAgentsStatus">Agent : non connecté</div>
         </div>
       </div>
 
@@ -145,27 +160,35 @@
       </div>
       <div id="toastAgentsLogin" class="toast"></div>
 
-      <div id="boxAgentsKey" style="display:none;margin-top:12px">
+      <!-- boîte changement code agent -->
+      <div id="agentsKeyBox" style="display:none; margin-top:12px;">
         <div class="divider"></div>
-        <div class="h2" style="margin:0 0 8px 0">Changer mon code</div>
+        <div class="h2" style="margin:0 0 10px 0">Changer mon code</div>
         <div class="row">
           <div>
             <label>Ancien code</label>
             <input id="agentsOldCode" placeholder="Ancien code" />
           </div>
           <div>
-            <label>Nouveau code (min 4)</label>
-            <input id="agentsNewCode" placeholder="Nouveau code" />
+            <label>Nouveau code</label>
+            <input id="agentsNewCode" placeholder="Nouveau code (min 4)" />
           </div>
           <div class="right">
-            <button class="btn primary" id="btnAgentsChange" onclick="agentsChangeCodes(event)">Valider</button>
+            <button class="btn primary" id="btnAgentsChange" onclick="agentsChangePasswords(event)">Valider</button>
           </div>
         </div>
         <div id="toastAgentsChange" class="toast"></div>
       </div>
 
-      <div id="boxAgentsWork" style="display:none;margin-top:12px">
+      <!-- zone travail agent -->
+      <div id="boxAgentsWork" style="display:none; margin-top:14px;">
         <div class="divider"></div>
+
+        <div class="headRow">
+          <div class="h2">Missions du mois</div>
+          <div class="status" id="pillAgentsPeriod">Période : —</div>
+        </div>
+
         <div class="row">
           <div>
             <label>Période</label>
@@ -175,35 +198,32 @@
             <button class="btn primary" id="btnAgentsLoad" onclick="agentsLoadPeriods(event)">Charger</button>
           </div>
         </div>
-        <div id="toastAgentsLoad" class="toast"></div>
+        <div id="toastAgentsPeriod" class="toast"></div>
 
         <div class="divider"></div>
+
+        <div class="scrollBox" id="boxAgentsMissions"></div>
+
+        <div class="divider"></div>
+
         <label>Remarque générale (facultatif)</label>
-        <textarea id="agentsRemark" placeholder="Remarque générale…"></textarea>
+        <textarea id="agentsRemark" placeholder="Remarque générale..."></textarea>
 
-        <div class="divider"></div>
-        <div class="scrollBox" id="boxAgentsMissions">
-          <div class="listItem"><div class="left"><div class="title">Choisis une période puis “Charger”.</div></div></div>
-        </div>
-
-        <div class="divider"></div>
-        <div class="row">
-          <div class="right">
-            <button class="btn primary" id="btnAgentsSave" onclick="agentsSaves(event)">Enregistrer</button>
-          </div>
+        <div class="right" style="margin-top:10px">
+          <button class="btn primary" id="btnAgentsSave" onclick="agentsSaves(event)">Enregistrer</button>
         </div>
         <div id="toastAgentsSave" class="toast"></div>
       </div>
     </div>
 
-    <!-- ===== ADMIN ===== -->
+    <!-- ========================= ADMIN ========================= -->
     <div id="viewAdmins" class="card" style="display:none">
       <div class="headRow">
         <div class="h2">Espace admin</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <button class="btn small" id="btnAdminsKey" style="display:none" onclick="toggleAdminsKey()">🔑</button>
-          <button class="btn small danger" id="btnAdminsLogout" style="display:none" onclick="adminsLogouts()">Déconnexion</button>
-          <div class="status" id="pillAdminsStatus">Admin : non connecté</div>
+        <div class="right">
+          <button class="btn icon" id="btnAdminsKey" title="Changer le code admin" onclick="toggleAdminsKey()" style="display:none">🔑</button>
+          <button class="btn danger" id="btnAdminsLogout" onclick="adminsLogouts()" style="display:none">Déconnexion</button>
+          <div class="status bad" id="pillAdminsStatus">Admin : non connecté</div>
         </div>
       </div>
 
@@ -218,32 +238,33 @@
       </div>
       <div id="toastAdminsLogin" class="toast"></div>
 
-      <div id="boxAdminsKey" style="display:none;margin-top:12px">
+      <!-- boîte changement code admin -->
+      <div id="adminsKeyBox" style="display:none; margin-top:12px;">
         <div class="divider"></div>
-        <div class="h2" style="margin:0 0 8px 0">Changer le code admin</div>
+        <div class="h2" style="margin:0 0 10px 0">Changer le code admin</div>
         <div class="row">
           <div>
             <label>Ancien code</label>
             <input id="adminsOldCode" placeholder="Ancien code" />
           </div>
           <div>
-            <label>Nouveau code (min 4)</label>
-            <input id="adminsNewCode" placeholder="Nouveau code" />
+            <label>Nouveau code</label>
+            <input id="adminsNewCode" placeholder="Nouveau code (min 4)" />
           </div>
           <div class="right">
-            <button class="btn primary" id="btnAdminsChange" onclick="adminsChangeCodes(event)">Valider</button>
+            <button class="btn primary" id="btnAdminsChange" onclick="adminsChangePasswords(event)">Valider</button>
           </div>
         </div>
         <div id="toastAdminsChange" class="toast"></div>
       </div>
 
-      <div id="boxAdminsWork" style="display:none;margin-top:12px">
+      <div id="boxAdminsWork" style="display:none; margin-top:14px;">
         <div class="divider"></div>
 
+        <!-- Agents + Missions : 2 colonnes -->
         <div class="twoCol">
-          <!-- agents -->
           <div class="card">
-            <div class="headRow"><div class="h2">Agents</div></div>
+            <div class="headRow"><div class="h2">👥 Agents</div></div>
             <div class="row">
               <div>
                 <label>Nom</label>
@@ -260,18 +281,16 @@
             <div id="toastAdminsAgents" class="toast"></div>
 
             <div class="divider"></div>
-            <div class="scrollBox" id="boxAdminsAgents">
-              <div class="listItem"><div class="left"><div class="title">—</div></div></div>
-            </div>
+            <div class="h2" style="margin:0 0 8px 0">Liste agents</div>
+            <div class="scrollBox" id="boxAdminsAgents"></div>
           </div>
 
-          <!-- catalog -->
           <div class="card">
-            <div class="headRow"><div class="h2">Catalogue missions</div></div>
+            <div class="headRow"><div class="h2">📚 Catalogue missions</div></div>
             <div class="row">
               <div>
                 <label>Libellé</label>
-                <input id="adminsNewMissionLib" placeholder="Ex : Nettoyage" />
+                <input id="adminsNewMissionLib" placeholder="Ex : Nettoyage communs" />
               </div>
               <div class="right">
                 <button class="btn primary" id="btnAdminsAddMission" onclick="adminsAddMissions(event)">Ajouter</button>
@@ -280,21 +299,21 @@
             <div id="toastAdminsMissions" class="toast"></div>
 
             <div class="divider"></div>
-            <div class="scrollBox" id="boxAdminsMissions">
-              <div class="listItem"><div class="left"><div class="title">—</div></div></div>
-            </div>
+            <div class="h2" style="margin:0 0 8px 0">Liste missions</div>
+            <div class="scrollBox" id="boxAdminsMissions"></div>
           </div>
         </div>
 
         <div class="divider"></div>
 
+        <!-- Période / Groupe / Responsable : 2 colonnes (gauche commandes, droite liste groupe) -->
         <div class="twoCol">
-          <!-- period / group / responsable -->
           <div class="card">
             <div class="headRow">
-              <div class="h2">Période / Groupe / Responsable</div>
+              <div class="h2">📅 Période / Groupe / Responsable</div>
               <div class="status" id="pillResponsable">Responsable : —</div>
             </div>
+
             <div class="row">
               <div>
                 <label>Période</label>
@@ -307,6 +326,7 @@
             <div id="toastAdminsPeriod" class="toast"></div>
 
             <div class="divider"></div>
+
             <div class="row">
               <div>
                 <label>Ajouter au groupe</label>
@@ -323,722 +343,983 @@
                 <select id="adminsResponsablesSel"></select>
               </div>
               <div class="right">
-                <button class="btn primary" id="btnAdminsSetResponsable" onclick="adminsSetResponsables(event)">Définir</button>
+                <button class="btn primary" id="btnAdminsSetResp" onclick="adminsSetResponsables(event)">Définir</button>
               </div>
-            </div>
-
-            <div class="divider"></div>
-            <div class="scrollBox" id="boxAdminsGroup">
-              <div class="listItem"><div class="left"><div class="title">Aucun groupe chargé.</div></div></div>
             </div>
           </div>
 
-          <!-- active missions -->
           <div class="card">
-            <div class="headRow"><div class="h2">Missions actives (par période)</div></div>
+            <div class="headRow"><div class="h2">👥 Agents du groupe</div></div>
+            <div class="scrollBox" id="boxAdminsGroup"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Missions actives : 2 colonnes (gauche check, droite résumé) -->
+        <div class="twoCol">
+          <div class="card">
+            <div class="headRow"><div class="h2">✅ Missions actives (par période)</div></div>
             <div class="row">
-              <div class="right">
+              <div class="right" style="width:100%; justify-content:flex-end">
                 <button class="btn" id="btnAdminsLoadActive" onclick="adminsLoadActiveMissions(event)">Charger</button>
-              </div>
-              <div class="right">
-                <button class="btn primary" id="btnAdminsSaveActive" onclick="adminsSaveActiveMissions(event)">Enregistrer missions actives</button>
+                <button class="btn primary" id="btnAdminsSaveActive" onclick="adminsSaveActiveMissions(event)">Enregistrer</button>
               </div>
             </div>
             <div id="toastAdminsActive" class="toast"></div>
+            <div class="divider"></div>
+            <div class="scrollBox" id="boxAdminsActiveMissions"></div>
+          </div>
 
-            <div class="divider"></div>
-            <div class="scrollBox" id="boxAdminsActiveMissions">
-              <div class="listItem"><div class="left"><div class="title">Charge une période, puis “Charger”.</div></div></div>
-            </div>
+          <div class="card">
+            <div class="headRow"><div class="h2">📌 Missions actives (résumé)</div></div>
+            <div class="scrollBox" id="boxAdminsActiveSummary"></div>
+          </div>
+        </div>
 
-            <div class="divider"></div>
-            <div class="h2" style="margin:0 0 8px 0">Retours (Partiel / Non fait)</div>
-            <div class="row">
-              <div class="right">
-                <button class="btn" id="btnAdminsLoadRetours" onclick="adminsLoadRetours(event)">Charger retours</button>
-              </div>
-            </div>
-            <div id="toastAdminsRetours" class="toast"></div>
-            <div class="divider"></div>
-            <div class="scrollBox" id="boxAdminsRetours">
-              <div class="listItem"><div class="left"><div class="title">—</div></div></div>
-            </div>
+        <div class="divider"></div>
+
+        <!-- Retours -->
+        <div class="card">
+          <div class="headRow"><div class="h2">🧾 Retours (Partiel / Non fait)</div></div>
+          <div class="right">
+            <button class="btn" id="btnAdminsLoadRetours" onclick="adminsLoadRetours(event)">Charger (par période)</button>
+          </div>
+          <div id="toastAdminsRetours" class="toast"></div>
+          <div class="divider"></div>
+          <div class="scrollBox">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Période</th>
+                  <th>Agent</th>
+                  <th>Mission</th>
+                  <th>Déclaration</th>
+                  <th>Justificatif</th>
+                </tr>
+              </thead>
+              <tbody id="tblAdminsRetours">
+                <tr><td class="ghost" colspan="5">—</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
       </div>
     </div>
+
   </div>
 
-  <!-- Overlay missions accomplies -->
-  <div class="overlay" id="doneOverlay" title="Double-clic pour fermer">
-    <img id="doneImg" src="missions-accomplies.jpg" alt="missions accomplies" />
+  <!-- overlay "missions accomplies" -->
+  <div class="overlay" id="doneOverlay">
+    <div class="overlayCard">
+      <img id="doneImg" alt="Missions accomplies" />
+      <div class="overlayHint">Double-clic / double-tap pour fermer. <b>✔</b></div>
+    </div>
   </div>
 
 <script>
-/* =========================
-   CONFIG
-   ========================= */
-const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // <-- A REMPLACER
+/* =========================================================
+   DEMO DATA (aucune API)
+   ========================================================= */
+const DEMO = {
+  admin_code: "1234",
+  agents: [
+    { agent_id:"A-1", name:"Bammé Melody", code:"1111", active:true, must_change:false },
+    { agent_id:"A-2", name:"Laleeu(w) Franck", code:"1111", active:true, must_change:false },
+    { agent_id:"A-3", name:"Vénante Amélie", code:"0000", active:true, must_change:true },
+    { agent_id:"A-4", name:"Sénéchal Benjamin", code:"0000", active:true, must_change:true },
+    { agent_id:"A-5", name:"Michel Marianne", code:"0000", active:true, must_change:true },
+    { agent_id:"A-6", name:"Vénante Pierre", code:"2222", active:true, must_change:false },
+  ],
+  catalog: [
+    { mission_id:"M-1", label:"Nettoyage communs", active:true },
+    { mission_id:"M-2", label:"Pression des pneus", active:true },
+    { mission_id:"M-3", label:"Pressions des véhicules", active:true },
+    { mission_id:"M-4", label:"Tonte", active:true },
+    { mission_id:"M-5", label:"Laver vitres", active:true },
+    { mission_id:"M-6", label:"Inventaire", active:true },
+    { mission_id:"M-7", label:"Frigo", active:true },
+  ],
+  periods: [
+    { period_id:"2026-01", label:"Janvier 2026", active:true, responsable_agent_id:"A-2" },
+    { period_id:"2026-02", label:"Février 2026", active:true, responsable_agent_id:"" },
+    { period_id:"2026-03", label:"Mars 2026", active:true, responsable_agent_id:"" },
+  ],
+  // affectations (agent dans période)
+  affectations: [
+    { period_id:"2026-01", agent_id:"A-1" },
+    { period_id:"2026-01", agent_id:"A-2" },
+    { period_id:"2026-01", agent_id:"A-6" },
+    { period_id:"2026-02", agent_id:"A-3" },
+    { period_id:"2026-02", agent_id:"A-4" },
+    { period_id:"2026-03", agent_id:"A-5" },
+  ],
+  // missions actives par période
+  activeMissionsByPeriod: {
+    "2026-01": ["M-1","M-2","M-3","M-4"],
+    "2026-02": ["M-1","M-5"],
+    "2026-03": ["M-6","M-7"],
+  },
+  // déclarations agent (done / partiel / non fait)
+  declarations: [
+    // { period_id, agent_id, mission_id, declaration, justificatif, remark }
+  ],
+  retours: [
+    // stocke les retours "Partiel/Non fait"
+  ]
+};
 
-/* =========================
-   UTILS
-   ========================= */
-function $(id){ return document.getElementById(id); }
+const STATE = {
+  admins: { ok:false, code:"" },
+  agents: { ok:false, agent_id:"", name:"" },
+  current: { period_id:"" },
+  data: {
+    agents: [], catalog: [], periods: [],
+    group: [], activeMissions: [],
+    agentPeriods: [], agentWork: []
+  }
+};
+
+/* =========================================================
+   UI utils
+   ========================================================= */
+const $ = (id)=>document.getElementById(id);
 function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-function showToast(id, msg, ok){
+
+function showToasts(id,msg,ok){
   const el=$(id); if(!el) return;
-  el.className="toast show " + (ok ? "ok":"bad");
-  el.textContent = msg || "";
+  el.className="toast show " + (ok?"ok":"bad");
+  el.textContent=msg||"";
 }
-function hideToast(id){
+function hideToasts(id){
   const el=$(id); if(!el) return;
   el.className="toast"; el.textContent="";
 }
-function setPill(id, txt, kind){
+function setPills(id,txt,mode){
   const el=$(id); if(!el) return;
   el.textContent=txt;
-  el.className="status " + (kind==="ok"?"ok":kind==="bad"?"bad":"");
+  el.className="status " + (mode==="ok"?"ok": mode==="bad"?"bad":"");
 }
-function setLoading(btn, on){
+function setLoadings(btn,on){
   if(!btn) return;
   btn.classList.toggle("loading", !!on);
   btn.disabled = !!on;
 }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-/* JSONP propre (pas de eval, ok CSP GitHub) */
-function apiJsonp(action, params){
-  return new Promise((resolve, reject)=>{
-    const cb = "__cb_" + Math.random().toString(36).slice(2);
-    const script = document.createElement("script");
-
-    window[cb] = (data)=>{
-      try{ delete window[cb]; }catch(_){}
-      try{ script.remove(); }catch(_){}
-      resolve(data);
-    };
-
-    const q = new URLSearchParams();
-    q.set("action", action);
-    q.set("callback", cb);
-    Object.entries(params||{}).forEach(([k,v])=>{
-      if(v===undefined || v===null) return;
-      q.set(k, String(v));
-    });
-
-    script.src = API_EXEC + "?" + q.toString();
-    script.onerror = ()=>{
-      try{ delete window[cb]; }catch(_){}
-      try{ script.remove(); }catch(_){}
-      reject(new Error("jsonp_error"));
-    };
-    document.head.appendChild(script);
-  });
+/* =========================================================
+   Tabs
+   ========================================================= */
+function showViews(v){
+  const isAgents = v==="agents";
+  $("tabAgents").classList.toggle("active", isAgents);
+  $("tabAdmins").classList.toggle("active", !isAgents);
+  $("viewAgents").style.display = isAgents ? "" : "none";
+  $("viewAdmins").style.display = isAgents ? "none" : "";
 }
 
-/* =========================
-   STATE
-   ========================= */
-const STATE = {
-  admins: { ok:false, code:"" },
-  agents: { ok:false, agent_id:"", name:"", must_change:false },
-  data: { agentsPublic:[], agents:[], missions:[], periods:[], group:[], activeMissions:[], retours:[] },
-  current: { period_id:"" },
-};
+/* =========================================================
+   Demo reload
+   ========================================================= */
+function reloadDemo(){
+  // reset UI only (data stays)
+  hideToasts("toastAgentsLogin");
+  hideToasts("toastAgentsPeriod");
+  hideToasts("toastAgentsSave");
+  hideToasts("toastAgentsChange");
+  hideToasts("toastAdminsLogin");
+  hideToasts("toastAdminsAgents");
+  hideToasts("toastAdminsMissions");
+  hideToasts("toastAdminsPeriod");
+  hideToasts("toastAdminsActive");
+  hideToasts("toastAdminsRetours");
 
-/* =========================
-   VIEW
-   ========================= */
-function showView(v){
-  $("tabAgents").classList.toggle("active", v==="agents");
-  $("tabAdmins").classList.toggle("active", v==="admins");
-  $("viewAgents").style.display = (v==="agents") ? "" : "none";
-  $("viewAdmins").style.display = (v==="admins") ? "" : "none";
+  // refill selects
+  renderAgentsPublics();
+  renderAdminsPeriods();
+  renderAgentsPeriods([]);
+  renderAgentMissions([]);
+  renderAdminsAgents();
+  renderAdminsMissions();
+  renderAdminsGroup([]);
+  renderAdminsActive([],[]);
+  renderAdminsRetours([]);
+
+  // reset login states
+  agentsLogouts(true);
+  adminsLogouts(true);
+
+  showViews("agents");
 }
 
-/* =========================
-   BOOT
-   ========================= */
-async function bootAll(){
-  setLoading($("btnReload"), true);
-  try{
-    await agentsBootstraps();
-    if(STATE.admins.ok) await adminsBootstraps();
-  }catch(_){}
-  setLoading($("btnReload"), false);
-}
-
-async function agentsBootstraps(){
-  // charge liste agents public
+/* =========================================================
+   Render functions
+   ========================================================= */
+function renderAgentsPublics(){
   const sel = $("agentsSel");
-  sel.innerHTML = `<option value="">— Chargement… —</option>`;
-  try{
-    const res = await apiJsonp("listAgentsPublics", {});
-    if(!res || !res.ok) throw new Error("bad");
-    STATE.data.agentsPublic = res.agents || [];
-    sel.innerHTML = `<option value="">— Choisir agent —</option>` +
-      STATE.data.agentsPublic.map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
-  }catch(e){
-    sel.innerHTML = `<option value="">— Erreur chargement —</option>`;
-  }
+  const list = DEMO.agents.filter(a=>a.active);
+  sel.innerHTML = `<option value="">— Choisir agent —</option>` +
+    list.map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
 }
 
-async function adminsBootstraps(){
-  await adminsLoadPeriods();
-  await adminsListAgents();
-  await adminsListMissions();
-}
-
-/* =========================
-   ADMIN
-   ========================= */
-function toggleAdminsKey(){
-  const b=$("boxAdminsKey");
-  b.style.display = (b.style.display==="none"||!b.style.display) ? "" : "none";
-}
-
-function adminsLogouts(){
-  STATE.admins.ok=false; STATE.admins.code="";
-  setPill("pillAdminsStatus","Admin : non connecté","");
-  $("boxAdminsWork").style.display="none";
-  $("btnAdminsKey").style.display="none";
-  $("btnAdminsLogout").style.display="none";
-  hideToast("toastAdminsLogin");
-}
-
-async function adminsLogins(ev){
-  hideToast("toastAdminsLogin");
-  const btn = ev?.target || $("btnAdminsLogin");
-  const code = $("adminsCode").value.trim();
-  if(!code){ showToast("toastAdminsLogin","Code requis.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res = await apiJsonp("adminLogin", { code });
-    if(!res || !res.ok){ showToast("toastAdminsLogin","Code admin incorrect.", false); setPill("pillAdminsStatus","Admin : non connecté","bad"); return; }
-    STATE.admins.ok=true; STATE.admins.code=code;
-    setPill("pillAdminsStatus","Admin : connecté ✅","ok");
-    $("boxAdminsWork").style.display="";
-    $("btnAdminsKey").style.display="";
-    $("btnAdminsLogout").style.display="";
-    showToast("toastAdminsLogin","Admin connecté ✅", true);
-    await adminsBootstraps();
-  }catch(e){
-    showToast("toastAdminsLogin","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
-  }
-}
-
-async function adminsChangeCodes(ev){
-  hideToast("toastAdminsChange");
-  const btn = ev?.target || $("btnAdminsChange");
-  if(!STATE.admins.ok){ showToast("toastAdminsChange","Non connecté.", false); return; }
-  const old_code=$("adminsOldCode").value.trim();
-  const new_code=$("adminsNewCode").value.trim();
-  if(!old_code || !new_code){ showToast("toastAdminsChange","Ancien + nouveau requis.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res = await apiJsonp("adminChangeCode", { admin_code: STATE.admins.code, old_code, new_code });
-    if(!res || !res.ok){ showToast("toastAdminsChange",(res&&res.message)||"Erreur", false); return; }
-    showToast("toastAdminsChange","Code admin modifié ✅", true);
-    STATE.admins.code = new_code; // garde session
-    $("adminsCode").value = new_code;
-  }catch(e){
-    showToast("toastAdminsChange","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
-  }
-}
-
-async function adminsLoadPeriods(){
+function renderAdminsPeriods(){
   const sel = $("adminsPeriodsSel");
-  sel.innerHTML = `<option value="">Chargement…</option>`;
-  try{
-    const res = await apiJsonp("adminListPeriods", { admin_code: STATE.admins.code });
-    if(!res || !res.ok) throw new Error("bad");
-    STATE.data.periods = res.periods || [];
-    sel.innerHTML = `<option value="">— Choisir période —</option>` +
-      STATE.data.periods.filter(p=>p.active).map(p=>`<option value="${esc(p.period_id)}">${esc(p.label)}</option>`).join("");
-  }catch(e){
-    sel.innerHTML = `<option value="">— Erreur —</option>`;
-  }
+  const list = DEMO.periods.filter(p=>p.active);
+  sel.innerHTML = `<option value="">— Choisir une période —</option>` +
+    list.map(p=>`<option value="${esc(p.period_id)}">${esc(p.label)}</option>`).join("");
 }
 
-async function adminsListAgents(){
-  const box=$("boxAdminsAgents");
-  box.innerHTML = `<div class="listItem"><div class="left"><div class="title">Chargement…</div></div></div>`;
-  try{
-    const res = await apiJsonp("adminListAgents", { admin_code: STATE.admins.code });
-    if(!res || !res.ok) throw new Error("bad");
-    STATE.data.agents = res.agents || [];
-
-    // select addToGroup
-    const addSel=$("adminsAddToGroupsSel");
-    addSel.innerHTML = `<option value="">— Choisir agent —</option>` +
-      STATE.data.agents.filter(a=>a.active).map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
-
-    box.innerHTML = (STATE.data.agents.length? STATE.data.agents : [{name:"—",active:false,agent_id:""}]).map(a=>`
-      <div class="listItem">
-        <div class="left">
-          <div class="title">${esc(a.name||"—")}</div>
-          <div class="sub">${a.active ? "Actif ✅" : "Inactif ❌"}</div>
-        </div>
-        ${a.agent_id ? `
-        <div class="pillRow">
-          <button class="pillBtn ok" onclick="adminsToggleAgents('${esc(a.agent_id)}', ${a.active?'false':'true'})">${a.active?'Désactiver':'Activer'}</button>
-          <button class="pillBtn" onclick="adminsResetAgents('${esc(a.agent_id)}')">Reset 0000</button>
-          <button class="pillBtn bad" onclick="adminsDeleteAgents('${esc(a.agent_id)}')">Supprimer</button>
-        </div>` : ``}
-      </div>
-    `).join("");
-  }catch(e){
-    box.innerHTML = `<div class="listItem"><div class="left"><div class="title">Erreur.</div></div></div>`;
-  }
-}
-
-async function adminsAddAgents(ev){
-  hideToast("toastAdminsAgents");
-  const btn = ev?.target || $("btnAdminsAddAgent");
-  if(!STATE.admins.ok){ showToast("toastAdminsAgents","Non connecté.", false); return; }
-  const name=$("adminsNewAgentName").value.trim();
-  const code=$("adminsNewAgentCode").value.trim() || "0000";
-  if(!name){ showToast("toastAdminsAgents","Nom requis.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res=await apiJsonp("adminAddAgent",{ admin_code: STATE.admins.code, name, code });
-    if(!res || !res.ok){ showToast("toastAdminsAgents",(res&&res.message)||"Erreur", false); return; }
-    showToast("toastAdminsAgents","Agent ajouté ✅", true);
-    $("adminsNewAgentName").value="";
-    $("adminsNewAgentCode").value="0000";
-    await adminsListAgents();
-    await agentsBootstraps(); // maj liste publique
-  }catch(e){ showToast("toastAdminsAgents","Erreur réseau.", false); }
-  finally{ setLoading(btn,false); }
-}
-
-async function adminsToggleAgents(agent_id, active){
-  if(!STATE.admins.ok) return;
-  await apiJsonp("adminToggleAgent", { admin_code: STATE.admins.code, agent_id, active: active ? "TRUE":"FALSE" });
-  await adminsListAgents();
-  await agentsBootstraps();
-}
-
-async function adminsResetAgents(agent_id){
-  if(!STATE.admins.ok) return;
-  await apiJsonp("adminResetAgentCode", { admin_code: STATE.admins.code, agent_id });
-  await adminsListAgents();
-}
-
-async function adminsDeleteAgents(agent_id){
-  if(!STATE.admins.ok) return;
-  if(!confirm("Supprimer définitivement cet agent ?")) return;
-  await apiJsonp("adminDeleteAgent", { admin_code: STATE.admins.code, agent_id });
-  await adminsListAgents();
-  await agentsBootstraps();
-}
-
-async function adminsListMissions(){
-  const box=$("boxAdminsMissions");
-  box.innerHTML = `<div class="listItem"><div class="left"><div class="title">Chargement…</div></div></div>`;
-  try{
-    const res = await apiJsonp("adminListMissions", { admin_code: STATE.admins.code });
-    if(!res || !res.ok) throw new Error("bad");
-    STATE.data.missions = res.missions || [];
-    box.innerHTML = (STATE.data.missions.length? STATE.data.missions : [{label:"—",active:false,mission_id:""}]).map(m=>`
-      <div class="listItem">
-        <div class="left">
-          <div class="title">${esc(m.label||"—")}</div>
-          <div class="sub">${m.active ? "Actif ✅" : "Inactif ❌"}</div>
-        </div>
-        ${m.mission_id ? `
-        <div class="pillRow">
-          <button class="pillBtn ok" onclick="adminsToggleMissions('${esc(m.mission_id)}', ${m.active?'false':'true'})">${m.active?'Désactiver':'Activer'}</button>
-          <button class="pillBtn bad" onclick="adminsDeleteMissions('${esc(m.mission_id)}')">Supprimer</button>
-        </div>` : ``}
-      </div>
-    `).join("");
-  }catch(e){
-    box.innerHTML = `<div class="listItem"><div class="left"><div class="title">Erreur.</div></div></div>`;
-  }
-}
-
-async function adminsAddMissions(ev){
-  hideToast("toastAdminsMissions");
-  const btn = ev?.target || $("btnAdminsAddMission");
-  if(!STATE.admins.ok){ showToast("toastAdminsMissions","Non connecté.", false); return; }
-  const label=$("adminsNewMissionLib").value.trim();
-  if(!label){ showToast("toastAdminsMissions","Libellé requis.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res=await apiJsonp("adminAddMission",{ admin_code: STATE.admins.code, label });
-    if(!res || !res.ok){ showToast("toastAdminsMissions",(res&&res.message)||"Erreur", false); return; }
-    showToast("toastAdminsMissions","Mission ajoutée ✅", true);
-    $("adminsNewMissionLib").value="";
-    await adminsListMissions();
-  }catch(e){ showToast("toastAdminsMissions","Erreur réseau.", false); }
-  finally{ setLoading(btn,false); }
-}
-
-async function adminsToggleMissions(mission_id, active){
-  if(!STATE.admins.ok) return;
-  await apiJsonp("adminToggleMission",{ admin_code: STATE.admins.code, mission_id, active: active ? "TRUE":"FALSE" });
-  await adminsListMissions();
-}
-
-async function adminsDeleteMissions(mission_id){
-  if(!STATE.admins.ok) return;
-  if(!confirm("Supprimer définitivement cette mission ?")) return;
-  await apiJsonp("adminDeleteMission",{ admin_code: STATE.admins.code, mission_id });
-  await adminsListMissions();
-}
-
-async function adminsLoadPeriods(ev){
-  hideToast("toastAdminsPeriod");
-  const btn = ev?.target || $("btnAdminsLoadPeriod");
-  const pid = $("adminsPeriodsSel").value;
-  if(!pid){ showToast("toastAdminsPeriod","Choisis une période.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res = await apiJsonp("adminLoadPeriod", { admin_code: STATE.admins.code, period_id: pid });
-    if(!res || !res.ok){ showToast("toastAdminsPeriod",(res&&res.message)||"Erreur", false); return; }
-    STATE.current.period_id = pid;
-    STATE.data.group = res.group || [];
-    setPill("pillResponsable","Responsable : " + (res.responsable_name || "—"), res.responsable_name ? "ok" : "");
-    // responsable select
-    $("adminsResponsablesSel").innerHTML =
-      `<option value="">— Choisir —</option>` +
-      STATE.data.group.map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
-    // group list
-    renderAdminsGroup();
-    showToast("toastAdminsPeriod","Période chargée ✅", true);
-    // auto: refresh active missions + retours
-    await adminsLoadActiveMissions();
-    await adminsLoadRetours();
-  }catch(e){
-    showToast("toastAdminsPeriod","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
-  }
-}
-
-function renderAdminsGroup(){
-  const box=$("boxAdminsGroup");
-  if(!STATE.data.group.length){
-    box.innerHTML = `<div class="listItem"><div class="left"><div class="title">Groupe vide.</div></div></div>`;
+function renderAgentsPeriods(periods){
+  const sel = $("agentsPeriodsSel");
+  if(!periods.length){
+    sel.innerHTML = `<option value="">—</option>`;
     return;
   }
-  box.innerHTML = STATE.data.group.map(a=>`
+  sel.innerHTML = `<option value="">— Choisir une période —</option>` +
+    periods.map(p=>`<option value="${esc(p.period_id)}">${esc(p.label)}</option>`).join("");
+}
+
+function renderAgentMissions(missions){
+  const box = $("boxAgentsMissions");
+  if(!missions.length){
+    box.innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
+    return;
+  }
+  box.innerHTML = missions.map(m=>`
     <div class="listItem">
-      <div class="left"><div class="title">${esc(a.name)}</div></div>
+      <div class="listLeft">
+        <div class="listTitle">${esc(m.label)}</div>
+      </div>
       <div class="pillRow">
-        <button class="pillBtn bad" onclick="adminsRemoveFromGroups('${esc(a.agent_id)}')">Retirer</button>
+        <label style="display:flex;align-items:center;gap:10px;margin:0">
+          <input type="checkbox" data-mid="${esc(m.mission_id)}" ${m.done?"checked":""} style="width:18px;height:18px">
+          <span class="ghost" style="font-weight:900">Fait</span>
+        </label>
+        <select data-decl="${esc(m.mission_id)}" style="min-width:160px">
+          <option value="Fait" ${m.declaration==="Fait"?"selected":""}>Fait</option>
+          <option value="Partiel" ${m.declaration==="Partiel"?"selected":""}>Partiel</option>
+          <option value="Non fait" ${m.declaration==="Non fait"?"selected":""}>Non fait</option>
+        </select>
+        <input data-justif="${esc(m.mission_id)}" placeholder="Justificatif si Partiel/Non fait" value="${esc(m.justificatif||"")}" style="min-width:220px">
       </div>
     </div>
   `).join("");
 }
 
-async function adminsAddToGroups(ev){
-  hideToast("toastAdminsPeriod");
-  const btn = ev?.target || $("btnAdminsAddToGroup");
-  const pid = STATE.current.period_id || $("adminsPeriodsSel").value;
-  const agent_id = $("adminsAddToGroupsSel").value;
-  if(!pid || !agent_id){ showToast("toastAdminsPeriod","Période + agent requis.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res=await apiJsonp("adminAddToGroup",{ admin_code: STATE.admins.code, period_id: pid, agent_id });
-    if(!res || !res.ok){ showToast("toastAdminsPeriod",(res&&res.message)||"Erreur", false); return; }
-    await adminsLoadPeriods({target:$("btnAdminsLoadPeriod")});
-  }catch(e){ showToast("toastAdminsPeriod","Erreur réseau.", false); }
-  finally{ setLoading(btn,false); }
+function renderAdminsAgents(){
+  const box = $("boxAdminsAgents");
+  const list = DEMO.agents.slice().sort((a,b)=>a.name.localeCompare(b.name,"fr"));
+  if(!list.length){
+    box.innerHTML = `<div class="ghost" style="padding:10px">—</div>`; return;
+  }
+  box.innerHTML = list.map(a=>`
+    <div class="listItem">
+      <div class="listLeft">
+        <div class="listTitle">${esc(a.name)}</div>
+        <div class="listSub">${a.active ? "Actif ✅" : "Inactif ❌"}</div>
+      </div>
+      <div class="pillRow">
+        <button class="btn small" onclick="adminsToggleAgents('${esc(a.agent_id)}')">${a.active?"Désactiver":"Activer"}</button>
+        <button class="btn small" onclick="adminsResetAgentCodes('${esc(a.agent_id)}')">Reset 0000</button>
+        <button class="btn small danger" onclick="adminsDeleteAgents('${esc(a.agent_id)}')">Supprimer</button>
+      </div>
+    </div>
+  `).join("");
+
+  // select "ajouter au groupe" (actifs)
+  const addSel = $("adminsAddToGroupsSel");
+  addSel.innerHTML = `<option value="">— Choisir agent —</option>` +
+    DEMO.agents.filter(x=>x.active).sort((a,b)=>a.name.localeCompare(b.name,"fr"))
+      .map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
 }
 
-async function adminsRemoveFromGroups(agent_id){
-  hideToast("toastAdminsPeriod");
-  const pid = STATE.current.period_id || $("adminsPeriodsSel").value;
+function renderAdminsMissions(){
+  const box = $("boxAdminsMissions");
+  const list = DEMO.catalog.slice().sort((a,b)=>a.label.localeCompare(b.label,"fr"));
+  if(!list.length){
+    box.innerHTML = `<div class="ghost" style="padding:10px">—</div>`; return;
+  }
+  box.innerHTML = list.map(m=>`
+    <div class="listItem">
+      <div class="listLeft">
+        <div class="listTitle">${esc(m.label)}</div>
+        <div class="listSub">${m.active ? "Active ✅" : "Inactive ❌"}</div>
+      </div>
+      <div class="pillRow">
+        <button class="btn small" onclick="adminsToggleMissions('${esc(m.mission_id)}')">${m.active?"Désactiver":"Activer"}</button>
+        <button class="btn small danger" onclick="adminsDeleteMissions('${esc(m.mission_id)}')">Supprimer</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderAdminsGroup(group){
+  const box = $("boxAdminsGroup");
+  if(!group.length){
+    box.innerHTML = `<div class="ghost" style="padding:10px">Aucun groupe chargé.</div>`;
+    return;
+  }
+  box.innerHTML = group.map(a=>`
+    <div class="listItem">
+      <div class="listLeft">
+        <div class="listTitle">${esc(a.name)}</div>
+      </div>
+      <div class="pillRow">
+        <button class="btn small danger" onclick="adminsRemoveFromGroups('${esc(a.agent_id)}')">Retirer</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderAdminsActive(allMissions, activeIds){
+  const box = $("boxAdminsActiveMissions");
+  const box2 = $("boxAdminsActiveSummary");
+
+  if(!STATE.current.period_id){
+    box.innerHTML = `<div class="ghost" style="padding:10px">Charge une période d’abord.</div>`;
+    box2.innerHTML = `<div class="ghost" style="padding:10px">—</div>`;
+    return;
+  }
+
+  // left checklist
+  const activeSet = new Set(activeIds);
+  const list = allMissions.filter(m=>m.active);
+  box.innerHTML = list.map(m=>`
+    <label class="listItem" style="cursor:pointer">
+      <div class="listLeft" style="flex:1;min-width:0">
+        <div class="listTitle">${esc(m.label)}</div>
+      </div>
+      <input type="checkbox" data-mid="${esc(m.mission_id)}" ${activeSet.has(m.mission_id)?"checked":""} style="width:18px;height:18px">
+    </label>
+  `).join("") || `<div class="ghost" style="padding:10px">Aucune mission active dans le catalogue.</div>`;
+
+  // right summary
+  const activeM = list.filter(m=>activeSet.has(m.mission_id));
+  box2.innerHTML = activeM.map(m=>`
+    <div class="listItem">
+      <div class="listLeft"><div class="listTitle">${esc(m.label)}</div></div>
+    </div>
+  `).join("") || `<div class="ghost" style="padding:10px">Aucune mission active.</div>`;
+}
+
+function renderAdminsRetours(rows){
+  const tb = $("tblAdminsRetours");
+  if(!rows.length){
+    tb.innerHTML = `<tr><td class="ghost" colspan="5">Aucun retour.</td></tr>`;
+    return;
+  }
+  tb.innerHTML = rows.map(r=>`
+    <tr>
+      <td>${esc(r.period_label)}</td>
+      <td>${esc(r.agent_name)}</td>
+      <td>${esc(r.mission_label)}</td>
+      <td>${esc(r.declaration)}</td>
+      <td>${esc(r.justificatif||"")}</td>
+    </tr>
+  `).join("");
+}
+
+/* =========================================================
+   Admin flows (DEMO)
+   ========================================================= */
+function toggleAdminsKey(){
+  $("adminsKeyBox").style.display = $("adminsKeyBox").style.display==="none" ? "" : "none";
+}
+
+async function adminsLogins(ev){
+  hideToasts("toastAdminsLogin");
+  const btn = ev?.target || $("btnAdminsLogin");
+  const code = $("adminsCode").value.trim();
+  if(!code){ showToasts("toastAdminsLogin","Code requis.",false); return; }
+  setLoadings(btn,true);
+  await sleep(350);
+
+  if(code !== DEMO.admin_code){
+    setPills("pillAdminsStatus","Admin : non connecté","bad");
+    showToasts("toastAdminsLogin","Code admin incorrect.",false);
+    setLoadings(btn,false);
+    return;
+  }
+
+  STATE.admins.ok = true;
+  STATE.admins.code = code;
+  setPills("pillAdminsStatus","Admin : connecté ✅","ok");
+  showToasts("toastAdminsLogin","Admin connecté ✅",true);
+
+  $("btnAdminsKey").style.display = "";
+  $("btnAdminsLogout").style.display = "";
+  $("boxAdminsWork").style.display = "";
+
+  // bootstrap lists
+  setLoadings(btn,true);
+  await sleep(250);
+  renderAdminsPeriods();
+  renderAdminsAgents();
+  renderAdminsMissions();
+
+  setLoadings(btn,false);
+}
+
+function adminsLogouts(silent){
+  STATE.admins.ok=false; STATE.admins.code="";
+  setPills("pillAdminsStatus","Admin : non connecté","bad");
+  $("btnAdminsKey").style.display="none";
+  $("btnAdminsLogout").style.display="none";
+  $("boxAdminsWork").style.display="none";
+  $("adminsKeyBox").style.display="none";
+  STATE.current.period_id = "";
+  setPills("pillResponsable","Responsable : —","");
+  renderAdminsGroup([]);
+  renderAdminsActive([],[]);
+  renderAdminsRetours([]);
+  if(!silent) showToasts("toastAdminsLogin","Déconnecté.",true);
+}
+
+async function adminsChangePasswords(ev){
+  hideToasts("toastAdminsChange");
+  const btn = ev?.target || $("btnAdminsChange");
+  if(!STATE.admins.ok){ showToasts("toastAdminsChange","Non connecté.",false); return; }
+
+  const oldC = $("adminsOldCode").value.trim();
+  const newC = $("adminsNewCode").value.trim();
+  if(!oldC || !newC){ showToasts("toastAdminsChange","Ancien + nouveau requis.",false); return; }
+  if(newC.length < 4){ showToasts("toastAdminsChange","Nouveau code min 4.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(250);
+
+  if(oldC !== DEMO.admin_code){
+    showToasts("toastAdminsChange","Ancien code incorrect.",false);
+    setLoadings(btn,false); return;
+  }
+
+  DEMO.admin_code = newC;
+  showToasts("toastAdminsChange","Code admin modifié ✅",true);
+  $("adminsOldCode").value=""; $("adminsNewCode").value="";
+  setLoadings(btn,false);
+}
+
+async function adminsAddAgents(ev){
+  hideToasts("toastAdminsAgents");
+  const btn = ev?.target || $("btnAdminsAddAgent");
+  if(!STATE.admins.ok){ showToasts("toastAdminsAgents","Non connecté.",false); return; }
+
+  const name = $("adminsNewAgentName").value.trim();
+  const code = ($("adminsNewAgentCode").value || "0000").trim() || "0000";
+  if(!name){ showToasts("toastAdminsAgents","Nom requis.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(250);
+
+  const agent_id = "A-" + Math.random().toString(16).slice(2,10);
+  DEMO.agents.push({ agent_id, name, code, active:true, must_change:(code==="0000") });
+  $("adminsNewAgentName").value=""; $("adminsNewAgentCode").value="0000";
+
+  renderAdminsAgents();
+  renderAgentsPublics();
+  showToasts("toastAdminsAgents","Agent ajouté ✅",true);
+  setLoadings(btn,false);
+}
+
+function adminsToggleAgents(agent_id){
+  const a = DEMO.agents.find(x=>x.agent_id===agent_id);
+  if(!a) return;
+  a.active = !a.active;
+  renderAdminsAgents();
+  renderAgentsPublics();
+}
+function adminsResetAgentCodes(agent_id){
+  const a = DEMO.agents.find(x=>x.agent_id===agent_id);
+  if(!a) return;
+  a.code = "0000";
+  a.must_change = true;
+  renderAdminsAgents();
+}
+function adminsDeleteAgents(agent_id){
+  if(!confirm("Supprimer définitivement cet agent ?")) return;
+  DEMO.agents = DEMO.agents.filter(x=>x.agent_id!==agent_id);
+  // retire affectations + groupe etc
+  DEMO.affectations = DEMO.affectations.filter(x=>x.agent_id!==agent_id);
+  DEMO.periods.forEach(p=>{ if(p.responsable_agent_id===agent_id) p.responsable_agent_id=""; });
+  renderAdminsAgents();
+  renderAgentsPublics();
+}
+
+async function adminsAddMissions(ev){
+  hideToasts("toastAdminsMissions");
+  const btn = ev?.target || $("btnAdminsAddMission");
+  if(!STATE.admins.ok){ showToasts("toastAdminsMissions","Non connecté.",false); return; }
+
+  const label = $("adminsNewMissionLib").value.trim();
+  if(!label){ showToasts("toastAdminsMissions","Libellé requis.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(250);
+
+  const mission_id = "M-" + Math.random().toString(16).slice(2,10);
+  DEMO.catalog.push({ mission_id, label, active:true });
+  $("adminsNewMissionLib").value="";
+  renderAdminsMissions();
+  // refresh active view if period loaded
+  adminsLoadActiveMissions({target:$("btnAdminsLoadActive")}, true).catch(()=>{});
+  showToasts("toastAdminsMissions","Mission ajoutée ✅",true);
+  setLoadings(btn,false);
+}
+function adminsToggleMissions(mission_id){
+  const m = DEMO.catalog.find(x=>x.mission_id===mission_id);
+  if(!m) return;
+  m.active=!m.active;
+  renderAdminsMissions();
+  adminsLoadActiveMissions({target:$("btnAdminsLoadActive")}, true).catch(()=>{});
+}
+function adminsDeleteMissions(mission_id){
+  if(!confirm("Supprimer définitivement cette mission ?")) return;
+  DEMO.catalog = DEMO.catalog.filter(x=>x.mission_id!==mission_id);
+  Object.keys(DEMO.activeMissionsByPeriod).forEach(pid=>{
+    DEMO.activeMissionsByPeriod[pid] = (DEMO.activeMissionsByPeriod[pid]||[]).filter(x=>x!==mission_id);
+  });
+  renderAdminsMissions();
+  adminsLoadActiveMissions({target:$("btnAdminsLoadActive")}, true).catch(()=>{});
+}
+
+/* Période / Groupe / Responsable */
+async function adminsLoadPeriods(ev){
+  hideToasts("toastAdminsPeriod");
+  const btn = ev?.target || $("btnAdminsLoadPeriod");
+  if(!STATE.admins.ok){ showToasts("toastAdminsPeriod","Non connecté.",false); return; }
+
+  const pid = $("adminsPeriodsSel").value;
+  if(!pid){ showToasts("toastAdminsPeriod","Choisis une période.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(250);
+
+  STATE.current.period_id = pid;
+
+  // group = affectations for pid
+  const ids = DEMO.affectations.filter(x=>x.period_id===pid).map(x=>x.agent_id);
+  const group = ids.map(id=>DEMO.agents.find(a=>a.agent_id===id)).filter(Boolean);
+  STATE.data.group = group;
+
+  // responsable
+  const per = DEMO.periods.find(p=>p.period_id===pid);
+  const resp = per ? DEMO.agents.find(a=>a.agent_id===per.responsable_agent_id) : null;
+  setPills("pillResponsable","Responsable : " + (resp ? resp.name : "—"), resp ? "ok" : "");
+
+  // responsables select (dans le groupe)
+  const rsel = $("adminsResponsablesSel");
+  rsel.innerHTML = `<option value="">— Choisir —</option>` +
+    group.map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
+
+  renderAdminsGroup(group);
+
+  // active missions load+render
+  await adminsLoadActiveMissions({target:$("btnAdminsLoadActive")}, true);
+
+  // retours render (admin can load)
+  renderAdminsRetours(getRetoursForPeriod(pid));
+
+  showToasts("toastAdminsPeriod","Période chargée ✅",true);
+  setLoadings(btn,false);
+}
+
+async function adminsAddToGroups(ev){
+  hideToasts("toastAdminsPeriod");
+  const btn = ev?.target || $("btnAdminsAddToGroup");
+  if(!STATE.admins.ok){ showToasts("toastAdminsPeriod","Non connecté.",false); return; }
+  const pid = STATE.current.period_id;
+  if(!pid){ showToasts("toastAdminsPeriod","Charge une période d’abord.",false); return; }
+
+  const aid = $("adminsAddToGroupsSel").value;
+  if(!aid){ showToasts("toastAdminsPeriod","Choisis un agent.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(220);
+
+  const exists = DEMO.affectations.some(x=>x.period_id===pid && x.agent_id===aid);
+  if(!exists) DEMO.affectations.push({ period_id: pid, agent_id: aid });
+
+  // re-render group (sans relancer plein d’autres chargements)
+  const ids = DEMO.affectations.filter(x=>x.period_id===pid).map(x=>x.agent_id);
+  const group = ids.map(id=>DEMO.agents.find(a=>a.agent_id===id)).filter(Boolean);
+  STATE.data.group = group;
+
+  const per = DEMO.periods.find(p=>p.period_id===pid);
+  const resp = per ? DEMO.agents.find(a=>a.agent_id===per.responsable_agent_id) : null;
+  setPills("pillResponsable","Responsable : " + (resp ? resp.name : "—"), resp ? "ok" : "");
+
+  const rsel = $("adminsResponsablesSel");
+  rsel.innerHTML = `<option value="">— Choisir —</option>` +
+    group.map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
+
+  renderAdminsGroup(group);
+
+  showToasts("toastAdminsPeriod","Agent ajouté au groupe ✅",true);
+  setLoadings(btn,false);
+}
+
+function adminsRemoveFromGroups(aid){
+  const pid = STATE.current.period_id;
   if(!pid) return;
-  await apiJsonp("adminRemoveFromGroup",{ admin_code: STATE.admins.code, period_id: pid, agent_id });
-  await adminsLoadPeriods({target:$("btnAdminsLoadPeriod")});
+  DEMO.affectations = DEMO.affectations.filter(x=>!(x.period_id===pid && x.agent_id===aid));
+
+  // si responsable retiré => reset responsable
+  const per = DEMO.periods.find(p=>p.period_id===pid);
+  if(per && per.responsable_agent_id===aid) per.responsable_agent_id="";
+
+  const ids = DEMO.affectations.filter(x=>x.period_id===pid).map(x=>x.agent_id);
+  const group = ids.map(id=>DEMO.agents.find(a=>a.agent_id===id)).filter(Boolean);
+  STATE.data.group = group;
+  renderAdminsGroup(group);
+
+  const resp = per ? DEMO.agents.find(a=>a.agent_id===per.responsable_agent_id) : null;
+  setPills("pillResponsable","Responsable : " + (resp ? resp.name : "—"), resp ? "ok" : "");
+
+  const rsel = $("adminsResponsablesSel");
+  rsel.innerHTML = `<option value="">— Choisir —</option>` +
+    group.map(a=>`<option value="${esc(a.agent_id)}">${esc(a.name)}</option>`).join("");
 }
 
 async function adminsSetResponsables(ev){
-  hideToast("toastAdminsPeriod");
-  const btn = ev?.target || $("btnAdminsSetResponsable");
-  const pid = STATE.current.period_id || $("adminsPeriodsSel").value;
-  const agent_id = $("adminsResponsablesSel").value;
-  if(!pid || !agent_id){ showToast("toastAdminsPeriod","Choisis un responsable.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res=await apiJsonp("adminSetResponsable",{ admin_code: STATE.admins.code, period_id: pid, agent_id });
-    if(!res || !res.ok){ showToast("toastAdminsPeriod",(res&&res.message)||"Erreur", false); return; }
-    await adminsLoadPeriods({target:$("btnAdminsLoadPeriod")});
-  }catch(e){ showToast("toastAdminsPeriod","Erreur réseau.", false); }
-  finally{ setLoading(btn,false); }
+  hideToasts("toastAdminsPeriod");
+  const btn = ev?.target || $("btnAdminsSetResp");
+  if(!STATE.admins.ok){ showToasts("toastAdminsPeriod","Non connecté.",false); return; }
+  const pid = STATE.current.period_id;
+  if(!pid){ showToasts("toastAdminsPeriod","Charge une période d’abord.",false); return; }
+
+  const aid = $("adminsResponsablesSel").value;
+  if(!aid){ showToasts("toastAdminsPeriod","Choisis un responsable.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(220);
+
+  const per = DEMO.periods.find(p=>p.period_id===pid);
+  if(per) per.responsable_agent_id = aid;
+
+  const resp = DEMO.agents.find(a=>a.agent_id===aid);
+  setPills("pillResponsable","Responsable : " + (resp ? resp.name : "—"), resp ? "ok" : "");
+  showToasts("toastAdminsPeriod","Responsable défini ✅",true);
+
+  setLoadings(btn,false);
 }
 
-async function adminsLoadActiveMissions(ev){
-  hideToast("toastAdminsActive");
+/* Missions actives */
+async function adminsLoadActiveMissions(ev, silent){
+  hideToasts("toastAdminsActive");
   const btn = ev?.target || $("btnAdminsLoadActive");
-  const pid = STATE.current.period_id || $("adminsPeriodsSel").value;
-  if(!pid){ showToast("toastAdminsActive","Choisis une période.", false); return; }
-  if(btn) setLoading(btn,true);
-  try{
-    const res=await apiJsonp("adminGetActiveMissions",{ admin_code: STATE.admins.code, period_id: pid });
-    if(!res || !res.ok){ showToast("toastAdminsActive",(res&&res.message)||"Erreur", false); return; }
-    STATE.data.activeMissions = res.active || [];
-    const all = res.all || [];
-    const on = new Set(STATE.data.activeMissions.map(x=>String(x.mission_id)));
-    const box = $("boxAdminsActiveMissions");
-    box.innerHTML = all.map(m=>`
-      <label class="listItem" style="cursor:pointer">
-        <div class="left"><div class="title">${esc(m.label)}</div></div>
-        <div class="pillRow" style="justify-content:flex-end">
-          <input type="checkbox" data-mid="${esc(m.mission_id)}" ${on.has(String(m.mission_id))?"checked":""} />
-        </div>
-      </label>
-    `).join("") || `<div class="listItem"><div class="left"><div class="title">Aucune mission.</div></div></div>`;
-    showToast("toastAdminsActive","Chargé ✅", true);
-  }catch(e){
-    showToast("toastAdminsActive","Erreur réseau.", false);
-  }finally{
-    if(btn) setLoading(btn,false);
+  if(!STATE.admins.ok){ if(!silent) showToasts("toastAdminsActive","Non connecté.",false); return; }
+  const pid = STATE.current.period_id;
+  if(!pid){
+    renderAdminsActive([],[]);
+    if(!silent) showToasts("toastAdminsActive","Charge une période d’abord.",false);
+    return;
   }
+
+  setLoadings(btn,true);
+  await sleep(200);
+
+  const activeIds = (DEMO.activeMissionsByPeriod[pid] || []).slice();
+  renderAdminsActive(DEMO.catalog, activeIds);
+
+  if(!silent) showToasts("toastAdminsActive","Missions chargées ✅",true);
+  setLoadings(btn,false);
 }
 
 async function adminsSaveActiveMissions(ev){
-  hideToast("toastAdminsActive");
+  hideToasts("toastAdminsActive");
   const btn = ev?.target || $("btnAdminsSaveActive");
-  const pid = STATE.current.period_id || $("adminsPeriodsSel").value;
-  if(!pid){ showToast("toastAdminsActive","Choisis une période.", false); return; }
-  setLoading(btn,true);
-  try{
-    const checks = Array.from($("boxAdminsActiveMissions").querySelectorAll('input[type="checkbox"][data-mid]'));
-    const ids = checks.filter(c=>c.checked).map(c=>c.getAttribute("data-mid"));
-    const res=await apiJsonp("adminSaveActiveMissions",{ admin_code: STATE.admins.code, period_id: pid, mission_ids: JSON.stringify(ids) });
-    if(!res || !res.ok){ showToast("toastAdminsActive",(res&&res.message)||"Erreur", false); return; }
-    showToast("toastAdminsActive","Enregistré ✅", true);
-  }catch(e){
-    showToast("toastAdminsActive","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
-  }
+  if(!STATE.admins.ok){ showToasts("toastAdminsActive","Non connecté.",false); return; }
+  const pid = STATE.current.period_id;
+  if(!pid){ showToasts("toastAdminsActive","Charge une période d’abord.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(220);
+
+  const checks = Array.from($("boxAdminsActiveMissions").querySelectorAll('input[type="checkbox"][data-mid]'));
+  const ids = checks.filter(c=>c.checked).map(c=>c.getAttribute("data-mid"));
+
+  DEMO.activeMissionsByPeriod[pid] = ids;
+
+  renderAdminsActive(DEMO.catalog, ids);
+  showToasts("toastAdminsActive","Enregistré ✅",true);
+  setLoadings(btn,false);
+}
+
+/* Retours */
+function getRetoursForPeriod(pid){
+  const period = DEMO.periods.find(p=>p.period_id===pid);
+  const period_label = period ? period.label : pid;
+  return DEMO.retours
+    .filter(r=>r.period_id===pid)
+    .map(r=>{
+      const a = DEMO.agents.find(x=>x.agent_id===r.agent_id);
+      const m = DEMO.catalog.find(x=>x.mission_id===r.mission_id);
+      return {
+        period_label,
+        agent_name: a ? a.name : r.agent_id,
+        mission_label: m ? m.label : r.mission_id,
+        declaration: r.declaration,
+        justificatif: r.justificatif
+      };
+    });
 }
 
 async function adminsLoadRetours(ev){
-  hideToast("toastAdminsRetours");
+  hideToasts("toastAdminsRetours");
   const btn = ev?.target || $("btnAdminsLoadRetours");
-  const pid = STATE.current.period_id || $("adminsPeriodsSel").value;
-  if(!pid){ showToast("toastAdminsRetours","Choisis une période.", false); return; }
-  if(btn) setLoading(btn,true);
-  try{
-    const res=await apiJsonp("adminGetRetours",{ admin_code: STATE.admins.code, period_id: pid });
-    if(!res || !res.ok){ showToast("toastAdminsRetours",(res&&res.message)||"Erreur", false); return; }
-    const items = res.items || [];
-    const box=$("boxAdminsRetours");
-    box.innerHTML = items.length ? items.map(it=>`
-      <div class="listItem">
-        <div class="left">
-          <div class="title">${esc(it.agent)} — ${esc(it.mission)}</div>
-          <div class="sub">${esc(it.declaration)}${it.justificatif ? " • " + esc(it.justificatif) : ""}</div>
-        </div>
-      </div>
-    `).join("") : `<div class="listItem"><div class="left"><div class="title">Aucun retour.</div></div></div>`;
-    showToast("toastAdminsRetours","Chargé ✅", true);
-  }catch(e){
-    showToast("toastAdminsRetours","Erreur réseau.", false);
-  }finally{
-    if(btn) setLoading(btn,false);
-  }
+  if(!STATE.admins.ok){ showToasts("toastAdminsRetours","Non connecté.",false); return; }
+  const pid = STATE.current.period_id;
+  if(!pid){ showToasts("toastAdminsRetours","Charge une période d’abord.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(200);
+
+  renderAdminsRetours(getRetoursForPeriod(pid));
+  showToasts("toastAdminsRetours","Chargé ✅",true);
+  setLoadings(btn,false);
 }
 
-/* =========================
-   AGENT
-   ========================= */
+/* =========================================================
+   Agent flows (DEMO)
+   ========================================================= */
 function toggleAgentsKey(){
-  const b=$("boxAgentsKey");
-  b.style.display = (b.style.display==="none"||!b.style.display) ? "" : "none";
-}
-
-function agentsLogouts(){
-  STATE.agents.ok=false; STATE.agents.agent_id=""; STATE.agents.name=""; STATE.agents.must_change=false;
-  setPill("pillAgentsStatus","Agent : non connecté","");
-  $("boxAgentsWork").style.display="none";
-  $("btnAgentsKey").style.display="none";
-  $("btnAgentsLogout").style.display="none";
-  $("boxAgentsKey").style.display="none";
-  hideToast("toastAgentsLogin");
+  $("agentsKeyBox").style.display = $("agentsKeyBox").style.display==="none" ? "" : "none";
 }
 
 async function agentsLogins(ev){
-  hideToast("toastAgentsLogin");
+  hideToasts("toastAgentsLogin");
   const btn = ev?.target || $("btnAgentsLogin");
   const agent_id = $("agentsSel").value;
   const code = $("agentsCode").value.trim();
-  if(!agent_id || !code){ showToast("toastAgentsLogin","Sélection + code requis.", false); return; }
 
-  setLoading(btn,true);
-  try{
-    const res = await apiJsonp("agentLogin", { agent_id, code });
-    if(!res || !res.ok){
-      showToast("toastAgentsLogin", (res&&res.message)||"Code incorrect.", false);
-      setPill("pillAgentsStatus","Agent : non connecté","bad");
-      return;
-    }
-
-    STATE.agents.ok=true;
-    STATE.agents.agent_id = res.agent.agent_id;
-    STATE.agents.name = res.agent.name;
-    STATE.agents.must_change = !!res.agent.must_change;
-
-    setPill("pillAgentsStatus","Agent : " + STATE.agents.name, "ok");
-    $("btnAgentsLogout").style.display="";
-    $("btnAgentsKey").style.display="";
-
-    // périodes autorisées
-    const psel=$("agentsPeriodsSel");
-    const periods = res.periods || [];
-    psel.innerHTML = `<option value="">— Choisir période —</option>` +
-      periods.map(p=>`<option value="${esc(p.period_id)}">${esc(p.label)}</option>`).join("");
-
-    $("boxAgentsWork").style.display = "";
-
-    // force changement au premier login
-    if(STATE.agents.must_change){
-      $("boxAgentsKey").style.display = "";
-      showToast("toastAgentsLogin","⚠️ Changement de code obligatoire.", false);
-    }else{
-      showToast("toastAgentsLogin","Connecté ✅", true);
-    }
-  }catch(e){
-    showToast("toastAgentsLogin","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
+  if(!agent_id || !code){
+    showToasts("toastAgentsLogin","Sélection + code requis.",false); return;
   }
+
+  setLoadings(btn,true);
+  await sleep(250);
+
+  const a = DEMO.agents.find(x=>x.agent_id===agent_id);
+  if(!a || !a.active){
+    setPills("pillAgentsStatus","Agent : non connecté","bad");
+    showToasts("toastAgentsLogin","Agent inconnu/inactif.",false);
+    setLoadings(btn,false); return;
+  }
+  if(String(a.code).trim() !== String(code).trim()){
+    setPills("pillAgentsStatus","Agent : non connecté","bad");
+    showToasts("toastAgentsLogin","Code incorrect.",false);
+    setLoadings(btn,false); return;
+  }
+
+  STATE.agents.ok = true;
+  STATE.agents.agent_id = a.agent_id;
+  STATE.agents.name = a.name;
+
+  setPills("pillAgentsStatus","Agent : " + a.name,"ok");
+  showToasts("toastAgentsLogin","Connecté ✅",true);
+
+  $("btnAgentsKey").style.display = "";
+  $("btnAgentsLogout").style.display = "";
+  $("boxAgentsWork").style.display = "";
+
+  // périodes affectées à l’agent
+  const pids = DEMO.affectations.filter(x=>x.agent_id===agent_id).map(x=>x.period_id);
+  const periods = DEMO.periods.filter(p=>pids.includes(p.period_id) && p.active);
+  STATE.data.agentPeriods = periods;
+
+  renderAgentsPeriods(periods);
+  setPills("pillAgentsPeriod","Période : —","");
+  renderAgentMissions([]);
+
+  // si doit changer => ouvre boîte clé automatiquement
+  if(a.must_change){
+    $("agentsKeyBox").style.display = "";
+    showToasts("toastAgentsChange","⚠️ Nouveau code obligatoire (première connexion).",false);
+  } else {
+    $("agentsKeyBox").style.display = "none";
+  }
+
+  setLoadings(btn,false);
 }
 
-async function agentsChangeCodes(ev){
-  hideToast("toastAgentsChange");
+function agentsLogouts(silent){
+  STATE.agents.ok=false; STATE.agents.agent_id=""; STATE.agents.name="";
+  setPills("pillAgentsStatus","Agent : non connecté","bad");
+  $("btnAgentsKey").style.display="none";
+  $("btnAgentsLogout").style.display="none";
+  $("boxAgentsWork").style.display="none";
+  $("agentsKeyBox").style.display="none";
+  $("agentsCode").value="";
+  $("agentsOldCode").value="";
+  $("agentsNewCode").value="";
+  $("agentsRemark").value="";
+  renderAgentsPeriods([]);
+  renderAgentMissions([]);
+  if(!silent) showToasts("toastAgentsLogin","Déconnecté.",true);
+}
+
+async function agentsChangePasswords(ev){
+  hideToasts("toastAgentsChange");
   const btn = ev?.target || $("btnAgentsChange");
-  if(!STATE.agents.ok){ showToast("toastAgentsChange","Non connecté.", false); return; }
-  const old_code=$("agentsOldCode").value.trim();
-  const new_code=$("agentsNewCode").value.trim();
-  if(!old_code || !new_code){ showToast("toastAgentsChange","Ancien + nouveau requis.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res = await apiJsonp("agentChangeCode", { agent_id: STATE.agents.agent_id, old_code, new_code });
-    if(!res || !res.ok){ showToast("toastAgentsChange",(res&&res.message)||"Erreur", false); return; }
-    showToast("toastAgentsChange","Code modifié ✅", true);
-    $("agentsCode").value = new_code;
-    STATE.agents.must_change=false;
-  }catch(e){
-    showToast("toastAgentsChange","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
+  if(!STATE.agents.ok){ showToasts("toastAgentsChange","Non connecté.",false); return; }
+
+  const oldC = $("agentsOldCode").value.trim();
+  const newC = $("agentsNewCode").value.trim();
+  if(!oldC || !newC){ showToasts("toastAgentsChange","Ancien + nouveau requis.",false); return; }
+  if(newC.length < 4){ showToasts("toastAgentsChange","Nouveau code min 4.",false); return; }
+
+  setLoadings(btn,true);
+  await sleep(220);
+
+  const a = DEMO.agents.find(x=>x.agent_id===STATE.agents.agent_id);
+  if(!a){ showToasts("toastAgentsChange","Agent introuvable.",false); setLoadings(btn,false); return; }
+  if(String(a.code).trim() !== String(oldC).trim()){
+    showToasts("toastAgentsChange","Ancien code incorrect.",false);
+    setLoadings(btn,false); return;
   }
+
+  a.code = newC;
+  a.must_change = false;
+  $("agentsOldCode").value=""; $("agentsNewCode").value="";
+  showToasts("toastAgentsChange","Code modifié ✅",true);
+
+  setLoadings(btn,false);
 }
 
 async function agentsLoadPeriods(ev){
-  hideToast("toastAgentsLoad");
+  hideToasts("toastAgentsPeriod");
   const btn = ev?.target || $("btnAgentsLoad");
-  if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.", false); return; }
+  if(!STATE.agents.ok){ showToasts("toastAgentsPeriod","Non connecté.",false); return; }
+
   const pid = $("agentsPeriodsSel").value;
-  if(!pid){ showToast("toastAgentsLoad","Choisis une période.", false); return; }
-  setLoading(btn,true);
-  try{
-    const res = await apiJsonp("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id: pid });
-    if(!res || !res.ok){ showToast("toastAgentsLoad",(res&&res.message)||"Erreur", false); return; }
+  if(!pid){ showToasts("toastAgentsPeriod","Choisis une période.",false); return; }
 
-    // remark existant
-    $("agentsRemark").value = res.remark || "";
+  setLoadings(btn,true);
+  await sleep(220);
 
-    // missions
-    const list = res.missions || [];
-    const box = $("boxAgentsMissions");
-    if(!list.length){
-      box.innerHTML = `<div class="listItem"><div class="left"><div class="title">Aucune mission.</div></div></div>`;
-    }else{
-      box.innerHTML = list.map(m=>`
-        <div class="missionRow">
-          <div class="mLeft">
-            <div class="mTitle">${esc(m.label)}</div>
-          </div>
-          <div>
-            <select data-mid="${esc(m.mission_id)}" class="decSel">
-              <option value="" ${m.declaration===""?"selected":""}>—</option>
-              <option value="Fait" ${m.declaration==="Fait"?"selected":""}>Fait</option>
-              <option value="Partiel" ${m.declaration==="Partiel"?"selected":""}>Partiel</option>
-              <option value="Non fait" ${m.declaration==="Non fait"?"selected":""}>Non fait</option>
-            </select>
-          </div>
-          <div style="flex:1;min-width:220px">
-            <input class="justifInp" data-mid="${esc(m.mission_id)}" placeholder="Justificatif si Partiel / Non fait" value="${esc(m.justificatif||"")}" />
-          </div>
-        </div>
-      `).join("");
-    }
+  const activeIds = new Set(DEMO.activeMissionsByPeriod[pid] || []);
+  const list = DEMO.catalog.filter(m=>m.active && activeIds.has(m.mission_id));
 
-    showToast("toastAgentsLoad","Chargé ✅", true);
-  }catch(e){
-    showToast("toastAgentsLoad","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
-  }
+  // récupère déclarations existantes
+  const decls = DEMO.declarations.filter(d=>d.period_id===pid && d.agent_id===STATE.agents.agent_id);
+  const byMid = new Map(decls.map(d=>[d.mission_id,d]));
+
+  const missions = list.map(m=>{
+    const d = byMid.get(m.mission_id);
+    return {
+      mission_id:m.mission_id,
+      label:m.label,
+      done: d ? (d.declaration==="Fait") : false,
+      declaration: d ? d.declaration : "Fait",
+      justificatif: d ? (d.justificatif||"") : ""
+    };
+  });
+
+  STATE.current.period_id = pid;
+  STATE.data.agentWork = missions;
+
+  const per = DEMO.periods.find(p=>p.period_id===pid);
+  setPills("pillAgentsPeriod","Période : " + (per?per.label:pid),"");
+
+  renderAgentMissions(missions);
+
+  showToasts("toastAgentsPeriod","Chargé ✅",true);
+  setLoadings(btn,false);
 }
 
 async function agentsSaves(ev){
-  hideToast("toastAgentsSave");
+  hideToasts("toastAgentsSave");
   const btn = ev?.target || $("btnAgentsSave");
-  if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.", false); return; }
-  const pid = $("agentsPeriodsSel").value;
-  if(!pid){ showToast("toastAgentsSave","Choisis une période.", false); return; }
+  if(!STATE.agents.ok){ showToasts("toastAgentsSave","Non connecté.",false); return; }
+  const pid = STATE.current.period_id;
+  if(!pid){ showToasts("toastAgentsSave","Choisis une période.",false); return; }
 
-  const decs = Array.from(document.querySelectorAll("#boxAgentsMissions .decSel"));
-  const justifs = Array.from(document.querySelectorAll("#boxAgentsMissions .justifInp"));
-  const items = decs.map(sel=>{
-    const mid = sel.getAttribute("data-mid");
-    const j = justifs.find(x=>x.getAttribute("data-mid")===mid);
-    return { mission_id: mid, declaration: sel.value, justificatif: (j?j.value:"") };
+  setLoadings(btn,true);
+  await sleep(250);
+
+  // récupère l’état UI
+  const box = $("boxAgentsMissions");
+  const checks = Array.from(box.querySelectorAll('input[type="checkbox"][data-mid]'));
+  const doneSet = new Set(checks.filter(c=>c.checked).map(c=>c.getAttribute("data-mid")));
+
+  const missions = STATE.data.agentWork.map(m=>{
+    const decl = box.querySelector(`select[data-decl="${CSS.escape(m.mission_id)}"]`)?.value || "Fait";
+    const justif = box.querySelector(`input[data-justif="${CSS.escape(m.mission_id)}"]`)?.value || "";
+    return { mission_id:m.mission_id, declaration:decl, justificatif:justif, done: doneSet.has(m.mission_id) };
   });
 
   const remark = $("agentsRemark").value.trim();
 
-  setLoading(btn,true);
-  try{
-    const res = await apiJsonp("agentSaveDeclarations", {
-      agent_id: STATE.agents.agent_id,
-      period_id: pid,
-      remark,
-      items: JSON.stringify(items)
+  // update declarations store
+  // supprime anciennes
+  DEMO.declarations = DEMO.declarations.filter(d=>!(d.period_id===pid && d.agent_id===STATE.agents.agent_id));
+  missions.forEach(m=>{
+    DEMO.declarations.push({
+      period_id:pid,
+      agent_id:STATE.agents.agent_id,
+      mission_id:m.mission_id,
+      declaration:m.declaration,
+      justificatif:m.justificatif,
+      remark
     });
-    if(!res || !res.ok){ showToast("toastAgentsSave",(res&&res.message)||"Erreur", false); return; }
-    showToast("toastAgentsSave","Enregistré ✅", true);
+    // retours si Partiel / Non fait
+    DEMO.retours = DEMO.retours.filter(r=>!(r.period_id===pid && r.agent_id===STATE.agents.agent_id && r.mission_id===m.mission_id));
+    if(m.declaration==="Partiel" || m.declaration==="Non fait"){
+      DEMO.retours.push({
+        period_id:pid,
+        agent_id:STATE.agents.agent_id,
+        mission_id:m.mission_id,
+        declaration:m.declaration,
+        justificatif:m.justificatif
+      });
+    }
+  });
 
-    // overlay si tout est "Fait"
-    const allDone = items.length>0 && items.every(x=>x.declaration==="Fait");
-    if(allDone) $("doneOverlay").classList.add("show");
-    else $("doneOverlay").classList.remove("show");
-  }catch(e){
-    showToast("toastAgentsSave","Erreur réseau.", false);
-  }finally{
-    setLoading(btn,false);
+  showToasts("toastAgentsSave","Enregistré ✅",true);
+
+  // overlay si tout est fait
+  const allDone = missions.length>0 && missions.every(x=>x.declaration==="Fait");
+  if(allDone){
+    // image si dispo
+    const img = $("doneImg");
+    img.src = "missions-accomplies.jpg";
+    img.onerror = () => { /* si pas d'image, on n'affiche pas */ $("doneOverlay").classList.remove("show"); };
+    $("doneOverlay").classList.add("show");
+  } else {
+    $("doneOverlay").classList.remove("show");
   }
+
+  setLoadings(btn,false);
 }
 
-/* Overlay close (double clic / double tap) */
+/* overlay close */
 $("doneImg").addEventListener("dblclick", ()=> $("doneOverlay").classList.remove("show"));
-$("doneImg").addEventListener("touchend", ()=>{
-  const now=Date.now();
-  if(!window.__lt){ window.__lt=now; return; }
-  if(now-window.__lt<350) $("doneOverlay").classList.remove("show");
-  window.__lt=now;
-});
+(function(){
+  let lastTap = 0;
+  $("doneImg").addEventListener("touchend", ()=>{
+    const now = Date.now();
+    if(now - lastTap < 350) $("doneOverlay").classList.remove("show");
+    lastTap = now;
+  }, {passive:true});
+})();
 
-/* INIT simple (pas d’IIFE piégeuse) */
-document.addEventListener("DOMContentLoaded", async ()=>{
-  showView("agents");
-  setPill("pillAdminsStatus","Admin : non connecté","");
-  setPill("pillAgentsStatus","Agent : non connecté","");
-  await agentsBootstraps();
-});
+/* =========================================================
+   INIT
+   ========================================================= */
+function bootstrap(){
+  renderAgentsPublics();
+  renderAdminsPeriods();
+  renderAdminsAgents();
+  renderAdminsMissions();
+  renderAgentsPeriods([]);
+  renderAgentMissions([]);
+  renderAdminsGroup([]);
+  renderAdminsActive([],[]);
+  renderAdminsRetours([]);
+}
+bootstrap();
+showViews("agents");
 </script>
 </body>
 </html>
