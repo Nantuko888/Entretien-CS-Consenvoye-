@@ -542,13 +542,26 @@ function renderAgentsSelect(){
   return p.period_id;
 }
 function renderPeriodsSelects(){
-  const opts = `<option value="">— Choisir période —</option>` +
-    (STATE.periods||[]).filter(p=>p.actif).map(p =>
-      `<option value="${esc(p.period_id)}">${esc(formatPeriodLabel(p))}</option>`
-    ).join("");
-  $("adminsPeriodsSel").innerHTML = opts;
-  $("agentsPeriodsSel").innerHTML = `<option value="">— Choisir période —</option>`;
+  const opts =
+    '<option value="">— Choisir période —</option>' +
+    (STATE.periods||[])
+      .filter(p => p.actif)
+      .map(p =>
+        `<option value="${esc(p.period_id)}">
+          ${esc(formatPeriodLabel(p))}
+        </option>`
+      )
+      .join("");
+
+  // ADMIN
+  const adminSel = $("adminsPeriodsSel");
+  if (adminSel) adminSel.innerHTML = opts;
+
+  // AGENT
+  const agentSel = $("agentsPeriodsSel");
+  if (agentSel) agentSel.innerHTML = opts;
 }
+
 function renderAdminsAddToGroupSelect(){
   $("adminsAddToGroupSel").innerHTML = `<option value="">— Choisir agent —</option>` +
     (STATE.agentsPublic||[]).filter(a=>a.actif).map(a =>
