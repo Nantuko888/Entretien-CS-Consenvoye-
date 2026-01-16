@@ -526,10 +526,25 @@ function renderAgentsSelect(){
       `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`
     ).join("");
 }
+  function formatPeriodLabel(p){
+  if (p.libelle) return p.libelle;
+
+  // si period_id = "2026-01"
+  if (/^\d{4}-\d{2}$/.test(p.period_id)) {
+    const [y, m] = p.period_id.split("-");
+    const mois = [
+      "Janvier","Février","Mars","Avril","Mai","Juin",
+      "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+    ];
+    return mois[Number(m)-1] + " " + y;
+  }
+
+  return p.period_id;
+}
 function renderPeriodsSelects(){
   const opts = `<option value="">— Choisir période —</option>` +
     (STATE.periods||[]).filter(p=>p.actif).map(p =>
-      `<option value="${esc(p.period_id)}">${esc(p.libelle || p.period_id)}</option>`
+      `<option value="${esc(p.period_id)}">${esc(formatPeriodLabel(p))}</option>`
     ).join("");
   $("adminsPeriodsSel").innerHTML = opts;
   $("agentsPeriodsSel").innerHTML = `<option value="">— Choisir période —</option>`;
