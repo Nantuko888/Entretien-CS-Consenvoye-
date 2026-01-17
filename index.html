@@ -563,7 +563,7 @@ function renderPeriodsSelects(){
       .filter(p => p.actif)
       .map(p =>
         `<option value="${esc(p.period_id)}">
-          ${esc(formatPeriodLabel(p))}
+          ${esc(p.period_id)}
         </option>`
       )
       .join("");
