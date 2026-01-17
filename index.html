@@ -541,6 +541,21 @@ function renderAgentsSelect(){
 
   return p.period_id;
 }
+  function formatPeriodLabel(period_id, fallbackLabel){
+  const id = String(period_id || "").trim(); // ex: 2026-01
+  const m = id.match(/^(\d{4})-(\d{2})$/);
+  if(m){
+    const y = m[1];
+    const mm = parseInt(m[2], 10);
+    const mois = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+    if(mm>=1 && mm<=12) return `${mois[mm-1]} ${y}`;
+  }
+  // si period_id pas au bon format, on nettoie les dates "Thu Jan..."
+  const fb = String(fallbackLabel || "").trim();
+  if(fb.includes("GMT") || fb.includes("heure")) return id || "—";
+  return fb || id || "—";
+}
+
 function renderPeriodsSelects(){
   const opts =
     '<option value="">— Choisir période —</option>' +
