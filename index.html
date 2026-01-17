@@ -505,9 +505,10 @@ async function bootstrap(){
 
   // périodes (admin + agent)
   try{
-    const res = await apiCall("listPeriodesPublics", {});
-    if(res && res.ok){
-      STATE.periods = res.periodes || [];
+    // périodes autorisées renvoyées par le login (pas d'appel réseau en plus)
+STATE.periods = (res.periodes || res.periods || []);
+renderPeriodsSelects();
+
       renderPeriodsSelects();
     }else{
       $("adminsPeriodsSel").innerHTML = `<option value="">—</option>`;
