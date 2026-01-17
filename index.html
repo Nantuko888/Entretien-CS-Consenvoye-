@@ -562,6 +562,7 @@ function renderPeriodsSelects(){
   if (agentSel) agentSel.innerHTML = opts;
 }
 
+
 function renderAdminsAddToGroupSelect(){
   $("adminsAddToGroupSel").innerHTML = `<option value="">— Choisir agent —</option>` +
     (STATE.agentsPublic||[]).filter(a=>a.actif).map(a =>
