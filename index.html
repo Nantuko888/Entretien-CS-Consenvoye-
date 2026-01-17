@@ -505,8 +505,8 @@ async function bootstrap(){
 
   // périodes (admin + agent)
   try{
-    // périodes autorisées renvoyées par le login (pas d'appel réseau en plus)
-STATE.periods = (res.periodes || res.periods || []);
+    const pRes = await api("listPeriodsPublic");
+STATE.periods = pRes.periods || [];
 renderPeriodsSelects();
 
       renderPeriodsSelects();
