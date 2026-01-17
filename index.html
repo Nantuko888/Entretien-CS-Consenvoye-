@@ -526,21 +526,21 @@ function renderAgentsSelect(){
       `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`
     ).join("");
 }
+
   function formatPeriodLabel(p){
-  if (p.libelle) return p.libelle;
+  const id = String(p?.period_id || "").trim();
 
-  // si period_id = "2026-01"
-  if (/^\d{4}-\d{2}$/.test(p.period_id)) {
-    const [y, m] = p.period_id.split("-");
-    const mois = [
-      "Janvier","Février","Mars","Avril","Mai","Juin",
-      "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
-    ];
-    return mois[Number(m)-1] + " " + y;
+  // Affichage propre depuis period_id: "2026-01" -> "Janvier 2026"
+  const m = id.match(/^(\d{4})-(\d{2})$/);
+  if(m){
+    const y = m[1];
+    const mm = parseInt(m[2],10);
+    const mois = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+    if(mm>=1 && mm<=12) return `${mois[mm-1]} ${y}`;
   }
-
-  return p.period_id;
+  return id || "—";
 }
+
 function renderPeriodsSelects(){
   const opts =
     '<option value="">— Choisir période —</option>' +
@@ -1063,7 +1063,8 @@ async function agentsLogin(ev){
     // périodes autorisées
     $("agentsPeriodsSel").innerHTML =
       `<option value="">— Choisir période —</option>` +
-      (res.periodes||[]).map(p=>`<option value="${esc(p.period_id)}">${esc(p.libelle||p.period_id)}</option>`).join("");
+      (res.periodes||[]).map(p=>`<option value="${esc(p.period_id)}">${esc(formatPeriodLabel(p))}</option>`)
+.join("");
 
     // impose changement code à la 1ère connexion si must_change
     if(STATE.agents.must_change){
