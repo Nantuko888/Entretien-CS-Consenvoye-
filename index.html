@@ -526,28 +526,18 @@ function renderAgentsSelect(){
       `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`
     ).join("");
 }
- function formatPeriodLabel(p){
-  const id = String(p?.period_id || "").trim();
-  const lib = String(p?.libelle || "").trim();
+  function formatPeriodLabel(p){
+  if (p.libelle) return p.libelle;
 
-  // Si libelle ressemble à une Date JS ("Thu Jan... GMT...")
-  const looksLikeDate = /GMT|heure|Mon|Tue|Wed|Thu|Fri|Sat|Sun|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec/i.test(lib);
-
-  // Si libelle est propre (pas une date), on l'affiche
-  if(lib && !looksLikeDate) return lib;
-
-  // Sinon, on construit "Janvier 2026" à partir de period_id (ex: 2026-01)
-  const m = id.match(/^(\d{4})-(\d{2})$/);
-  if(m){
-    const y = m[1];
-    const mm = parseInt(m[2],10);
-    const mois = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-    if(mm>=1 && mm<=12) return `${mois[mm-1]} ${y}`;
+  // si period_id = "2026-01"
+  if (/^\d{4}-\d{2}$/.test(p.period_id)) {
+    const [y, m] = p.period_id.split("-");
+    const mois = [
+      "Janvier","Février","Mars","Avril","Mai","Juin",
+      "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+    ];
+    return mois[Number(m)-1] + " " + y;
   }
-
-  // fallback
-  return id || lib || "—";
-}
 
   return p.period_id;
 }
@@ -1072,10 +1062,8 @@ async function agentsLogin(ev){
 
     // périodes autorisées
     $("agentsPeriodsSel").innerHTML =
-  `<option value="">— Choisir période —</option>` +
-  (res.periodes||[]).map(p =>
-    `<option value="${esc(p.period_id)}">${esc(formatPeriodLabel(p))}</option>`
-  ).join("");
+      `<option value="">— Choisir période —</option>` +
+      (res.periodes||[]).map(p=>`<option value="${esc(p.period_id)}">${esc(p.libelle||p.period_id)}</option>`).join("");
 
     // impose changement code à la 1ère connexion si must_change
     if(STATE.agents.must_change){
