@@ -1061,6 +1061,11 @@ async function agentsLogin(ev){
     $("btnAgentsLogout").style.display="";
     $("boxAgentsWork").style.display="";
 
+    // Charger les périodes pour l'agent
+const pRes = await api("listPeriodsPublic");
+STATE.periods = pRes.periods || [];
+renderPeriodsSelects();
+
     // périodes autorisées
     $("agentsPeriodsSel").innerHTML =
       `<option value="">— Choisir période —</option>` +
