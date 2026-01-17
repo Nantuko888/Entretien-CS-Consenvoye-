@@ -505,10 +505,9 @@ async function bootstrap(){
 
   // périodes (admin + agent)
   try{
-    const pRes = await api("listPeriodsPublic");
-STATE.periods = pRes.periods || [];
-renderPeriodsSelects();
-
+    const res = await apiCall("listPeriodesPublics", {});
+    if(res && res.ok){
+      STATE.periods = res.periodes || [];
       renderPeriodsSelects();
     }else{
       $("adminsPeriodsSel").innerHTML = `<option value="">—</option>`;
@@ -562,7 +561,6 @@ function renderPeriodsSelects(){
   const agentSel = $("agentsPeriodsSel");
   if (agentSel) agentSel.innerHTML = opts;
 }
-
 
 function renderAdminsAddToGroupSelect(){
   $("adminsAddToGroupSel").innerHTML = `<option value="">— Choisir agent —</option>` +
@@ -1256,3 +1254,6 @@ $("doneImg").addEventListener("touchend", (e)=>{
 </script>
 </body>
 </html>
+
+
+ 
