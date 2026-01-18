@@ -771,7 +771,7 @@ async function adminsAddMission(ev){
 
   setLoading(btn,true);
   try{
-    const res = await apiCall("adminAddMission" { admin_code: STATE.admins.code, libelle });
+    const res = await apiCall("adminAddMission", { admin_code: STATE.admins.code, libelle });
     if(!res || !res.ok){
       showToast("toastAdminsMissions",(res&&res.message)||"Erreur",false); return;
     }
