@@ -1195,10 +1195,7 @@ function renderAgentMissions(list){
 }
   // IMPORTANT: pas de checkbox “Fait” séparée. Juste le select.
   box.innerHTML = list.map(m=>`
-  syncJustifs();
-box.querySelectorAll(".decSel").forEach(sel=>{
-  sel.addEventListener("change", syncJustifs);
-});
+  
     <div class="checkRow" style="align-items:flex-start">
       <div style="flex:1;min-width:0">
         <div class="title">${esc(m.libelle)}</div>
@@ -1224,6 +1221,12 @@ box.querySelectorAll(".decSel").forEach(sel=>{
   `).join("");
 }
 
+syncJustifs();
+
+box.querySelectorAll(".decSel").forEach(sel=>{
+  sel.addEventListener("change", syncJustifs);
+});
+  
 async function agentsSave(ev){
   hideToast("toastAgentsSave");
   if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
