@@ -1186,16 +1186,58 @@ function renderAgentMissions(list){
     return;
   }
 
-  function syncJustifs(){
-  box.querySelectorAll(".decSel").forEach(sel => {
-    const mid = sel.getAttribute("data-mid");
-    const wrap = box.querySelector(`.justifWrap[data-mid="${mid}"]`);
-    if(!wrap) return;
+  function renderAgentMissions(list){
+  const box = $("boxAgentsMissions");
+  if(!box) return;
 
-    const show = (sel.value === "Partiel" || sel.value === "Non fait");
-    wrap.style.display = show ? "" : "none";
+  if(!list || !list.length){
+    box.innerHTML = '<div class="ghost" style="padding:10px">Aucune mission.</div>';
+    return;
+  }
+
+  // 1) construit le HTML
+  box.innerHTML = list.map(m => `
+    <div class="checkRow" style="align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <div class="title">${esc(m.libelle)}</div>
+
+        <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px">
+            <select class="decSel" data-mid="${esc(m.mission_id)}">
+              <option value="" ${(!m.declaration ? "selected" : "")}>—</option>
+              <option value="Fait" ${m.declaration==="Fait" ? "selected" : ""}>Fait</option>
+              <option value="Partiel" ${m.declaration==="Partiel" ? "selected" : ""}>Partiel</option>
+              <option value="Non fait" ${m.declaration==="Non fait" ? "selected" : ""}>Non fait</option>
+            </select>
+          </div>
+
+          <div class="justifWrap" data-mid="${esc(m.mission_id)}" style="flex:1;min-width:220px;display:none">
+            <input class="justifInp" data-mid="${esc(m.mission_id)}"
+              placeholder="Justificatif si Partiel/Non fait"
+              value="${esc(m.justificatif || "")}" />
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  // 2) applique visibilité justificatif + events
+  const refresh = ()=>{
+    box.querySelectorAll(".decSel").forEach(sel=>{
+      const mid = sel.getAttribute("data-mid");
+      const wrap = box.querySelector(`.justifWrap[data-mid="${mid}"]`);
+      if(!wrap) return;
+      const show = (sel.value === "Partiel" || sel.value === "Non fait");
+      wrap.style.display = show ? "" : "none";
+    });
+  };
+
+  refresh();
+  box.querySelectorAll(".decSel").forEach(sel=>{
+    sel.addEventListener("change", refresh);
   });
 }
+
   // IMPORTANT: pas de checkbox “Fait” séparée. Juste le select.
   box.innerHTML = list.map(m=>`
   
