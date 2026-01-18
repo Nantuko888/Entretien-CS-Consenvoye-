@@ -826,7 +826,13 @@ async function adminsLoadPeriod(ev){
     renderGroupTable();
     renderResponsablesSelect();
 
-    showToast("toastAdminsPeriod","Période chargée ✅",true);
+        showToast("toastAdminsPeriod","Période chargée ✅",true);
+    
+    // Auto-refresh uniquement quand l'utilisateur clique "Charger groupe"
+if (!ev?.internal) {
+  await adminsLoadActiveMissions({ target: $("btnAdminsLoadActive"), internal:true });
+  await adminsLoadRetours({ target: $("btnAdminsLoadRetours"), internal:true });
+}
 
     // NE PAS déclencher d’autres chargements automatiques (sinon “sapin de Noël”)
     // => missions actives / retours = manuels via boutons
@@ -873,7 +879,7 @@ async function adminsAddToGroup(ev){
       showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false); return;
     }
     // recharge le groupe uniquement (pas les autres)
-    await adminsLoadPeriod({target:$("btnAdminsLoadPeriod")});
+    await adminsLoadPeriod({ target: $("btnAdminsLoadPeriod"), internal:true });
   }catch(_){
     showToast("toastAdminsPeriod","Erreur réseau.",false);
   }finally{
@@ -892,7 +898,7 @@ async function adminsRemoveFromGroup(agent_id){
     if(!res || !res.ok){
       showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false); return;
     }
-    await adminsLoadPeriod({target:$("btnAdminsLoadPeriod")});
+    await adminsLoadPeriod({ target: $("btnAdminsLoadPeriod"), internal:true });
   }catch(_){
     showToast("toastAdminsPeriod","Erreur réseau.",false);
   }
@@ -913,7 +919,7 @@ async function adminsSetResponsable(ev){
     if(!res || !res.ok){
       showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false); return;
     }
-    await adminsLoadPeriod({target:$("btnAdminsLoadPeriod")});
+    await adminsLoadPeriod({ target: $("btnAdminsLoadPeriod"), internal:true });
   }catch(_){
     showToast("toastAdminsPeriod","Erreur réseau.",false);
   }finally{
