@@ -1185,8 +1185,20 @@ function renderAgentMissions(list){
     box.innerHTML = `<div class="ghost" style="padding:10px">Aucune mission.</div>`;
     return;
   }
+  function syncJustifs(){
+  document.querySelectorAll(".decSel").forEach(sel=>{
+    const mid = sel.getAttribute("data-mid");
+    const wrap = document.querySelector(`.justifWrap[data-mid="${CSS.escape(mid)}"]`);
+    const show = (sel.value === "Partiel" || sel.value === "Non fait");
+    if(wrap) wrap.style.display = show ? "" : "none";
+  });
+}
   // IMPORTANT: pas de checkbox “Fait” séparée. Juste le select.
   box.innerHTML = list.map(m=>`
+  syncJustifs();
+box.querySelectorAll(".decSel").forEach(sel=>{
+  sel.addEventListener("change", syncJustifs);
+});
     <div class="checkRow" style="align-items:flex-start">
       <div style="flex:1;min-width:0">
         <div class="title">${esc(m.libelle)}</div>
@@ -1231,6 +1243,21 @@ async function agentsSave(ev){
   });
 
   const remark = $("agentsRemark").value.trim();
+
+  // contrôle justificatif obligatoire
+for (const d of decs) {
+  if (
+    (d.declaration === "Partiel" || d.declaration === "Non fait") &&
+    !d.justificatif
+  ) {
+    showToast(
+      "toastAgentsSave",
+      "Justificatif obligatoire si Partiel ou Non fait.",
+      false
+    );
+    return;
+  }
+}
 
   // overlay si tout “Fait”
   const allDone = decs.length>0 && decs.every(d=>d.declaration==="Fait");
