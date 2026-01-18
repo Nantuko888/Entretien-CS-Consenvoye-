@@ -1227,6 +1227,13 @@ async function agentsSave(ev){
     };
   });
 
+  for (const d of decs) {
+  if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
+    showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
+    return;
+  }
+}
+
   const remark = $("agentsRemark").value.trim();
 
   // overlay si tout “Fait”
