@@ -520,12 +520,34 @@ async function bootstrap(){
   }
 }
 
-function renderAgentsSelect(){
+ffunction renderAgentsSelect(){
   const sel = $("agentsSel");
-  sel.innerHTML = `<option value="">— Choisir agent —</option>` +
-    (STATE.agentsPublic||[]).filter(a=>a.actif).map(a =>
-      `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`
-    ).join("");
+  if(!sel) return;
+
+  const list = Array.isArray(STATE.agentsPublic) ? STATE.agentsPublic : [];
+
+  const opts =
+    ['<option value="">— Choisir agent —</option>']
+    .concat(
+      list
+        // actif peut être booléen, "TRUE"/"FALSE", 1/0...
+        .filter(a => {
+          const v = (a && (a.actif ?? a.active));
+          if (v === undefined || v === null || v === "") return true; // si pas de champ, on affiche
+          if (typeof v === "boolean") return v;
+          return String(v).toUpperCase() === "TRUE" || String(v) === "1";
+        })
+        .map(a => {
+          const id = String(a.agent_id ?? a.id ?? "").trim();
+          const label = String(a.nom ?? a.name ?? id).trim();
+          if(!id) return "";
+          return `<option value="${esc(id)}">${esc(label)}</option>`;
+        })
+        .filter(Boolean)
+    )
+    .join("");
+
+  sel.innerHTML = opts;
 }
 
   function formatPeriodLabel(p){
@@ -564,11 +586,34 @@ function renderPeriodsSelects(){
 }
 
 function renderAdminsAddToGroupSelect(){
-  $("adminsAddToGroupSel").innerHTML = `<option value="">— Choisir agent —</option>` +
-    (STATE.agentsPublic||[]).filter(a=>a.actif).map(a =>
-      `<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`
-    ).join("");
+  const sel = $("adminsAddToGroupSel");
+  if(!sel) return;
+
+  const list = Array.isArray(STATE.agentsPublic) ? STATE.agentsPublic : [];
+
+  const opts =
+    ['<option value="">— Choisir agent —</option>']
+    .concat(
+      list
+        .filter(a => {
+          const v = (a && (a.actif ?? a.active));
+          if (v === undefined || v === null || v === "") return true;
+          if (typeof v === "boolean") return v;
+          return String(v).toUpperCase() === "TRUE" || String(v) === "1";
+        })
+        .map(a => {
+          const id = String(a.agent_id ?? a.id ?? "").trim();
+          const label = String(a.nom ?? a.name ?? id).trim();
+          if(!id) return "";
+          return `<option value="${esc(id)}">${esc(label)}</option>`;
+        })
+        .filter(Boolean)
+    )
+    .join("");
+
+  sel.innerHTML = opts;
 }
+
 
 /* ===============================
    ADMIN
