@@ -1081,6 +1081,16 @@ async function agentsLogin(ev){
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
     STATE.agents.must_change = !!res.agent.must_change;
+    if (STATE.agents.must_change || code === "0000") {
+  $("boxAgentsKey").style.display = "";
+  $("boxAgentsWork").style.display = "none";
+  showToast(
+    "toastAgentsLogin",
+    "⚠️ Changement de code obligatoire (première connexion ou reset).",
+    true
+  );
+  return;
+}
 
     setPill("pillAgentsStatus","Agent : " + STATE.agents.name,"ok");
     $("btnAgentsKey").style.display="";
