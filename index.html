@@ -5,16 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Entretien CS Consenvoye</title>
   <style>
-  const refresh = () => {
-    justif.style.display =
-      (sel.value === "Partiel" || sel.value === "Non fait")
-        ? "block"
-        : "none";
-  };
-
-  refresh();
-  sel.addEventListener("change", refresh);
-});
     :root{
       --bg:#0b0f14; --panel:#0f1724; --panel2:#111b2b;
       --stroke:rgba(255,255,255,.12);
@@ -1218,22 +1208,6 @@ function renderAgentMissions(list){
       </div>
     </div>
   `).join("");
-  // affichage conditionnel du justificatif
-box.querySelectorAll(".decSel").forEach(sel => {
-  const mid = sel.dataset.mid;
-  const justif = box.querySelector(`.justifInp[data-mid="${mid}"]`);
-  if (!justif) return;
-
-  const refresh = () => {
-    justif.style.display =
-      (sel.value === "Partiel" || sel.value === "Non fait")
-        ? "block"
-        : "none";
-  };
-
-  refresh();
-  sel.addEventListener("change", refresh);
-});
 }
 
 async function agentsSave(ev){
