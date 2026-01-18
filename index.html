@@ -1208,6 +1208,22 @@ function renderAgentMissions(list){
       </div>
     </div>
   `).join("");
+  // affichage conditionnel du justificatif
+box.querySelectorAll(".decSel").forEach(sel => {
+  const mid = sel.dataset.mid;
+  const justif = box.querySelector(`.justifInp[data-mid="${mid}"]`);
+  if (!justif) return;
+
+  const refresh = () => {
+    justif.style.display =
+      (sel.value === "Partiel" || sel.value === "Non fait")
+        ? "block"
+        : "none";
+  };
+
+  refresh();
+  sel.addEventListener("change", refresh);
+});
 }
 
 async function agentsSave(ev){
