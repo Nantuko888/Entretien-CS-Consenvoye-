@@ -1200,9 +1200,11 @@ function renderAgentMissions(list){
             </select>
           </div>
           <div style="flex:1;min-width:220px">
-            <input class="justifInp" data-mid="${esc(m.mission_id)}"
-              placeholder="Justificatif si Partiel/Non fait"
-              value="${esc(m.justificatif||"")}" />
+            <div class="justifWrap" data-mid="${esc(m.mission_id)}" style="display:none;flex:1;min-width:220px">
+  <input class="justifInp" data-mid="${esc(m.mission_id)}"
+    placeholder="Justificatif si Partiel/Non fait"
+    value="${esc(m.justificatif||"")}" />
+</div>
           </div>
         </div>
       </div>
