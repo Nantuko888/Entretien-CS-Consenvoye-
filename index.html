@@ -1185,12 +1185,15 @@ function renderAgentMissions(list){
     box.innerHTML = `<div class="ghost" style="padding:10px">Aucune mission.</div>`;
     return;
   }
+
   function syncJustifs(){
-  document.querySelectorAll(".decSel").forEach(sel=>{
+  box.querySelectorAll(".decSel").forEach(sel => {
     const mid = sel.getAttribute("data-mid");
-    const wrap = document.querySelector(`.justifWrap[data-mid="${CSS.escape(mid)}"]`);
+    const wrap = box.querySelector(`.justifWrap[data-mid="${mid}"]`);
+    if(!wrap) return;
+
     const show = (sel.value === "Partiel" || sel.value === "Non fait");
-    if(wrap) wrap.style.display = show ? "" : "none";
+    wrap.style.display = show ? "" : "none";
   });
 }
   // IMPORTANT: pas de checkbox “Fait” séparée. Juste le select.
