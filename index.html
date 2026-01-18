@@ -483,6 +483,7 @@ const STATE = {
   periods: [],
   current: { period_id:"", group:[], responsable:null, activeMissions:[] },
   agentWork: { period_id:"", missions:[] }
+  catalogById: {}
 };
 
 /* ===============================
@@ -742,6 +743,10 @@ async function adminsListMissions(){
     const res = await apiCall("adminListCatalog", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.catalog || [];
+    STATE.catalogById = {};
+list.forEach(m => {
+  STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
+});
     tb.innerHTML = list.map(m=>`
       <tr>
         <td>${esc(m.libelle)}</td>
@@ -969,12 +974,28 @@ function renderActiveCheckboxes(all, onList){
 
 function renderActiveSummary(list){
   const tb = $("adminsActiveSummary");
-  if(!list || !list.length){
+  if(!tb) return;
+
+  const arr = (list || []).map(x => {
+    const mid = (typeof x === "string") ? x : (x && x.mission_id);
+    if(!mid) return null;
+
+    const lib =
+      (typeof x === "string")
+        ? (STATE.catalogById[String(mid)] || String(mid))
+        : (x.libelle || STATE.catalogById[String(mid)] || String(mid));
+
+    return { lib };
+  }).filter(Boolean);
+
+  if(!arr.length){
     tb.innerHTML = `<tr><td class="ghost">—</td></tr>`;
     return;
   }
-  tb.innerHTML = list.map(m=>`<tr><td>${esc(m.libelle)}</td></tr>`).join("");
+
+  tb.innerHTML = arr.map(r => `<tr><td>${esc(r.lib)}</td></tr>`).join("");
 }
+
 
 async function adminsSaveActiveMissions(ev){
   hideToast("toastAdminsActive");
@@ -992,7 +1013,7 @@ async function adminsSaveActiveMissions(ev){
     if(!res || !res.ok){
       showToast("toastAdminsActive",(res&&res.message)||"Erreur",false); return;
     }
-    renderActiveSummary(res.missionsOn||[]);
+    renderActiveSummary(res.missionsOn||ids);
     showToast("toastAdminsActive","Enregistré ✅",true);
   }catch(_){
     showToast("toastAdminsActive","Erreur réseau.",false);
