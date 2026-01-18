@@ -71,7 +71,7 @@
     .scrollBox{max-height:260px;overflow:auto;border-radius:14px;border:1px solid rgba(255,255,255,.08)}
     .checkRow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
     .checkRow:last-child{border-bottom:0}
-    .checkRow input{width:18px;height:18px;flex:0 0 auto;}
+    .checkRow input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto;}
     .checkRow .title{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .pillBtn{border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--text);border-radius:999px;padding:10px 12px;font-weight:900;font-size:13px;cursor:pointer;}
     .keyBtn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);border-radius:999px;padding:8px 10px;cursor:pointer}
@@ -1200,9 +1200,8 @@ function renderAgentMissions(list){
             </select>
           </div>
           <div style="flex:1;min-width:220px">
-            <input class="justifInp" data-mid="${esc(m.mission_id)}"
-              placeholder="Justificatif si Partiel/Non fait"
-              value="${esc(m.justificatif||"")}" />
+            <input type="text" class="justifInp" data-mid="..." placeholder="Justificatif si Partiel/Non fait" value="..." />
+
           </div>
         </div>
       </div>
