@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Entretien CS Consenvoye</title>
   <style>
-// affichage conditionnel du justificatif
-box.querySelectorAll(".decSel").forEach(sel => {
-  const mid = sel.dataset.mid;
-  const justif = box.querySelector(`.justifInp[data-mid="${mid}"]`);
-  if (!justif) return;
-
   const refresh = () => {
     justif.style.display =
       (sel.value === "Partiel" || sel.value === "Non fait")
