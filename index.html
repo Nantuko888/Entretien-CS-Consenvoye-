@@ -1382,10 +1382,15 @@ async function agentsSave(ev){
       remark,
       items: JSON.stringify(decs)
     });
-    if(!res || !res.ok){
-      showToast("toastAgentsSave",(res&&res.message)||"Erreur",false);
-      return;
-    }
+    f(!res || !res.ok){
+  if(res && res.message === "locked"){
+    showToast("toastAgentsSave","✅ Déjà validé : tu ne peux plus modifier. Demande à l’admin de réouvrir.", false);
+  }else{
+    showToast("toastAgentsSave",(res&&res.message)||"Erreur", false);
+  }
+  return;
+}
+
     showToast("toastAgentsSave","Enregistré ✅",true);
 
     if(allDone){
