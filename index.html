@@ -657,8 +657,7 @@ async function adminsRefreshAll(){
 async function adminsListAgents(){
   if(!STATE.admins.ok) return;
   const tb = $("adminsAgentsTable");
-  tb.innerHTML = `<tr><td class="ghost" colspan="3">Chargement…</td></tr>`;
-  try{
+    try{
     const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.agents || [];
