@@ -209,7 +209,8 @@
         <label>Remarque générale (facultatif)</label>
         <textarea id="agentsRemark" rows="3" placeholder="Remarque générale..."></textarea>
 
-       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px;flex-wrap:wrap">
+       <div id="boxAgentsAfterLoad" style="display:none;display:flex;justify-content:flex-end;margin-top:10px;gap:10px">
+
   <button class="btn primary" id="btnAgentsSave" onclick="agentsSave(event)">Enregistrer</button>
   <button class="btn info" id="btnAgentsValidate" onclick="agentsValidate(event)">Valider</button>
 </div>
