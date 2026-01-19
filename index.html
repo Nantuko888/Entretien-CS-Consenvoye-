@@ -668,7 +668,7 @@ async function adminsListAgents(){
         <td>${a.actif ? "Oui":"Non"}</td>
         <td class="right">
           <button class="btn small" onclick="adminsToggleAgent('${esc(a.agent_id)}', ${a.actif ? "false":"true"})">${a.actif ? "Désactiver":"Activer"}</button>
-          <button class="btn small" onclick="adminsResetAgentCode('${esc(a.agent_id)}')">Reset 0000</button>
+          <button type="button" class="btn small" onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">Reset 0000</button>
           <button class="btn small danger" onclick="adminsDeleteAgent('${esc(a.agent_id)}')">Supprimer</button>
         </td>
       </tr>
@@ -719,13 +719,33 @@ async function adminsToggleAgent(agent_id, actif){
     await adminsListAgents();
   }catch(_){}
 }
-async function adminsResetAgentCode(agent_id){
+async function adminsResetAgentCode(ev, agent_id){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(!STATE.admins.ok) return;
+
+  const btn = ev?.target || null;
+  setLoading(btn, true);
+
   try{
-    await apiCall("adminResetAgentCode", { admin_code: STATE.admins.code, agent_id });
+    const res = await apiCall("adminResetAgentCode", { admin_code: STATE.admins.code, agent_id });
+
+    if(!res || !res.ok){
+      showToast("toastAdminsAgents", (res && (res.message || res.error)) || "Erreur", false);
+      return;
+    }
+
+    showToast("toastAdminsAgents", "Reset 0000 ✅", true);
+
+    // Recharge juste la liste (sans reload page)
     await adminsListAgents();
-  }catch(_){}
+
+  }catch(e){
+    showToast("toastAdminsAgents", "Erreur réseau.", false);
+  }finally{
+    setLoading(btn, false);
+  }
 }
+
 async function adminsDeleteAgent(agent_id){
   if(!STATE.admins.ok) return;
   if(!confirm("Supprimer définitivement cet agent ?")) return;
