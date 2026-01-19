@@ -207,18 +207,17 @@
         <div class="divider"></div>
 
         <div id="boxAgentsAfterLoad" style="display:none">
-
   <label>Remarque générale (facultatif)</label>
   <textarea id="agentsRemark" rows="3" placeholder="Remarque générale..."></textarea>
 
   <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px">
     <button class="btn primary" id="btnAgentsSave" onclick="agentsSave(event)">Enregistrer</button>
-    <button class="btn info" id="btnAgentsValidate" style="display:none" onclick="agentsValidate(event)">Valider</button>
+    <button class="btn info" id="btnAgentsValidate" onclick="agentsValidate(event)">Valider</button>
   </div>
 
   <div id="toastAgentsSave" class="toast"></div>
 </div>
-
+    </div>
 
     <!-- ========= ADMIN ========= -->
     <div id="viewAdmins" class="card" style="display:none">
@@ -1130,12 +1129,6 @@ async function agentsLogin(ev){
     "⚠️ Changement de code obligatoire (première connexion ou reset).",
     true
   );
-      // reset affichage missions (évite que ça reste visible d’un agent précédent)
-$("boxAgentsAfterLoad").style.display = "none";
-$("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
-$("agentsRemark").value = "";
-$("btnAgentsSave").style.display = "none";
-$("btnAgentsValidate").style.display = "none";
   return;
 }
 
@@ -1177,12 +1170,6 @@ function agentsLogout(){
   $("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
   $("agentsRemark").value="";
   hideToast("toastAgentsLogin");
-  // reset affichage "après chargement"
-$("boxAgentsAfterLoad").style.display = "none";
-$("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
-$("agentsRemark").value = "";
-$("btnAgentsSave").style.display = "none";
-$("btnAgentsValidate").style.display = "none";
 }
 
 function toggleAgentsKey(){
@@ -1249,7 +1236,12 @@ $("btnAgentsSave").style.display = "";
 // Bouton Valider : seulement si responsable
 $("btnAgentsValidate").style.display = STATE.agentWork.is_responsable ? "" : "none";
 
-   
+    $("boxAgentsAfterLoad").style.display = "";
+
+// Affichage du bouton "Valider" uniquement pour le responsable
+$("btnAgentsValidate").style.display = STATE.agentWork.is_responsable ? "" : "none";
+    $("btnAgentsSave").style.display = "";
+
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
 
