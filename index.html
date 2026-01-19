@@ -207,17 +207,18 @@
         <div class="divider"></div>
 
         <div id="boxAgentsAfterLoad" style="display:none">
+
   <label>Remarque générale (facultatif)</label>
   <textarea id="agentsRemark" rows="3" placeholder="Remarque générale..."></textarea>
 
   <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px">
     <button class="btn primary" id="btnAgentsSave" onclick="agentsSave(event)">Enregistrer</button>
-    <button class="btn info" id="btnAgentsValidate" onclick="agentsValidate(event)">Valider</button>
+    <button class="btn info" id="btnAgentsValidate" style="display:none" onclick="agentsValidate(event)">Valider</button>
   </div>
 
   <div id="toastAgentsSave" class="toast"></div>
 </div>
-    </div>
+
 
     <!-- ========= ADMIN ========= -->
     <div id="viewAdmins" class="card" style="display:none">
