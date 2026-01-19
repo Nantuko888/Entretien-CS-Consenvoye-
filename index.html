@@ -110,7 +110,8 @@
       <div class="tabs">
         <button class="tab active" id="tabAgents" onclick="showView('agents')">🧑‍🚒 Agent</button>
         <button class="tab" id="tabAdmins" onclick="showView('admins')">🛡️ Admin</button>
-        <button class="btn" onclick="bootstrap()">Recharger</button>
+        <button class="btn" id="btnRefresh" onclick="softRefresh(event)">Recharger</button>
+
       </div>
     </div>
 
@@ -1267,6 +1268,71 @@ function renderAgentMissions(list){
     if(input) input.value = "";
   }
 }
+
+async function softRefresh(ev){
+  const btn = ev?.target || document.getElementById("btnRefresh");
+  if(btn) setLoading(btn,true);
+
+  // on mémorise l’onglet affiché pour ne pas “revenir au début”
+  const isAdminsView = document.getElementById("viewAdmins")?.style.display !== "none";
+
+  // on mémorise les sélections actuelles
+  const keep = {
+    agentSel: document.getElementById("agentsSel")?.value || "",
+    agentsPeriodSel: document.getElementById("agentsPeriodsSel")?.value || "",
+    adminsPeriodSel: document.getElementById("adminsPeriodsSel")?.value || ""
+  };
+
+  try{
+    // 1) Recharger les listes globales (agents publics + périodes)
+    await bootstrap();
+
+    // restaurer sélections si encore valides
+    if(keep.agentSel) document.getElementById("agentsSel").value = keep.agentSel;
+    if(keep.agentsPeriodSel) document.getElementById("agentsPeriodsSel").value = keep.agentsPeriodSel;
+    if(keep.adminsPeriodSel) document.getElementById("adminsPeriodsSel").value = keep.adminsPeriodSel;
+
+    // 2) Admin connecté -> refresh admin
+    if(STATE?.admins?.ok){
+      // rafraîchir listes
+      await adminsListAgents();
+      await adminsListMissions();
+      await adminsListPeriods();
+
+      // si une période est déjà chargée, on recharge le groupe (sans toucher missions actives/retours)
+      if(STATE.current?.period_id){
+        await adminsLoadPeriod({ target: document.getElementById("btnAdminsLoadPeriod") });
+      }
+    }
+
+    // 3) Agent connecté -> refresh agent
+    if(STATE?.agents?.ok){
+      // si une période agent est chargée, on recharge les missions de la période
+      if(STATE.agentWork?.period_id){
+        // remet le select sur la période courante, puis recharge
+        const sel = document.getElementById("agentsPeriodsSel");
+        if(sel) sel.value = STATE.agentWork.period_id;
+        await agentsLoadPeriod({ target: document.getElementById("btnAgentsLoad") });
+      }
+    }
+
+    // on restaure l’onglet affiché (sans reset)
+    if(isAdminsView) showView("admins"); else showView("agents");
+
+    // petit feedback simple
+    // (si tu veux pas de toast global, tu peux supprimer ces 2 lignes)
+    if(STATE?.admins?.ok) showToast("toastAdminsLogin", "Rafraîchi ✅", true);
+    if(STATE?.agents?.ok) showToast("toastAgentsLogin", "Rafraîchi ✅", true);
+
+  }catch(e){
+    // feedback minimal
+    if(STATE?.admins?.ok) showToast("toastAdminsLogin", "Erreur refresh.", false);
+    if(STATE?.agents?.ok) showToast("toastAgentsLogin", "Erreur refresh.", false);
+  }finally{
+    if(btn) setLoading(btn,false);
+  }
+}
+
   
 async function agentsSave(ev){
   hideToast("toastAgentsSave");
