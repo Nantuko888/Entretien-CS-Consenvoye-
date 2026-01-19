@@ -1229,16 +1229,24 @@ function renderAgentMissions(list){
         <div class="title">${esc(m.libelle)}</div>
         <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
           <div style="flex:1;min-width:220px">
-            <select class="decSel" data-mid="${esc(m.mission_id)}">
+            <select class="decSel"
+               data-mid="${esc(m.mission_id)}"
+                onchange="onAgentDeclarationChange(this)">
               <option value="" ${m.declaration===""?"selected":""}>—</option>
               <option value="Fait" ${m.declaration==="Fait"?"selected":""}>Fait</option>
               <option value="Partiel" ${m.declaration==="Partiel"?"selected":""}>Partiel</option>
               <option value="Non fait" ${m.declaration==="Non fait"?"selected":""}>Non fait</option>
             </select>
           </div>
-          <div style="flex:1;min-width:220px">
-            <input type="text" class="justifInp" data-mid="..." placeholder="Justificatif si Partiel/Non fait" value="..." />
-
+          <div class="justifRow"
+     data-mid="${esc(m.mission_id)}"
+     style="display:none;margin-top:8px;width:100%;">
+  <input type="text"
+         class="justifInp"
+         data-mid="${esc(m.mission_id)}"
+         placeholder="Justificatif obligatoire si Partiel / Non fait"
+         value="${esc(m.justificatif||"")}" />
+</div>
           </div>
         </div>
       </div>
@@ -1246,6 +1254,20 @@ function renderAgentMissions(list){
   `).join("");
 }
 
+  function onAgentDeclarationChange(sel){
+  const mid = sel.dataset.mid;
+  const row = document.querySelector(`.justifRow[data-mid="${mid}"]`);
+  if(!row) return;
+
+  if(sel.value === "Partiel" || sel.value === "Non fait"){
+    row.style.display = "block";
+  } else {
+    row.style.display = "none";
+    const input = row.querySelector("input");
+    if(input) input.value = "";
+  }
+}
+  
 async function agentsSave(ev){
   hideToast("toastAgentsSave");
   if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
