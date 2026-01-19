@@ -1152,6 +1152,14 @@ async function agentsChangeCode(ev){
       showToast("toastAgentsChange",(res&&res.message)||"Erreur",false); return;
     }
     STATE.agents.must_change = false;
+    // fermer le tableau de changement de code
+$("boxAgentsKey").style.display = "none";
+
+// débloquer la suite (missions)
+$("boxAgentsWork").style.display = "";
+
+// garder la clé disponible
+$("btnAgentsKey").style.display = "";
     $("agentsOldCode").value="";
     $("agentsNewCode").value="";
     showToast("toastAgentsChange","Code modifié ✅",true);
