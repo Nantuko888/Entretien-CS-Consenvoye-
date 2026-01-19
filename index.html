@@ -209,14 +209,14 @@
         <div id="boxAgentsAfterLoad" style="display:none">
   <label>Remarque générale (facultatif)</label>
   <textarea id="agentsRemark" rows="3" placeholder="Remarque générale..."></textarea>
-</div>
 
-         <button class="btn primary" id="btnAgentsSave" onclick="agentsSave(event)">Enregistrer</button>
-  <button class="btn info" id="btnAgentsValidate" onclick="agentsValidate(event)">Valider</button>
-</div>
+  <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px">
+    <button class="btn primary" id="btnAgentsSave" onclick="agentsSave(event)">Enregistrer</button>
+    <button class="btn info" id="btnAgentsValidate" onclick="agentsValidate(event)">Valider</button>
+  </div>
 
-        <div id="toastAgentsSave" class="toast"></div>
-      </div>
+  <div id="toastAgentsSave" class="toast"></div>
+</div>
     </div>
 
     <!-- ========= ADMIN ========= -->
