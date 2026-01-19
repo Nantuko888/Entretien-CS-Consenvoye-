@@ -1411,9 +1411,74 @@ async function agentsSave(ev){
     setLoading(btn,false);
   }
 }
-function agentsValidate(ev){
-  alert("Validation cliquée (test)");
+async function agentsValidate(ev){
+  hideToast("toastAgentsSave"); // on réutilise le toast du bloc missions
+  if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
+
+  const btn = ev?.target || $("btnAgentsValidate");
+  const period_id = STATE.agentWork.period_id;
+  if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
+
+  // 1) Vérif locale : toutes les missions doivent être remplies
+  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
+    const mid = sel.getAttribute("data-mid");
+    const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
+    return {
+      mission_id: mid,
+      declaration: sel.value,
+      justificatif: just ? just.value.trim() : ""
+    };
+  });
+
+  if(!decs.length){
+    showToast("toastAgentsSave","Aucune mission à valider.",false);
+    return;
+  }
+
+  for(const d of decs){
+    if(!d.declaration){
+      showToast("toastAgentsSave","Tu dois renseigner toutes les missions avant de valider.",false);
+      return;
+    }
+    if((d.declaration==="Partiel" || d.declaration==="Non fait") && !d.justificatif){
+      showToast("toastAgentsSave","Justificatif obligatoire si Partiel / Non fait.",false);
+      return;
+    }
+  }
+
+  // 2) On enregistre d’abord (pour être sûr que tout est bien stocké)
+  // -> on appelle ta fonction existante agentsSave(ev)
+  await agentsSave({ target: $("btnAgentsSave") });
+
+  // 3) Puis on demande le verrouillage au serveur
+  setLoading(btn,true);
+  try{
+    const res = await apiCall("agentValidatePeriod", {
+      agent_id: STATE.agents.agent_id,
+      period_id
+    });
+
+    if(!res || !res.ok){
+      showToast("toastAgentsSave",(res&&res.message)||"Erreur validation",false);
+      return;
+    }
+
+    showToast("toastAgentsSave","✅ Validé — saisie verrouillée",true);
+
+    // 4) UI en lecture seule
+    // désactive tous les selects + champs justificatif + remarque + boutons
+    $("boxAgentsMissions").querySelectorAll("select, input").forEach(el=> el.disabled = true);
+    $("agentsRemark").disabled = true;
+    $("btnAgentsSave").disabled = true;
+    $("btnAgentsValidate").disabled = true;
+
+  }catch(e){
+    showToast("toastAgentsSave","Erreur réseau.",false);
+  }finally{
+    setLoading(btn,false);
+  }
 }
+
 /* double click / double tap pour fermer l’image */
 $("doneImg").addEventListener("dblclick", ()=> $("doneOverlay").classList.remove("show"));
 $("doneImg").addEventListener("touchend", (e)=>{
