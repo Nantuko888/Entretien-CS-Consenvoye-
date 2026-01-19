@@ -206,23 +206,18 @@
 
         <div class="divider"></div>
 
-        <div id="boxAgentsAfterLoad" style="display:none">
+       <div id="boxAgentsAfterLoad" style="display:none">
   <label>Remarque générale (facultatif)</label>
   <textarea id="agentsRemark" rows="3" placeholder="Remarque générale..."></textarea>
+
+  <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px">
+    <button class="btn primary" id="btnAgentsSave" onclick="agentsSave(event)">Enregistrer</button>
+    <button class="btn info" id="btnAgentsValidate" style="display:none" onclick="agentsValidate(event)">Valider</button>
+  </div>
+
+  <div id="toastAgentsSave" class="toast"></div>
 </div>
 
-       <div id="boxAgentsAfterLoad" style="display:none;justify-content:flex-end;margin-top:10px;gap:10px">
-         <label>Remarque générale (facultatif)</label>
-<textarea id="agentsRemark" rows="3" placeholder="Remarque générale..."></textarea>
-
-
-  <button class="btn primary" id="btnAgentsSave" onclick="agentsSave(event)">Enregistrer</button>
-  <button class="btn info" id="btnAgentsValidate" onclick="agentsValidate(event)">Valider</button>
-</div>
-
-        <div id="toastAgentsSave" class="toast"></div>
-      </div>
-    </div>
 
     <!-- ========= ADMIN ========= -->
     <div id="viewAdmins" class="card" style="display:none">
@@ -1175,6 +1170,9 @@ function agentsLogout(){
   $("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
   $("agentsRemark").value="";
   hideToast("toastAgentsLogin");
+  $("boxAgentsAfterLoad").style.display = "none";
+  $("btnAgentsValidate").style.display = "none";
+  $("btnAgentsSave").style.display = "none";
 }
 
 function toggleAgentsKey(){
@@ -1231,6 +1229,10 @@ async function agentsLoadPeriod(ev){
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
+    STATE.agentWork.period_id = period_id;
+STATE.agentWork.missions = res.missions || [];
+STATE.agentWork.is_responsable = !!res.is_responsable; // (ou ce que tu as)
+
     $("boxAgentsAfterLoad").style.display = "";
 
 // Affichage du bouton "Valider" uniquement pour le responsable
