@@ -1231,9 +1231,11 @@ async function agentsLoadPeriod(ev){
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
+    $("boxAgentsAfterLoad").style.display = "";
 
 // Affichage du bouton "Valider" uniquement pour le responsable
 $("btnAgentsValidate").style.display = STATE.agentWork.is_responsable ? "" : "none";
+    $("btnAgentsSave").style.display = "";
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
