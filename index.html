@@ -1081,14 +1081,6 @@ async function agentsLogin(ev){
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
     STATE.agents.must_change = !!res.agent.must_change;
-    const msgBox = $("agentsMustChangeMsg");
-
-if (STATE.agents.must_change) {
-  msgBox.innerText = "⚠️ Changement de code obligatoire (première connexion ou reset).";
-  msgBox.style.display = "";
-} else {
-  msgBox.style.display = "none";
-}
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
@@ -1160,17 +1152,9 @@ async function agentsChangeCode(ev){
       showToast("toastAgentsChange",(res&&res.message)||"Erreur",false); return;
     }
     STATE.agents.must_change = false;
-    const msgBox = $("agentsMustChangeMsg");
-msgBox.innerText = "✅ Votre code a été changé avec succès.";
-msgBox.style.display = "";
-
-    setTimeout(() => {
-  msgBox.style.display = "none";
-}, 4000);
     $("agentsOldCode").value="";
     $("agentsNewCode").value="";
     showToast("toastAgentsChange","Code modifié ✅",true);
-    $("boxAgentsKey").style.display = "none";
   }catch(_){
     showToast("toastAgentsChange","Erreur réseau.",false);
   }finally{
