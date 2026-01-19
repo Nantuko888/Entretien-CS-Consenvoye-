@@ -559,6 +559,9 @@ function renderPeriodsSelects(){
   const adminSel = $("adminsPeriodsSel");
   if (adminSel) adminSel.innerHTML = opts;
 
+  // AGENT
+  const agentSel = $("agentsPeriodsSel");
+  if (agentSel) agentSel.innerHTML = opts;
 }
 
 function renderAdminsAddToGroupSelect(){
@@ -1098,18 +1101,6 @@ async function agentsLogin(ev){
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
     STATE.agents.must_change = !!res.agent.must_change;
-    // === périodes autorisées pour l'agent ===
-STATE.agents.allowedPeriods = (res.periodes || []).map(p => String(p.period_id));
-
-const sel = $("agentsPeriodsSel");
-if(sel){
-  sel.innerHTML =
-    `<option value="">— Choisir période —</option>` +
-    (res.periodes || []).map(p =>
-      `<option value="${esc(p.period_id)}">${esc(p.libelle || p.period_id)}</option>`
-    ).join("");
-}
-
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
@@ -1382,15 +1373,10 @@ async function agentsSave(ev){
       remark,
       items: JSON.stringify(decs)
     });
-    f(!res || !res.ok){
-  if(res && res.message === "locked"){
-    showToast("toastAgentsSave","✅ Déjà validé : tu ne peux plus modifier. Demande à l’admin de réouvrir.", false);
-  }else{
-    showToast("toastAgentsSave",(res&&res.message)||"Erreur", false);
-  }
-  return;
-}
-
+    if(!res || !res.ok){
+      showToast("toastAgentsSave",(res&&res.message)||"Erreur",false);
+      return;
+    }
     showToast("toastAgentsSave","Enregistré ✅",true);
 
     if(allDone){
