@@ -1411,7 +1411,9 @@ async function agentsSave(ev){
     setLoading(btn,false);
   }
 }
-
+function agentsValidate(ev){
+  alert("Validation cliquée (test)");
+}
 /* double click / double tap pour fermer l’image */
 $("doneImg").addEventListener("dblclick", ()=> $("doneOverlay").classList.remove("show"));
 $("doneImg").addEventListener("touchend", (e)=>{
