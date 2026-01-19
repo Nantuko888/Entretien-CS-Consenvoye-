@@ -1230,7 +1230,17 @@ async function agentsLoadPeriod(ev){
     }
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
-    STATE.agentWork.is_responsable = !!res.is_responsable;
+    STATE.agentWork.is_responsable = !!res.is_responsable === true;
+
+    // Affiche le bloc complet après chargement
+$("boxAgentsAfterLoad").style.display = "";
+
+// Bouton Enregistrer : toujours visible après chargement
+$("btnAgentsSave").style.display = "";
+
+// Bouton Valider : seulement si responsable
+$("btnAgentsValidate").style.display = STATE.agentWork.is_responsable ? "" : "none";
+
     $("boxAgentsAfterLoad").style.display = "";
 
 // Affichage du bouton "Valider" uniquement pour le responsable
