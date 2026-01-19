@@ -1233,9 +1233,9 @@ async function agentsLoadPeriod(ev){
     STATE.agentWork.is_responsable = !!res.is_responsable;
     $("boxAgentsAfterLoad").style.display = "";
 
-// Affichage du bouton "Valider" uniquement pour le responsable
-$("btnAgentsValidate").style.display = STATE.agentWork.is_responsable ? "" : "none";
-    $("btnAgentsSave").style.display = "";
+    // === AFFICHAGE DES BOUTONS AGENT APRÈS CHARGEMENT ===
+$("btnAgentsSave").style.display = "";
+$("btnAgentsValidate").style.display = "";
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
