@@ -1155,6 +1155,7 @@ async function agentsChangeCode(ev){
     $("agentsOldCode").value="";
     $("agentsNewCode").value="";
     showToast("toastAgentsChange","Code modifié ✅",true);
+    $("boxAgentsKey").style.display = "none";
   }catch(_){
     showToast("toastAgentsChange","Erreur réseau.",false);
   }finally{
