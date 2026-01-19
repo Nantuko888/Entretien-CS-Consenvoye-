@@ -1129,6 +1129,12 @@ async function agentsLogin(ev){
     "⚠️ Changement de code obligatoire (première connexion ou reset).",
     true
   );
+      // reset affichage missions (évite que ça reste visible d’un agent précédent)
+$("boxAgentsAfterLoad").style.display = "none";
+$("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
+$("agentsRemark").value = "";
+$("btnAgentsSave").style.display = "none";
+$("btnAgentsValidate").style.display = "none";
   return;
 }
 
@@ -1170,6 +1176,12 @@ function agentsLogout(){
   $("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
   $("agentsRemark").value="";
   hideToast("toastAgentsLogin");
+  // reset affichage "après chargement"
+$("boxAgentsAfterLoad").style.display = "none";
+$("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
+$("agentsRemark").value = "";
+$("btnAgentsSave").style.display = "none";
+$("btnAgentsValidate").style.display = "none";
 }
 
 function toggleAgentsKey(){
@@ -1236,12 +1248,7 @@ $("btnAgentsSave").style.display = "";
 // Bouton Valider : seulement si responsable
 $("btnAgentsValidate").style.display = STATE.agentWork.is_responsable ? "" : "none";
 
-    $("boxAgentsAfterLoad").style.display = "";
-
-// Affichage du bouton "Valider" uniquement pour le responsable
-$("btnAgentsValidate").style.display = STATE.agentWork.is_responsable ? "" : "none";
-    $("btnAgentsSave").style.display = "";
-
+   
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
 
