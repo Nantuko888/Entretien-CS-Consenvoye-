@@ -271,6 +271,30 @@
 #viewAgents[data-period-open="1"][data-is-resp="0"] #btnAgentsValidate{
   display:none !important;
 }
+/* ===== Badge connecté mobile ===== */
+.mobileOnly {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobileOnly {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #1fd36b, #0fa958);
+    color: #003b1f;
+  }
+
+  /* On cache le badge desktop dans le header sur mobile */
+  .topActions #pillAgentsStatus {
+    display: none;
+  }
+}
+
+
 
   </style>
 </head>
