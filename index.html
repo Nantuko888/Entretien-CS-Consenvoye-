@@ -1242,6 +1242,7 @@ $("btnAgentsValidate").style.display = "";
 
 
     renderAgentMissions(res.missions || []);
+    renderAgentTeam(res.group || [], res.responsable || null);
     $("boxAgentsAfterLoad").style.display = "";
 $("btnAgentsSave").style.display = "";
 $("btnAgentsValidate").style.display = (STATE.agentWork?.is_responsable ? "" : "none");
