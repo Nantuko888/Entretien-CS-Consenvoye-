@@ -236,6 +236,15 @@
     max-height: 150px; /* ↓ taille max du titre feu */
   }
 }
+    .infoBanner{
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 80, 80, 0.15);
+  border: 1px solid rgba(255, 80, 80, 0.4);
+  color: #ffb3b3;
+  font-weight: 600;
+}
 
   </style>
 </head>
@@ -1377,14 +1386,30 @@ async function agentsLoadPeriod(ev){
     if(!res || !res.ok){
       showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
     }
+    // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
+const now = new Date();
+const currentYM = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+const periodYM = String(period_id).substring(0, 7); // "YYYY-MM"
+STATE.agentWork.is_period_open = (periodYM === currentYM);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
     $("boxAgentsAfterLoad").style.display = "";
 
-    // === AFFICHAGE DES BOUTONS AGENT APRÈS CHARGEMENT ===
-$("btnAgentsSave").style.display = "";
-$("btnAgentsValidate").style.display = "";
+if (STATE.agentWork.is_period_open) {
+  $("btnAgentsSave").style.display = "";
+  $("btnAgentsValidate").style.display = (STATE.agentWork.is_responsable ? "" : "none");
+  $("periodClosedInfo").style.display = "none";
+} else {
+  <div id="periodClosedInfo" class="infoBanner" style="display:none;">
+  ⛔ Vous n’êtes pas autorisé à enregistrer ou valider cette période.<br>
+  📅 L’ouverture se fait en début de mois.
+</div>
+
+  $("btnAgentsSave").style.display = "none";
+  $("btnAgentsValidate").style.display = "none";
+  $("periodClosedInfo").style.display = "block";
+}
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
