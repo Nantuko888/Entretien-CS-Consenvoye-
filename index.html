@@ -1478,6 +1478,9 @@ async function agentsLoadPeriod(ev){
     // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
 STATE.agentWork.is_period_open = !!res.is_period_open;
 STATE.agentWork.is_responsable = !!res.is_responsable;
+    console.log("PERIOD OPEN =", res.is_period_open);
+console.log("RESPONSABLE =", res.is_responsable);
+
 
 setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.period_id = period_id;
