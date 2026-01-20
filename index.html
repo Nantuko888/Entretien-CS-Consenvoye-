@@ -621,7 +621,22 @@ function showView(which){
   $("viewAgents").style.display = (which==="agents") ? "" : "none";
   $("viewAdmins").style.display = (which==="admins") ? "" : "none";
 }
+function setAgentPeriodLocked(locked){
+  // boutons
+  $("btnAgentsSave").style.display = locked ? "none" : "";
+  $("btnAgentsValidate").style.display = locked ? "none" : "";
 
+  // remarque générale
+  const remark = $("agentsRemark");
+  if(remark) remark.disabled = !!locked;
+
+  // missions : select + justificatif
+  const box = $("boxAgentsMissions");
+  if(box){
+    box.querySelectorAll(".decSel").forEach(sel => { sel.disabled = !!locked; });
+    box.querySelectorAll(".justifInp").forEach(inp => { inp.disabled = !!locked; });
+  }
+}
 /* ===============================
    JSONP (évite CORS GitHub -> Apps Script)
    =============================== */
@@ -1417,6 +1432,7 @@ if (STATE.agentWork.is_period_open) {
 
     renderAgentMissions(res.missions || []);
     renderAgentTeam(res.group || [], res.responsable || null);
+    setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     console.log("TEAM GROUP =", res.group);
 console.log("RESPONSABLE =", res.responsable);
     $("boxAgentsAfterLoad").style.display = "";
