@@ -324,9 +324,10 @@
         </div>
         <div id="pillAgentsStatusMobile" class="status" style="display:none"></div>
       </div>
-
+       <div id="boxAgentsLoginFields">
       <div class="row">
         <div>
+          <div>
           <label>Agent</label>
           <select id="agentsSel"></select>
         </div>
@@ -720,6 +721,9 @@ function showView(which){
   if (badgeMobile) {
     badgeMobile.textContent = isConnected ? "Connecté ✓" : "Non connecté";
   }
+    const box = $("boxAgentsLoginFields");
+  if (box) box.style.display = isConnected ? "none" : "";
+
 }
 
 
