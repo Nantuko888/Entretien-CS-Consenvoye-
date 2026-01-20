@@ -1445,8 +1445,7 @@ if (STATE.agentWork.is_period_open) {
     console.log("TEAM GROUP =", res.group);
 console.log("RESPONSABLE =", res.responsable);
     $("boxAgentsAfterLoad").style.display = "";
-$("btnAgentsSave").style.display = "";
-$("btnAgentsValidate").style.display = (STATE.agentWork?.is_responsable ? "" : "none");
+
     showToast("toastAgentsLoad","Chargé ✅",true);
   }catch(_){
     showToast("toastAgentsLoad","Erreur réseau.",false);
