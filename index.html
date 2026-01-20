@@ -1319,13 +1319,16 @@ function renderAgentMissions(list){
   box.style.display = "";
   list.innerHTML = g.map(a => `<div class="checkRow"><div class="title">${esc(a.nom || a.name || "")}</div></div>`).join("");
 
-  if(responsable && (responsable.nom || responsable.name)){
-    resp.textContent = "Responsable : " + (responsable.nom || responsable.name);
-    resp.className = "status ok";
-  }else{
-    resp.textContent = "Responsable : —";
-    resp.className = "status";
-  }
+  if (responsable && responsable.nom) {
+  resp.innerHTML = `
+    <div class="resp-line">Responsable</div>
+    <div class="resp-line">${esc(responsable.nom)}</div>
+  `;
+  resp.className = "status ok";
+} else {
+  resp.innerHTML = "";
+  resp.className = "status";
+}
 }
 
   function onAgentDeclarationChange(sel){
