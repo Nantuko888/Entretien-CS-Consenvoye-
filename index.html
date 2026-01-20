@@ -1317,7 +1317,16 @@ function renderAgentMissions(list){
 
   if(!box || !list || !resp) return;
 
-  const g = Array.isArray(group) ? group : [];
+ const g = Array.isArray(group) ? [...group] : [];
+
+g.sort((a, b) =>
+  (a.nom || a.name || "").localeCompare(
+    (b.nom || b.name || ""),
+    "fr",
+    { sensitivity: "base" }
+  )
+);
+
 
   if(!g.length){
     box.style.display = "none";
