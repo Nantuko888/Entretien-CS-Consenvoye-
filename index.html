@@ -186,17 +186,31 @@
   background:linear-gradient(135deg, #ff6b6b, #d83a3a);
   color:#3b0b0b;
 }
-
+.titleWrap{
+  display:flex;
+  justify-content:center;
+  margin: 6px 0 10px;
+}
+.titleImg{
+  width: min(900px, 92vw);
+  height: auto;
+  display:block;
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,.55));
+}
+@media (max-width: 700px){
+  .titleImg{ width: min(760px, 96vw); }
+}
 
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <h1>Entretien du centre de secours de Consenvoye</h1>
-    <div class="subtitle">Agent : saisie • Admin : configuration • Justificatif obligatoire si <b>Partiel</b> / <b>Non fait</b></div>
+    <div class="titleWrap">
+  <img src="assets/titre-feu.png" alt="Entretien du centre de secours de Consenvoye" class="titleImg">
+</div>
 
-    <div class="tabsCenter">
+      <div class="tabsCenter">
       <div class="tabs">
         <button class="tab active" id="tabAgents" onclick="showView('agents')">🧑‍🚒 Agent</button>
         <button class="tab" id="tabAdmins" onclick="showView('admins')">🛡️ Admin</button>
