@@ -683,6 +683,21 @@ function showView(which){
   $("viewAgents").style.display = (which==="agents") ? "" : "none";
   $("viewAdmins").style.display = (which==="admins") ? "" : "none";
 }
+  function setAgentConnectedUI(isConnected) {
+  const badge = $("pillAgentsStatus");
+  if (!badge) return;
+
+  if (isConnected) {
+    badge.textContent = "Connecté ✓";
+    badge.classList.add("ok");
+    badge.classList.remove("bad");
+  } else {
+    badge.textContent = "Non connecté";
+    badge.classList.remove("ok");
+    badge.classList.add("bad");
+  }
+}
+
 
 /* ===============================
    JSONP (évite CORS GitHub -> Apps Script)
@@ -1351,6 +1366,8 @@ async function agentsLogin(ev){
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
     STATE.agents.must_change = !!res.agent.must_change;
+    
+    setAgentConnectedUI(true);
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
