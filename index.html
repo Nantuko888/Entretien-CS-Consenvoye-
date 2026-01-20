@@ -713,6 +713,16 @@ async function adminsListAgents(){
 list.sort((a,b)=>
   String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
 );
+
+      // === Compteurs agents ===
+const total = list.length;
+const active = list.filter(a => a.actif).length;
+const inactive = total - active;
+
+$("agentsCountTotal").textContent = ` (${total})`;
+$("agentsCountActive").textContent = ` 🟢 ${active}`;
+$("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
+
     tb.innerHTML = list.map(a=>`
       <tr>
         <td>${esc(a.nom)}</td>
