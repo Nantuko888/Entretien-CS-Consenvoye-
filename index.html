@@ -1418,11 +1418,10 @@ async function agentsLoadPeriod(ev){
       showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
     }
     // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
-const now = new Date();
-const currentYM = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
-const periodYM = String(period_id).match(/\d{4}-\d{2}/)?.[0] || "";
+STATE.agentWork.is_period_open = !!res.is_period_open;
+STATE.agentWork.is_responsable = !!res.is_responsable;
 
-STATE.agentWork.is_period_open = (periodYM === currentYM);
+setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
