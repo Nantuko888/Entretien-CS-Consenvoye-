@@ -1291,6 +1291,35 @@ function renderAgentMissions(list){
   `).join("");
 }
 
+  function renderAgentTeam(group, responsable){
+  const box = $("boxAgentsTeam");
+  const list = $("agentsTeamList");
+  const resp = $("agentsResponsable");
+
+  if(!box || !list || !resp) return;
+
+  const g = Array.isArray(group) ? group : [];
+
+  if(!g.length){
+    box.style.display = "none";
+    list.innerHTML = "";
+    resp.textContent = "";
+    resp.className = "status";
+    return;
+  }
+
+  box.style.display = "";
+  list.innerHTML = g.map(a => `<div class="checkRow"><div class="title">${esc(a.nom || a.name || "")}</div></div>`).join("");
+
+  if(responsable && (responsable.nom || responsable.name)){
+    resp.textContent = "Responsable : " + (responsable.nom || responsable.name);
+    resp.className = "status ok";
+  }else{
+    resp.textContent = "Responsable : —";
+    resp.className = "status";
+  }
+}
+
   function onAgentDeclarationChange(sel){
   const mid = sel.dataset.mid;
   const row = document.querySelector(`.justifRow[data-mid="${mid}"]`);
