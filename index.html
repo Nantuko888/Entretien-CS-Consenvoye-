@@ -225,7 +225,17 @@
     max-height: 36vh;
   }
 }
+/* Réglage spécifique PC */
+@media (min-width: 1024px) {
+  .hero {
+    height: 22vh; /* ↓ diminue la hauteur sur PC */
+    max-height: 200px; /* sécurité */
+  }
 
+  .title-img {
+    max-height: 180px; /* ↓ taille max du titre feu */
+  }
+}
 
   </style>
 </head>
