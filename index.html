@@ -1482,8 +1482,7 @@ STATE.agentWork.is_responsable = !!res.is_responsable;
 setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
-    STATE.agentWork.is_responsable = !!res.is_responsable;
-    $("boxAgentsAfterLoad").style.display = "";
+        $("boxAgentsAfterLoad").style.display = "";
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
