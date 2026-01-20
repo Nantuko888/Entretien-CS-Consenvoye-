@@ -1440,6 +1440,28 @@ $("btnAgentsKey").style.display = "";
   }
 }
 
+function toPeriodYM(period_id, label){
+  // 1) si period_id contient déjà YYYY-MM, on le prend
+  const m = String(period_id || "").match(/\d{4}-\d{2}/);
+  if (m) return m[0];
+
+  // 2) sinon on tente de parser "Janvier 2026"
+  const txt = String(label || "").trim().toLowerCase();
+
+  const months = {
+    "janvier":"01", "février":"02", "fevrier":"02", "mars":"03", "avril":"04",
+    "mai":"05", "juin":"06", "juillet":"07", "août":"08", "aout":"08",
+    "septembre":"09", "octobre":"10", "novembre":"11", "décembre":"12", "decembre":"12"
+  };
+
+  const year = (txt.match(/\b(20\d{2})\b/) || [])[1];
+  const monthName = Object.keys(months).find(k => txt.includes(k));
+  if (!year || !monthName) return "";
+
+  return `${year}-${months[monthName]}`;
+}
+
+  
 async function agentsLoadPeriod(ev){
   hideToast("toastAgentsLoad");
   if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.",false); return; }
