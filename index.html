@@ -1330,14 +1330,14 @@ function renderAgentMissions(list){
   box.style.display = "";
   list.innerHTML = g.map(a => `<div class="checkRow"><div class="title">${esc(a.nom || a.name || "")}</div></div>`).join("");
 
-  if (responsable && responsable.nom) {
+  if (responsable && (responsable.nom || responsable.name)) {
   resp.innerHTML = `
-    <div class="resp-line">Responsable</div>
-    <div class="resp-line">${esc(responsable.nom)}</div>
+    <div>Responsable</div>
+    <div>${esc(responsable.nom || responsable.name)}</div>
   `;
   resp.className = "status ok";
 } else {
-  resp.innerHTML = "";
+  resp.innerHTML = `<div>Responsable</div>`;
   resp.className = "status";
 }
 }
