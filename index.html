@@ -350,7 +350,12 @@
         </div>
 
            <div id="boxAgentsAfterLoad" style="display:none;justify-content:flex-end;margin-top:10px;gap:10px">
-            
+
+             <div id="periodClosedInfo" class="infoBanner" style="display:none; margin-bottom:12px;">
+  ⛔ Vous n’êtes pas autorisé à enregistrer ou valider cette période.<br>
+  📅 L’ouverture se fait en début de mois.
+</div>
+           
 
          <label>Remarque générale (facultatif)</label>
 <textarea id="agentsRemark" rows="3" placeholder="Remarque générale..."></textarea>
@@ -1401,11 +1406,7 @@ if (STATE.agentWork.is_period_open) {
   $("btnAgentsValidate").style.display = (STATE.agentWork.is_responsable ? "" : "none");
   $("periodClosedInfo").style.display = "none";
 } else {
-  <div id="periodClosedInfo" class="infoBanner" style="display:none;">
-  ⛔ Vous n’êtes pas autorisé à enregistrer ou valider cette période.<br>
-  📅 L’ouverture se fait en début de mois.
-</div>
-
+  
   $("btnAgentsSave").style.display = "none";
   $("btnAgentsValidate").style.display = "none";
   $("periodClosedInfo").style.display = "block";
