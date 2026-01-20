@@ -1453,20 +1453,6 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.is_responsable = !!res.is_responsable;
     $("boxAgentsAfterLoad").style.display = "";
 
-const btnSave = $("btnAgentsSave");
-const btnVal = $("btnAgentsValidate");
-const info = $("periodClosedInfo");
-
-if (STATE.agentWork.is_period_open) {
-  if (btnSave) btnSave.style.display = "";
-  if (btnVal) btnVal.style.display = (STATE.agentWork.is_responsable ? "" : "none");
-  if (info) info.style.display = "none";
-} else {
-  if (btnSave) btnSave.style.display = "none";
-  if (btnVal) btnVal.style.display = "none";
-  if (info) info.style.display = "block";
-}
-
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
 
