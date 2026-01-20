@@ -245,6 +245,32 @@
   color: #ffb3b3;
   font-weight: 600;
 }
+/* Pilotage centralisé via data-* sur #viewAgents */
+#viewAgents[data-period-open="0"] #btnAgentsSave,
+#viewAgents[data-period-open="0"] #btnAgentsValidate{
+  display:none !important;
+}
+
+#viewAgents[data-period-open="0"] #periodClosedInfo{
+  display:block !important;
+}
+
+#viewAgents[data-period-open="1"] #periodClosedInfo{
+  display:none !important;
+}
+
+/* En période ouverte : Save visible */
+#viewAgents[data-period-open="1"] #btnAgentsSave{
+  display:inline-flex !important;
+}
+
+/* Valider visible SEULEMENT si responsable */
+#viewAgents[data-period-open="1"][data-is-resp="1"] #btnAgentsValidate{
+  display:inline-flex !important;
+}
+#viewAgents[data-period-open="1"][data-is-resp="0"] #btnAgentsValidate{
+  display:none !important;
+}
 
   </style>
 </head>
