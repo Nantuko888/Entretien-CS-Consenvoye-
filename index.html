@@ -704,6 +704,10 @@ async function adminsListAgents(){
     const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.agents || [];
+      // TRI alphabétique (ignore majuscules/accents)
+list.sort((a,b)=>
+  String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
+);
     tb.innerHTML = list.map(a=>`
       <tr>
         <td>${esc(a.nom)}</td>
