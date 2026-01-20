@@ -125,6 +125,32 @@
 .status.ok {
   font-weight: 600;
 }
+    badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-left: 10px;
+  padding: 4px 12px;
+
+  border-radius: 999px; /* pill / bouton */
+  font-size: 0.85em;
+  font-weight: 600;
+
+  line-height: 1;
+  white-space: nowrap;
+}
+    .badge.green {
+  background: linear-gradient(135deg, rgba(31,211,107,0.25), rgba(31,211,107,0.1));
+  color: #1fd36b;
+  border: 1px solid rgba(31,211,107,0.5);
+}
+.badge.red {
+  background: linear-gradient(135deg, rgba(255,59,48,0.25), rgba(255,59,48,0.1));
+  color: #ff3b30;
+  border: 1px solid rgba(255,59,48,0.5);
+}
+
 
   </style>
 </head>
