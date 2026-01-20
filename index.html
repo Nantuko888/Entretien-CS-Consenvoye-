@@ -595,6 +595,36 @@ const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-n
    OUTILS
    =============================== */
 function $(id){ return document.getElementById(id); }
+  
+Pierre Vénante <pierre.venante@gmail.com>
+17:06 (il y a 3 minutes)
+À moi
+
+function setAgentPeriodLocked(locked) {
+  // locked = true => interdit (lecture seule)
+  // locked = false => autorisé (édition)
+
+  const btnSave = $("btnAgentsSave");
+  const btnVal = $("btnAgentsValidate");
+  const info = $("periodClosedInfo");
+
+  if (btnSave) btnSave.style.display = locked ? "none" : "";
+  if (btnVal) btnVal.style.display = locked ? "none" : "";
+
+  if (info) info.style.display = locked ? "block" : "none";
+
+  // remarque générale
+  const remark = $("agentsRemark");
+  if (remark) remark.disabled = locked;
+
+  // missions : select + justificatif
+  const box = $("boxAgentsMissions");
+  if (box) {
+    box.querySelectorAll(".decSel").forEach(sel => sel.disabled = locked);
+    box.querySelectorAll(".justifInp").forEach(inp => inp.disabled = locked);
+  }
+}
+
 function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function showToast(id, msg, ok){
   const el = $(id); if(!el) return;
@@ -1394,7 +1424,8 @@ async function agentsLoadPeriod(ev){
     // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
 const now = new Date();
 const currentYM = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
-const periodYM = String(period_id).substring(0, 7); // "YYYY-MM"
+const periodYM = String(period_id).match(/\d{4}-\d{2}/)?.[0] || "";
+
 STATE.agentWork.is_period_open = (periodYM === currentYM);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
