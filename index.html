@@ -294,8 +294,6 @@
   }
 }
 
-
-
   </style>
 </head>
 
@@ -318,6 +316,7 @@
     <div id="viewAgents" class="card">
       <div class="headRow">
         <div class="h2">Espace agent</div>
+        <div id="pillAgentsStatusMobile" class="mobileOnly">Non connecté</div>
         <div class="topActions">
           <button class="keyBtn" id="btnAgentsKey" style="display:none" title="Changer mon code" onclick="toggleAgentsKey()">🔑</button>
           <button class="btn danger small" id="btnAgentsLogout" style="display:none" onclick="agentsLogout()">Déconnexion</button>
@@ -710,18 +709,19 @@ function showView(which){
 }
   function setAgentConnectedUI(isConnected) {
   const badge = $("pillAgentsStatus");
-  if (!badge) return;
+  const badgeMobile = $("pillAgentsStatusMobile");
 
-  if (isConnected) {
-    badge.textContent = "Connecté ✓";
-    badge.classList.add("ok");
-    badge.classList.remove("bad");
-  } else {
-    badge.textContent = "Non connecté";
-    badge.classList.remove("ok");
-    badge.classList.add("bad");
+  if (badge) {
+    badge.textContent = isConnected ? "Connecté ✓" : "Non connecté";
+    badge.classList.toggle("ok", isConnected);
+    badge.classList.toggle("bad", !isConnected);
+  }
+
+  if (badgeMobile) {
+    badgeMobile.textContent = isConnected ? "Connecté ✓" : "Non connecté";
   }
 }
+
 
 
 /* ===============================
