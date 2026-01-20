@@ -200,6 +200,32 @@
 @media (max-width: 700px){
   .titleImg{ width: min(760px, 96vw); }
 }
+    /* ===== TITRE FEU RESPONSIVE ===== */
+.hero-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 12px 0 8px 0; /* réduit l'espace haut/bas */
+}
+
+.hero-title img {
+  width: auto;
+  max-width: 90vw;
+
+  /* CLÉ DU PROBLÈME */
+  max-height: 28vh;
+
+  object-fit: contain;
+}
+
+/* ===== MOBILE : titre un peu plus grand ===== */
+@media (max-width: 768px) {
+  .hero-title img {
+    max-height: 36vh;
+  }
+}
+
 
   </style>
 </head>
