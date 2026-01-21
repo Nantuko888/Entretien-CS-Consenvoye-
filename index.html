@@ -333,6 +333,14 @@
   #viewAgents .topActions{ gap: 8px; }
   #pillAgentsStatus{ font-size: 12px; }
 }
+/* STEP 1 : badge agent à la place du select */
+#agentsAgentBadge{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  justify-content: center; /* texte centré */
+  text-align: center;
+}
 
   </style>
 </head>
@@ -364,11 +372,14 @@
       </div>
 
       <div class="row">
-        <div>
-          <label>Agent</label>
-          <select id="agentsSel"></select>
-        </div>
-        <div>
+        <div id="agentsAgentSlot">
+  <label>Agent</label>
+  <select id="agentsSel"></select>
+
+  <!-- Badge agent (sera affiché après connexion) -->
+  <div id="agentsAgentBadge" class="status ok" style="display:none"></div>
+</div>
+
           <label>Code</label>
           <input id="agentsCode" placeholder="Code agent" />
         </div>
