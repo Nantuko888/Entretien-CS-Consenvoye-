@@ -1199,6 +1199,10 @@ async function adminsRemoveFromGroup(agent_id){
 
   const period_id = STATE.current.period_id;
   if(!period_id) return;
+  // Anti double-clic + feedback simple (safe)
+const btn = event?.target;
+if (btn && btn.tagName === "BUTTON") setLoading(btn, true);
+
 
   try{
     const res = await apiCall("adminRemoveFromGroup", {
@@ -1213,6 +1217,7 @@ async function adminsRemoveFromGroup(agent_id){
         (res && res.message) || "Erreur",
         false
       );
+      if (btn && btn.tagName === "BUTTON") setLoading(btn, false);
       return;
     }
 
