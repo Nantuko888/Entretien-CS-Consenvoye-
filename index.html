@@ -1452,6 +1452,14 @@ async function agentsLogin(ev){
     $("btnAgentsKey").style.display="";
     $("btnAgentsLogout").style.display="";
     $("boxAgentsWork").style.display="";
+    // UI: remplacer le select agent par le badge, et cacher Code + Se connecter
+$("agentsSel").style.display = "none";
+$("agentsAgentBadge").style.display = "";
+$("agentsAgentBadge").textContent = "Agent : " + STATE.agents.name;
+
+$("agentsCodeCol").style.display = "none";
+$("agentsLoginBtnCol").style.display = "none";
+
 
     // périodes autorisées
     $("agentsPeriodsSel").innerHTML =
@@ -1464,7 +1472,7 @@ async function agentsLogin(ev){
       $("boxAgentsKey").style.display="";
       showToast("toastAgentsLogin","Première connexion : change ton code (🔑).", true);
     }else{
-      showToast("toastAgentsLogin","Connecté ✅", true);
+      hideToast("toastAgentsLogin");
     }
 
   }catch(_){
