@@ -1383,6 +1383,12 @@ async function agentsLogin(ev){
     STATE.agents.ok = true;
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
+    // Affiche la zone "travail" + cache la zone login
+const work = $("boxAgentsWork");
+if (work) work.style.display = "";
+
+const loginBox = $("boxAgentsLoginFields");
+if (loginBox) loginBox.style.display = "none";
     STATE.agents.must_change = !!res.agent.must_change;
     // cache la zone login (agent + code + se connecter)
 const box = $("boxAgentsLoginFields");
@@ -1447,11 +1453,6 @@ if (sel) sel.value = "";
 
 const code = $("agentsCode");
 if (code) code.value = "";
-
-// ré-affiche le bloc login
-const box = $("boxAgentsLoginFields");
-if (box) box.style.display = "";
-}
 
 function toggleAgentsKey(){
   const box = $("boxAgentsKey");
