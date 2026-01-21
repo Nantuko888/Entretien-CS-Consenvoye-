@@ -1114,11 +1114,11 @@ async function adminsListPeriods(){
 async function adminsLoadPeriod(ev){
   hideToast("toastAdminsPeriod");
   if(!STATE.admins.ok){ showToast("toastAdminsPeriod","Non connecté.",false); return; }
-  const btn = ev?.target || $("btnAdminsLoadPeriod");
+  const btn = ev?.internal ? null : (ev?.target || $("btnAdminsLoadPeriod"));
   const period_id = $("adminsPeriodsSel").value;
   if(!period_id){ showToast("toastAdminsPeriod","Choisis une période.",false); return; }
 
-  setLoading(btn,true);
+  if (btn) setLoading(btn,true);
   try{
     const res = await apiCall("adminLoadPeriod", { admin_code: STATE.admins.code, period_id });
     if(!res || !res.ok){
@@ -1145,7 +1145,7 @@ if (!ev?.internal) {
   }catch(_){
     showToast("toastAdminsPeriod","Erreur réseau.",false);
   }finally{
-    setLoading(btn,false);
+    if (btn) setLoading(btn,false);
   }
 }
 
