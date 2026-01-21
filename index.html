@@ -950,7 +950,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
         <td class="right">
           <button class="btn small" onclick="adminsToggleAgent('${esc(a.agent_id)}', ${a.actif ? "false":"true"})">${a.actif ? "Désactiver":"Activer"}</button>
           <button type="button" class="btn small" onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">Reset 0000</button>
-          <button class="btn small danger" onclick="adminsDeleteAgent('${esc(a.agent_id)}')">Supprimer</button>
+          <button class="btn small danger" onclick="adminsRemoveFromGroup('${esc(a.agent_id)}', this)">Retirer</button>
         </td>
       </tr>
     `).join("");
@@ -1193,7 +1193,16 @@ async function adminsAddToGroup(ev){
   }
 }
 
-async function adminsRemoveFromGroup(agent_id){
+async function adminsRemoveFromGroup(agent_id, btn){
+  // UI immédiate + anti double clic (évite le "sapin")
+  const tr = btn ? btn.closest("tr") : null;
+  if (btn){
+    btn.disabled = true;
+    btn.dataset.oldText = btn.textContent;
+    btn.textContent = "…";
+  }
+  if (tr) tr.style.opacity = "0.45";
+
   hideToast("toastAdminsPeriod");
   if(!STATE.admins.ok) return;
   const period_id = STATE.current.period_id;
@@ -1202,12 +1211,34 @@ async function adminsRemoveFromGroup(agent_id){
   try{
     const res = await apiCall("adminRemoveFromGroup", { admin_code: STATE.admins.code, period_id, agent_id });
     if(!res || !res.ok){
-      showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false); return;
+      showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false); if (tr) tr.style.opacity = "";
+      if (btn){
+        btn.disabled = false;
+        btn.textContent = btn.dataset.oldText || "Retirer";
+      }
+ return;
     }
-    await adminsLoadPeriod({ target: $("btnAdminsLoadPeriod"), internal:true });
+    // Retrait optimiste : on enlève la ligne tout de suite
+    if (tr) tr.remove();
+
+    // Met à jour le state (important pour éviter réapparition au prochain render)
+    STATE.current.group = (STATE.current.group || []).filter(a => String(a.agent_id) !== String(agent_id));
+
+    // Met à jour la liste des responsables (car elle dépend du groupe)
+    renderResponsablesSelect();
+
+    // Si le responsable retiré était le responsable du mois, on met le pill à jour
+    if (STATE.current.responsable && String(STATE.current.responsable.agent_id) === String(agent_id)){
+      STATE.current.responsable = null;
+      setPill("pillResponsable","Responsable : —","");
+    }
+
   }catch(_){
-    showToast("toastAdminsPeriod","Erreur réseau.",false);
-  }
+    showToast("toastAdminsPeriod","Erreur réseau.",false); if (tr) tr.style.opacity = "";
+    if (btn){
+      btn.disabled = false;
+      btn.textContent = btn.dataset.oldText || "Retirer";
+      }
 }
 
 async function adminsSetResponsable(ev){
