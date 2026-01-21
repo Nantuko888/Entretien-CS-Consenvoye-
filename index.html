@@ -371,14 +371,27 @@
         </div>
       </div>
 
-      <div id="agentsCodeCol">
-  <label>Code</label>
-  <input id="agentsCode" placeholder="Code agent" />
+      <div class="row" id="agentsLoginRow">
+
+  <div id="agentsAgentSlot">
+    <label>Agent</label>
+    <select id="agentsSel"></select>
+
+    <!-- Badge agent (sera affiché après connexion) -->
+    <div id="agentsAgentBadge" class="status ok" style="display:none"></div>
+  </div>
+
+  <div id="agentsCodeCol">
+    <label>Code</label>
+    <input id="agentsCode" placeholder="Code agent" />
+  </div>
+
+  <div class="right" id="agentsLoginBtnCol">
+    <button class="btn primary" id="btnAgentsLogin" onclick="agentsLogin(event)">Se connecter</button>
+  </div>
+
 </div>
 
-<div class="right" id="agentsLoginBtnCol">
-  <button class="btn primary" id="btnAgentsLogin" onclick="agentsLogin(event)">Se connecter</button>
-</div>
 
       <div id="toastAgentsLogin" class="toast"></div>
 
