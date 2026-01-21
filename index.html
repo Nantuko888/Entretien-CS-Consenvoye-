@@ -1384,6 +1384,9 @@ async function agentsLogin(ev){
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
     STATE.agents.must_change = !!res.agent.must_change;
+    // cache la zone login (agent + code + se connecter)
+const box = $("boxAgentsLoginFields");
+if (box) box.style.display = "none";
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
