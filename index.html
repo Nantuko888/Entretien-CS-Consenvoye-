@@ -271,28 +271,6 @@
 #viewAgents[data-period-open="1"][data-is-resp="0"] #btnAgentsValidate{
   display:none !important;
 }
-/* ===== Badge connecté mobile ===== */
-.mobileOnly {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .mobileOnly {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    background: linear-gradient(135deg, #1fd36b, #0fa958);
-    color: #003b1f;
-  }
-
-  /* On cache le badge desktop dans le header sur mobile */
-  .topActions #pillAgentsStatus {
-    display: none;
-  }
-}
 
   </style>
 </head>
@@ -316,17 +294,15 @@
     <div id="viewAgents" class="card">
       <div class="headRow">
         <div class="h2">Espace agent</div>
-        <div id="pillAgentsStatusMobile" class="status" style="display:none"></div>
-                <div class="topActions">
+        <div class="topActions">
           <button class="keyBtn" id="btnAgentsKey" style="display:none" title="Changer mon code" onclick="toggleAgentsKey()">🔑</button>
           <button class="btn danger small" id="btnAgentsLogout" style="display:none" onclick="agentsLogout()">Déconnexion</button>
           <div class="status" id="pillAgentsStatus">Agent : non connecté</div>
         </div>
-        
-       <div id="boxAgentsLoginFields">
+      </div>
+
       <div class="row">
         <div>
-          <div>
           <label>Agent</label>
           <select id="agentsSel"></select>
         </div>
@@ -339,7 +315,7 @@
         </div>
       </div>
       <div id="toastAgentsLogin" class="toast"></div>
-      </div>
+
       <!-- changer code agent -->
       <div id="boxAgentsKey" style="display:none;margin-top:12px">
         <div class="divider"></div>
@@ -707,25 +683,6 @@ function showView(which){
   $("viewAgents").style.display = (which==="agents") ? "" : "none";
   $("viewAdmins").style.display = (which==="admins") ? "" : "none";
 }
-  function setAgentConnectedUI(isConnected) {
-  const badge = $("pillAgentsStatus");
-  const badgeMobile = $("pillAgentsStatusMobile");
-
-  if (badge) {
-    badge.textContent = isConnected ? "Connecté ✓" : "Non connecté";
-    badge.classList.toggle("ok", isConnected);
-    badge.classList.toggle("bad", !isConnected);
-  }
-
-  if (badgeMobile) {
-    badgeMobile.textContent = isConnected ? "Connecté ✓" : "Non connecté";
-  }
-    const box = $("boxAgentsLoginFields");
-  if (box) box.style.display = isConnected ? "none" : "";
-
-}
-
-
 
 /* ===============================
    JSONP (évite CORS GitHub -> Apps Script)
@@ -1394,9 +1351,6 @@ async function agentsLogin(ev){
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
     STATE.agents.must_change = !!res.agent.must_change;
-    
-    setAgentConnectedUI(true);
-    $("boxAgentsWork").style.display = "";
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
@@ -1407,9 +1361,6 @@ async function agentsLogin(ev){
   );
   return;
 }
-    $("boxAgentsWork").style.display = "";
-    $("boxAgentsKey").style.display = "none";
-
 
     setPill("pillAgentsStatus","Agent : " + STATE.agents.name,"ok");
     $("btnAgentsKey").style.display="";
@@ -1527,21 +1478,20 @@ async function agentsLoadPeriod(ev){
     // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
 STATE.agentWork.is_period_open = !!res.is_period_open;
 STATE.agentWork.is_responsable = !!res.is_responsable;
-    console.log("PERIOD OPEN =", res.is_period_open);
-console.log("RESPONSABLE =", res.is_responsable);
-
 
 setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
-        $("boxAgentsAfterLoad").style.display = "";
+    STATE.agentWork.is_responsable = !!res.is_responsable;
+    $("boxAgentsAfterLoad").style.display = "";
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
 
     renderAgentMissions(res.missions || []);
     renderAgentTeam(res.group || [], res.responsable || null);
-        console.log("TEAM GROUP =", res.group);
+    setAgentPeriodLocked(!STATE.agentWork.is_period_open);
+    console.log("TEAM GROUP =", res.group);
 console.log("RESPONSABLE =", res.responsable);
     $("boxAgentsAfterLoad").style.display = "";
 
