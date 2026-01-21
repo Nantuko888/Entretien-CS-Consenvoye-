@@ -950,7 +950,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
         <td class="right">
           <button class="btn small" onclick="adminsToggleAgent('${esc(a.agent_id)}', ${a.actif ? "false":"true"})">${a.actif ? "Désactiver":"Activer"}</button>
           <button type="button" class="btn small" onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">Reset 0000</button>
-          <button class="btn small danger" onclick="adminsRemoveFromGroup('${esc(a.agent_id)}', this)">Retirer</button>
+          <button class="btn small danger" onclick="adminsRemoveFromGroup('${esc(a.agent_id)}')">Retirer</button>
         </td>
       </tr>
     `).join("");
@@ -1193,16 +1193,7 @@ async function adminsAddToGroup(ev){
   }
 }
 
-async function adminsRemoveFromGroup(agent_id, btn){
-  // UI immédiate + anti double clic (évite le "sapin")
-  const tr = btn ? btn.closest("tr") : null;
-  if (btn){
-    btn.disabled = true;
-    btn.dataset.oldText = btn.textContent;
-    btn.textContent = "…";
-  }
-  if (tr) tr.style.opacity = "0.45";
-
+async function adminsRemoveFromGroup(agent_id){
   hideToast("toastAdminsPeriod");
   if(!STATE.admins.ok) return;
   const period_id = STATE.current.period_id;
@@ -1211,11 +1202,14 @@ async function adminsRemoveFromGroup(agent_id, btn){
   try{
     const res = await apiCall("adminRemoveFromGroup", { admin_code: STATE.admins.code, period_id, agent_id });
     if(!res || !res.ok){
-      showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false); if (tr) tr.style.opacity = "";
-      if (btn){
-        btn.disabled = false;
-        btn.textContent = btn.dataset.oldText || "Retirer";
-      }
+      showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false); return;
+    }
+    await adminsLoadPeriod({ target: $("btnAdminsLoadPeriod"), internal:true });
+  }catch(_){
+    showToast("toastAdminsPeriod","Erreur réseau.",false);
+  }
+}
+
  return;
     }
     // Retrait optimiste : on enlève la ligne tout de suite
