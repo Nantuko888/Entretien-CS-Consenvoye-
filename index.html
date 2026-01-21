@@ -289,7 +289,21 @@
   border: 1px solid rgba(0, 120, 255, 0.45);
   color: #cfe5ff;
 }
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  line-height:1;
+  border:1px solid rgba(255,255,255,.18);
+}
 
+.badge.blue{
+  background: rgba(0,120,255,0.18);
+  border-color: rgba(0,120,255,0.45);
+  color:#cfe5ff;
+}
   </style>
 </head>
 
@@ -392,7 +406,7 @@
 </div>
         
         <div class="divider"></div>
-        <div class="h2"><span class="status blue">Missions du mois</span></div>
+        <div class="h2"><span class="badge blue">Missions du mois</span></div>
                 <div id="boxAgentsMissions" class="scrollBox">
           <div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>
         </div>
