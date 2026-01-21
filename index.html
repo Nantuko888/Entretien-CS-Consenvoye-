@@ -1452,6 +1452,9 @@ async function agentsLogin(ev){
     STATE.agents.must_change = !!res.agent.must_change;
     // UI : cacher le label "Agent" (inutile quand on est connecté)
 $("agentsAgentLabel").style.display = "none";
+    $("agentsAgentSlot").style.marginTop = "0";
+$("agentsAgentSlot").style.paddingTop = "0";
+
 
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
@@ -1510,8 +1513,11 @@ function agentsLogout(){
   $("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
   $("agentsRemark").value="";
   $("agentsAgentLabel").style.display = "";
+  $("agentsAgentSlot").style.marginTop = "";
+$("agentsAgentSlot").style.paddingTop = "";
+
   hideToast("toastAgentsLogin");
-  location.reload();
+  
 }
 
 function toggleAgentsKey(){
