@@ -374,7 +374,7 @@
       <div class="row" id="agentsLoginRow">
 
   <div id="agentsAgentSlot">
-    <label>Agent</label>
+    <label id="agentsAgentLabel">Agent</label>
     <select id="agentsSel"></select>
 
     <!-- Badge agent (sera affiché après connexion) -->
@@ -1450,6 +1450,9 @@ async function agentsLogin(ev){
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
     STATE.agents.must_change = !!res.agent.must_change;
+    // UI : cacher le label "Agent" (inutile quand on est connecté)
+$("agentsAgentLabel").style.display = "none";
+
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
@@ -1506,6 +1509,7 @@ function agentsLogout(){
   $("agentsPeriodsSel").innerHTML = `<option value="">— Choisir période —</option>`;
   $("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
   $("agentsRemark").value="";
+  $("agentsAgentLabel").style.display = "";
   hideToast("toastAgentsLogin");
   location.reload();
 }
