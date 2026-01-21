@@ -55,7 +55,20 @@
     .card{border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));border-radius:var(--r);padding:16px;box-shadow:var(--shadow);}
     .headRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
     .h2{margin:0;font-size:15px;font-weight:900}
-    .status{font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.02);color:var(--muted);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
+    .status{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  width: auto;
+}
+
     .status.ok{border-color:rgba(31,211,107,.35);background:rgba(31,211,107,.10);color:#bdf6d2}
     .status.bad{border-color:rgba(255,59,48,.35);background:rgba(255,59,48,.10);color:#ffd0cd}
     label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px}
