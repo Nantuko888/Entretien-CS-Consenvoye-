@@ -1422,6 +1422,7 @@ function agentsLogout(){
   $("boxAgentsMissions").innerHTML = `<div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>`;
   $("agentsRemark").value="";
   hideToast("toastAgentsLogin");
+  location.reload();
 }
 
 function toggleAgentsKey(){
