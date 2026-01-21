@@ -293,7 +293,7 @@
     <!-- ========= AGENT ========= -->
     <div id="viewAgents" class="card">
       <div class="headRow">
-        <div class="h2">Espace agent</div>
+        <div class="status blue">Espace agent</div>
         <div class="topActions">
           <button class="keyBtn" id="btnAgentsKey" style="display:none" title="Changer mon code" onclick="toggleAgentsKey()">🔑</button>
           <button class="btn danger small" id="btnAgentsLogout" style="display:none" onclick="agentsLogout()">Déconnexion</button>
@@ -345,7 +345,7 @@
 </div>
 
 <div class="row" style="margin-top:6px">
-  <div class="status" id="pillAgentsPeriod">Période : —</div>
+  <div class="status blue" id="pillAgentsPeriod">Période : —</div>
 </div>
 
 
@@ -366,7 +366,7 @@
 
   <div class="headRow">
     <div class="h2">Équipe du mois</div>
-    <div id="agentsResponsable" class="status"></div>
+    <div id="agentsResponsable" class="status blue"></div>
   </div>
 
   <div id="agentsTeamList" class="list"></div>
@@ -374,7 +374,7 @@
 </div>
         
         <div class="divider"></div>
-        <div class="h2" style="margin: 6px 0 10px 0;">Missions du mois</div>
+        <div class="status blue" style="margin: 6px 0 10px 0;">Missions du mois</div>
         <div id="boxAgentsMissions" class="scrollBox">
           <div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>
         </div>
