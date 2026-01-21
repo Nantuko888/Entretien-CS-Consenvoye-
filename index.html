@@ -333,7 +333,6 @@
         </div>
       </div>
 
-      <div id="boxAgentsLoginFields">
       <div class="row">
         <div>
           <label>Agent</label>
@@ -348,7 +347,6 @@
         </div>
       </div>
       <div id="toastAgentsLogin" class="toast"></div>
-        <div>
 
       <!-- changer code agent -->
       <div id="boxAgentsKey" style="display:none;margin-top:12px">
@@ -1383,16 +1381,7 @@ async function agentsLogin(ev){
     STATE.agents.ok = true;
     STATE.agents.agent_id = res.agent.agent_id;
     STATE.agents.name = res.agent.nom;
-    // Affiche la zone "travail" + cache la zone login
-const work = $("boxAgentsWork");
-if (work) work.style.display = "";
-
-const loginBox = $("boxAgentsLoginFields");
-if (loginBox) loginBox.style.display = "none";
     STATE.agents.must_change = !!res.agent.must_change;
-    // cache la zone login (agent + code + se connecter)
-const box = $("boxAgentsLoginFields");
-if (box) box.style.display = "none";
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
@@ -1405,7 +1394,6 @@ if (box) box.style.display = "none";
 }
 
     setPill("pillAgentsStatus","Agent : " + STATE.agents.name,"ok");
-    $("boxAgentsWork").style.display = "";
     $("btnAgentsKey").style.display="";
     $("btnAgentsLogout").style.display="";
     $("boxAgentsWork").style.display="";
@@ -1444,15 +1432,7 @@ function agentsLogout(){
   $("agentsRemark").value="";
   hideToast("toastAgentsLogin");
   location.reload();
-  // --- RESET UI LOGIN (vider + ré-afficher) ---
-setAgentConnectedUI(false);
-
-// vide les champs
-const sel = $("agentsSel");
-if (sel) sel.value = "";
-
-const code = $("agentsCode");
-if (code) code.value = "";
+}
 
 function toggleAgentsKey(){
   const box = $("boxAgentsKey");
