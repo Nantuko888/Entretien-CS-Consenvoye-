@@ -1396,6 +1396,7 @@ async function agentsLogin(ev){
     STATE.agents.must_change = !!res.agent.must_change;
     
     setAgentConnectedUI(true);
+    $("boxAgentsWork").style.display = "";
     if (STATE.agents.must_change || code === "0000") {
   $("boxAgentsKey").style.display = "";
   $("boxAgentsWork").style.display = "none";
