@@ -304,6 +304,36 @@
   border-color: rgba(0,120,255,0.45);
   color:#cfe5ff;
 }
+ /* ===== STEP 1 : Header Agent sur une seule ligne ===== */
+#viewAgents .headRow{
+  flex-wrap: nowrap !important; /* évite que ça passe à la ligne */
+  align-items: center;
+}
+
+#viewAgents .topActions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap !important; /* évite que 🔑 / Déco / badge se cassent */
+  min-width: 0;
+}
+
+/* Ordre visuel : 🔑 | badge Agent | Déconnexion */
+#btnAgentsKey{ order: 1; }
+#pillAgentsStatus{
+  order: 2;
+  flex: 1; /* prend l'espace entre 🔑 et Déco */
+  text-align: center;
+  min-width: 0;
+}
+#btnAgentsLogout{ order: 3; }
+
+/* Mobile : un peu plus compact */
+@media (max-width: 700px){
+  #viewAgents .topActions{ gap: 8px; }
+  #pillAgentsStatus{ font-size: 12px; }
+}
+
   </style>
 </head>
 
