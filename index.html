@@ -1437,6 +1437,19 @@ function agentsLogout(){
   $("agentsRemark").value="";
   hideToast("toastAgentsLogin");
   location.reload();
+  // --- RESET UI LOGIN (vider + ré-afficher) ---
+setAgentConnectedUI(false);
+
+// vide les champs
+const sel = $("agentsSel");
+if (sel) sel.value = "";
+
+const code = $("agentsCode");
+if (code) code.value = "";
+
+// ré-affiche le bloc login
+const box = $("boxAgentsLoginFields");
+if (box) box.style.display = "";
 }
 
 function toggleAgentsKey(){
