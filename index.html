@@ -459,6 +459,22 @@
 .togglePwd:hover{
   opacity: 1;
 }
+.admin-actions{
+  display: flex;
+  gap: 14px; /* espace propre */
+  align-items: center;
+  margin-top: 6px; /* respire un peu */
+}
+
+.btn.danger.outline{
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+}
+
+.btn.danger.outline:hover{
+  background: rgba(255,107,107,.15);
+}
 
 
   </style>
@@ -718,11 +734,20 @@
                 <label>Période</label>
                 <select id="adminsPeriodsSel"></select>
               </div>
-              <div class="right">
-                <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriod(event)">Charger groupe</button>
-                <button class="btn danger" id="btnAdminsUnlockPeriod" onclick="adminsUnlockPeriod(event)">Déverrouiller</button>
+              <div class="admin-actions">
+  <button class="btn primary"
+          id="btnAdminsLoadPeriod"
+          onclick="adminsLoadPeriod(event)">
+    Charger groupe
+  </button>
 
-              </div>
+  <button class="btn danger outline"
+          id="btnAdminsUnlockPeriod"
+          onclick="adminsUnlockPeriod(event)">
+    Déverrouiller
+  </button>
+</div>
+
             </div>
             <div id="toastAdminsPeriod" class="toast"></div>
 
