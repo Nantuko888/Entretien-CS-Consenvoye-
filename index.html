@@ -2041,7 +2041,7 @@ if (decs.some(d => !d.declaration)) {
   const remark = $("agentsRemark").value.trim();
 
   // overlay si tout “Fait”
-  const allDone = decs.length>0 && decs.every(d=>d.declaration==="Fait");
+ const allDone = decs.length > 0 && decs.every(d => String(d.declaration || "").trim() === "Fait");
   // (on l’affiche après succès seulement)
 
   setLoading(btn,true);
@@ -2057,12 +2057,7 @@ if (decs.some(d => !d.declaration)) {
       return;
     }
     showToast("toastAgentsSave","Enregistré ✅",true);
-
-    if(allDone){
-      $("doneOverlay").classList.add("show");
-    }else{
-      $("doneOverlay").classList.remove("show");
-    }
+  
   }catch(_){
     showToast("toastAgentsSave","Erreur réseau.",false);
   }finally{
@@ -2125,6 +2120,14 @@ async function agentsValidate(ev){
     }
 
     showToast("toastAgentsSave","✅ Validé — saisie verrouillée",true);
+    // 🎉 Overlay uniquement à la validation si tout est "Fait"
+const allDone =
+  decs.length > 0 &&
+  decs.every(d => String(d.declaration || "").trim() === "Fait");
+
+if (allDone) {
+  $("doneOverlay").classList.add("show");
+}
 
     // 4) UI en lecture seule
     // désactive tous les selects + champs justificatif + remarque + boutons
