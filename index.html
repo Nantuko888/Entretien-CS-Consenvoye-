@@ -625,6 +625,19 @@ f<!doctype html>
   align-items: center;
   gap: 6px;
 }
+    /* DIAG: forcer l'affichage du bouton Déverrouiller */
+#btnAdminsUnlockPeriod{
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  outline: 4px solid magenta !important;
+  background: rgba(255,0,255,.15) !important;
+}
+
+#btnAdminsUnlockPeriod .icon,
+#btnAdminsUnlockPeriod .label{
+  display: inline !important;
+}
   </style>
 </head>
 
