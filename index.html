@@ -1236,11 +1236,28 @@ async function adminsAddAgent(ev){
 
 async function adminsToggleAgent(agent_id, actif){
   if(!STATE.admins.ok) return;
+
+  // accepte boolean OU string
+  const isActif = (actif === true || actif === "true" || actif === "TRUE");
+
   try{
-    await apiCall("adminToggleAgent", { admin_code: STATE.admins.code, agent_id, actif: actif ? "TRUE":"FALSE" });
+    const res = await apiCall("adminToggleAgent", {
+      admin_code: STATE.admins.code,
+      agent_id,
+      actif: isActif ? "TRUE" : "FALSE"
+    });
+
+    if(!res || !res.ok){
+      showToast("toastAdminsAgents", (res && res.message) || "Erreur désactivation", false);
+      return;
+    }
+
     await adminsListAgents();
-  }catch(_){}
+  }catch(e){
+    showToast("toastAdminsAgents", "Erreur réseau", false);
+  }
 }
+
 async function adminsResetAgentCode(ev, agent_id){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(!STATE.admins.ok) return;
