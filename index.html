@@ -1777,6 +1777,7 @@ function renderAgentMissions(list){
       </div>
     </div>
   `).join("");
+  box.querySelectorAll(".decSel").forEach(onAgentDeclarationChange);
 }
 
   function renderAgentTeam(group, responsable){
