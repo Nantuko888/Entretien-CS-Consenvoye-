@@ -1433,6 +1433,20 @@ async function adminsLoadRetours(ev){
    =============================== */
 async function agentsLogin(ev){
   hideToast("toastAgentsLogin");
+  // --- UI: retour état déconnecté ---
+$("agentsSel").style.display = ""; // réaffiche le select
+$("agentsAgentBadge").style.display = "none"; // cache le badge
+$("agentsCodeCol").style.display = "";
+$("agentsLoginBtnCol").style.display = "";
+$("agentsAgentLabel").style.display = "";
+
+// --- reset valeurs ---
+$("agentsSel").value = "";
+$("agentsCode").value = "";
+
+// --- recharge la liste des agents ---
+renderAgentsSelect();
+
   const btn = ev?.target || $("btnAgentsLogin");
   const agent_id = $("agentsSel").value;
   const code = $("agentsCode").value.trim();
