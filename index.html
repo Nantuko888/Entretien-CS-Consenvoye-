@@ -572,6 +572,22 @@ f<!doctype html>
 @media (max-width: 768px){
   .unlock-btn .icon{ display: none; }
 }
+/* FORCER l'affichage de l'icône déverrouiller */
+#btnAdminsUnlockPeriod .icon{
+  display: inline-flex !important;
+  font-size: 18px;
+  margin-right: 6px;
+  line-height: 1;
+}
+
+/* sécurité : le bouton ne s'écrase pas */
+#btnAdminsUnlockPeriod{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
 
 
 <div class="row period-actions">
