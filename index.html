@@ -486,12 +486,40 @@ f<!doctype html>
   justify-content: space-between;
   gap: 16px;
 }
-    .row.period-actions {
+   /* ===== PC : ligne propre ===== */
+.row.period-actions{
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  column-gap: 12px;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
 }
+
+.row.period-actions select{
+  width: 100%;
+}
+
+/* ===== Boutons admin à droite ===== */
+.row.period-actions .admin-actions{
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== MOBILE : empilé ===== */
+@media (max-width: 899px){
+  .row.period-actions{
+    grid-template-columns: 1fr;
+  }
+
+  .row.period-actions .admin-actions{
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .row.period-actions .admin-actions .btn{
+    width: 100%;
+  }
+}
+
 <div class="row period-actions">
   <div class="period-select">
     <label>Période</label>
