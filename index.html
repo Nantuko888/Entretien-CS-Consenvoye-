@@ -1178,7 +1178,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   <td class="right">
 
     <button class="btn small"
-      onclick="adminsToggleAgent('${a.agent_id}', ${a.actif ? 'false' : 'true'})">
+      onclick="adminsToggleAgent('${a.agent_id}', ${a.actif ? false : 'true'})">
       ${a.actif ? "Désactiver" : "Activer"}
     </button>
 
@@ -1188,7 +1188,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
     </button>
 
     <button class="btn small danger"
-      onclick="adminsRemoveFromGroup('${a.agent_id}')">
+      onclick="adminsDeleteAgent('${a.agent_id}')">
       Retirer
     </button>
 
