@@ -2040,8 +2040,6 @@ if (decs.some(d => !d.declaration)) {
 
   const remark = $("agentsRemark").value.trim();
 
-  // overlay si tout “Fait”
- const allDone = decs.length > 0 && decs.every(d => String(d.declaration || "").trim() === "Fait");
   // (on l’affiche après succès seulement)
 
   setLoading(btn,true);
