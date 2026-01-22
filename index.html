@@ -519,15 +519,46 @@ f<!doctype html>
     width: 100%;
   }
 }
-    /* DIAGNOSTIC: si tu ne vois PAS ce contour, le CSS n'est pas appliqué */
+   /* ===== LAYOUT PERIODE / ACTIONS ===== */
+
 .row.period-actions{
-  outline: 6px solid lime !important;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
 }
-@media (max-width: 899px){
+
+/* le select doit prendre une vraie largeur */
+.row.period-actions select{
+  min-width: 220px;
+}
+
+/* boutons PC */
+.admin-actions{
+  display: flex;
+  gap: 12px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 900px){
   .row.period-actions{
-    outline-color: red !important;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .row.period-actions select{
+    width: 100%;
+  }
+
+  .admin-actions{
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .admin-actions .btn{
+    width: 100%;
   }
 }
+
 
 <div class="row period-actions">
   <div class="period-select">
