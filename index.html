@@ -346,8 +346,10 @@
 }
 /* Tables : header fixe pendant le scroll */
 .scrollBox{
-  overflow: auto; /* déjà chez toi, mais on sécurise */
+  max-height: 320px; /* ← tu peux ajuster */
+  overflow-y: auto;
 }
+
 
 .table{
   border-collapse: separate; /* sticky + collapse = buggy selon navigateurs */
