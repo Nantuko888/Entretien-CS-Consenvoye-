@@ -1634,6 +1634,10 @@ $("btnAgentsKey").style.display = "";
     $("agentsOldCode").value="";
     $("agentsNewCode").value="";
     showToast("toastAgentsChange","Code modifié ✅",true);
+    setTimeout(() => {
+  location.reload();
+}, 800);
+
   }catch(_){
     showToast("toastAgentsChange","Erreur réseau.",false);
   }finally{
