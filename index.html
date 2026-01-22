@@ -459,12 +459,18 @@
 .togglePwd:hover{
   opacity: 1;
 }
-.admin-actions{
+.admin-actions {
   display: flex;
-  gap: 14px; /* espace propre */
   align-items: center;
-  margin-top: 6px; /* respire un peu */
+  gap: 12px; /* espace propre entre les boutons */
+  justify-content: flex-start;
+  flex-wrap: nowrap; /* interdit le débordement bizarre */
 }
+
+.admin-actions .btn {
+  white-space: nowrap; /* empêche les retours à la ligne */
+}
+
 
 .btn.danger.outline{
   background: transparent;
@@ -475,7 +481,26 @@
 .btn.danger.outline:hover{
   background: rgba(255,107,107,.15);
 }
+<div class="row period-actions">
+  <div class="period-select">
+    <label>Période</label>
+    <select id="adminsPeriodsSel"></select>
+  </div>
 
+  <div class="admin-actions">
+    <button class="btn primary"
+            id="btnAdminsLoadPeriod"
+            onclick="adminsLoadPeriod(event)">
+      Charger groupe
+    </button>
+
+    <button class="btn danger outline"
+            id="btnAdminsUnlockPeriod"
+            onclick="adminsUnlockPeriod(event)">
+      Déverrouiller
+    </button>
+  </div>
+</div>
 
   </style>
 </head>
