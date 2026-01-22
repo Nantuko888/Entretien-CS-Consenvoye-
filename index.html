@@ -1982,6 +1982,9 @@ async function agentsValidate(ev){
   hideToast("toastAgentsSave"); // on réutilise le toast du bloc missions
   if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
 
+  if(!confirm("Confirmer la validation ?\n\n⚠️ Après validation, la saisie sera verrouillée et ne pourra plus être modifiée.")){
+  return;
+}
   const btn = ev?.target || $("btnAgentsValidate");
   const period_id = STATE.agentWork.period_id;
   if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
