@@ -519,6 +519,15 @@ f<!doctype html>
     width: 100%;
   }
 }
+    /* DIAGNOSTIC: si tu ne vois PAS ce contour, le CSS n'est pas appliqué */
+.row.period-actions{
+  outline: 6px solid lime !important;
+}
+@media (max-width: 899px){
+  .row.period-actions{
+    outline-color: red !important;
+  }
+}
 
 <div class="row period-actions">
   <div class="period-select">
