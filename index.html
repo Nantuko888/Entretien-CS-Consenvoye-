@@ -1,4 +1,4 @@
-f<!doctype html>
+<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
@@ -459,194 +459,7 @@ f<!doctype html>
 .togglePwd:hover{
   opacity: 1;
 }
-.admin-actions{
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-left: 12px; /* respire */
-}
 
-.admin-actions .btn {
-  white-space: nowrap; /* empêche les retours à la ligne */
-}
-
-
-.btn.danger.outline{
-  background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
-}
-
-.btn.danger.outline:hover{
-  background: rgba(255,107,107,.15);
-}
-    .row{
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-}
-   /* ===== PC : ligne propre ===== */
-.row.period-actions{
-  display: grid;
-  grid-template-columns: minmax(240px, 1fr) auto;
-  gap: 12px;
-  align-items: end;
-}
-
-.row.period-actions select{
-  width: 100%;
-}
-
-/* ===== Boutons admin à droite ===== */
-.row.period-actions .admin-actions{
-  display: flex;
-  gap: 8px;
-}
-
-/* ===== MOBILE : empilé ===== */
-@media (max-width: 899px){
-  .row.period-actions{
-    grid-template-columns: 1fr;
-  }
-
-  .row.period-actions .admin-actions{
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .row.period-actions .admin-actions .btn{
-    width: 100%;
-  }
-}
-   /* ===== LAYOUT PERIODE / ACTIONS ===== */
-
-.row.period-actions{
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-}
-
-/* le select doit prendre une vraie largeur */
-.row.period-actions select{
-  min-width: 220px;
-}
-
-/* boutons PC */
-.admin-actions{
-  display: flex;
-  gap: 12px;
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 900px){
-  .row.period-actions{
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .row.period-actions select{
-    width: 100%;
-  }
-
-  .admin-actions{
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .admin-actions .btn{
-    width: 100%;
-  }
-}
-/* Déverrouiller : icône sur PC, texte sur mobile */
-.unlock-btn .icon{
-  font-size: 18px;
-}
-
-/* PC : on cache le texte */
-@media (min-width: 769px){
-  .unlock-btn .label{ display: none; }
-}
-
-/* Mobile : on cache l’icône */
-@media (max-width: 768px){
-  .unlock-btn .icon{ display: none; }
-}
-/* FORCER l'affichage de l'icône déverrouiller */
-#btnAdminsUnlockPeriod .icon{
-  display: inline-flex !important;
-  font-size: 18px;
-  margin-right: 6px;
-  line-height: 1;
-}
-
-/* sécurité : le bouton ne s'écrase pas */
-#btnAdminsUnlockPeriod{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-
-<div class="row period-actions">
-  <div class="period-select">
-    <label>Période</label>
-    <select id="adminsPeriodsSel"></select>
-  </div>
-
-  <div class="admin-actions">
-    <button class="btn primary"
-            id="btnAdminsLoadPeriod"
-            onclick="adminsLoadPeriod(event)">
-      Charger groupe
-    </button>
-
-    <button class="btn danger outline unlock-btn"
-        id="btnAdminsUnlockPeriod"
-        onclick="adminsUnlockPeriod(event)">
-  <span class="icon">🔓</span>
-  <span class="label">Déverrouiller</span>
-</button>
-
-  </div>
-</div>
-
-    /* FORCER l'affichage de l'icône déverrouiller */
-#btnAdminsUnlockPeriod .icon{
-  display: inline-flex !important;
-  font-size: 18px;
-  margin-right: 6px;
-  line-height: 1;
-}
-
-/* sécurité : le bouton ne s'écrase pas */
-#btnAdminsUnlockPeriod{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-    /* DIAG: forcer l'affichage du bouton Déverrouiller */
-#btnAdminsUnlockPeriod{
-  display: inline-flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  outline: 4px solid magenta !important;
-  background: rgba(255,0,255,.15) !important;
-}
-
-#btnAdminsUnlockPeriod .icon,
-#btnAdminsUnlockPeriod .label{
-  display: inline !important;
-}
-    #btnAdminsUnlockPeriod {
-  display: inline-flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: relative !important;
-  z-index: 9999 !important;
-  background: rgba(255,0,0,0.15) !important;
-  border: 2px solid red !important;
-}
 
   </style>
 </head>
@@ -900,20 +713,16 @@ f<!doctype html>
               <div class="status" id="pillResponsable">Responsable : —</div>
             </div>
 
-            <div class="row period-actions">
+            <div class="row">
               <div>
                 <label>Période</label>
                 <select id="adminsPeriodsSel"></select>
               </div>
-              <div class="admin-actions">
-  <button class="btn primary"
-          id="btnAdminsLoadPeriod"
-          onclick="adminsLoadPeriod(event)">
-    Charger groupe
-  </button>
+              <div class="right">
+                <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriod(event)">Charger groupe</button>
+                <button class="btn danger" id="btnAdminsUnlockPeriod" onclick="adminsUnlockPeriod(event)">Déverrouiller</button>
 
- </div>
-
+              </div>
             </div>
             <div id="toastAdminsPeriod" class="toast"></div>
 
