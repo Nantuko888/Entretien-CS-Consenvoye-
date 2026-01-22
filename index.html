@@ -1235,28 +1235,40 @@ async function adminsAddAgent(ev){
 }
 
 async function adminsToggleAgent(agent_id, actif){
-  if(!STATE.admins.ok) return;
+  if(!STATE.admins.ok){
+    showToast("toastAdminsAgents","Non connecté.",false);
+    return;
+  }
 
-  // accepte boolean OU string
-  const isActif = (actif === true || actif === "true" || actif === "TRUE");
+  // Debug: on voit exactement ce qui arrive
+  console.log("[toggle] agent_id =", agent_id, "| actif param =", actif, "| typeof =", typeof actif);
+
+  // actif = état désiré (true = activer, false = désactiver)
+  const desired = (actif === true || actif === "true" || actif === "TRUE");
 
   try{
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
-      agent_id,
-      actif: isActif ? "TRUE" : "FALSE"
+      agent_id: String(agent_id).trim(),
+      actif: desired ? "TRUE" : "FALSE"
     });
 
+    console.log("[toggle] API res =", res);
+
     if(!res || !res.ok){
-      showToast("toastAdminsAgents", (res && res.message) || "Erreur désactivation", false);
+      showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
       return;
     }
 
+    showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
     await adminsListAgents();
+
   }catch(e){
-    showToast("toastAdminsAgents", "Erreur réseau", false);
+    console.log("[toggle] error =", e);
+    showToast("toastAdminsAgents","Erreur réseau.",false);
   }
 }
+
 
 async function adminsResetAgentCode(ev, agent_id){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
