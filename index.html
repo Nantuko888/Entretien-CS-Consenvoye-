@@ -1176,10 +1176,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
         <td>${esc(a.nom)}</td>
         <td>${a.actif ? "Oui":"Non"}</td>
         <td class="right">
-          <button class="btn small"
-  onclick="adminsToggleAgent(${JSON.stringify(a.agent_id)}, ${!a.actif})">
-  ${a.actif ? "Désactiver" : "Activer"}
-</button>
+          <button class="btn small" onclick="adminsToggleAgent(${JSON.stringify(a.agent_id)}, ${!a.actif})">${a.actif ? "Désactiver" : "Activer"}</button>
           <button type="button" class="btn small" onclick="adminsResetAgentCode(event,'${a.agent_id)}')">Reset 0000</button>
           <button class="btn small danger" onclick="adminsRemoveFromGroup('${a.agent_id)}')">Retirer</button>
         </td>
