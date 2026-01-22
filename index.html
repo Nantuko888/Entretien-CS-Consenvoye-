@@ -459,13 +459,11 @@ f<!doctype html>
 .togglePwd:hover{
   opacity: 1;
 }
-.admin-actions {
-  display: flex;  
+.admin-actions{
+  display: flex;
+  gap: 12px;
   align-items: center;
-  gap: 12px; /* espace propre entre les boutons */
-  justify-content: flex-start;
-  flex-wrap: nowrap; /* interdit le débordement bizarre */
-  margin-right: 14px;
+  margin-left: 12px; /* respire */
 }
 
 .admin-actions .btn {
@@ -481,6 +479,12 @@ f<!doctype html>
 
 .btn.danger.outline:hover{
   background: rgba(255,107,107,.15);
+}
+    .row{
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
 }
 <div class="row period-actions">
   <div class="period-select">
