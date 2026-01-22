@@ -1102,6 +1102,9 @@ function adminsLogout(){
   $("btnAdminsKey").style.display="none";
   $("btnAdminsLogout").style.display="none";
   $("boxAdminsKey").style.display="none";
+  $("adminsCode").value = "";
+  $("adminsOldCode").value = "";
+  $("adminsNewCode").value = "";
   setPill("pillAdminsStatus","Admin : non connecté","bad");
   hideToast("toastAdminsLogin");
 }
