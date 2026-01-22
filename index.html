@@ -720,6 +720,8 @@
               </div>
               <div class="right">
                 <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriod(event)">Charger groupe</button>
+                <button class="btn danger" id="btnAdminsUnlockPeriod" onclick="adminsUnlockPeriod(event)">Déverrouiller</button>
+
               </div>
             </div>
             <div id="toastAdminsPeriod" class="toast"></div>
@@ -1549,6 +1551,40 @@ async function adminsLoadRetours(ev){
     showToast("toastAdminsRetours","Chargé ✅",true);
   }catch(_){
     showToast("toastAdminsRetours","Erreur réseau.",false);
+  }finally{
+    setLoading(btn,false);
+  }
+}
+
+  async function adminsUnlockPeriod(ev){
+  hideToast("toastAdminsPeriod");
+  if(!STATE.admins.ok){ showToast("toastAdminsPeriod","Non connecté.",false); return; }
+
+  const btn = ev?.target || $("btnAdminsUnlockPeriod");
+
+  // période courante (priorité à celle déjà chargée)
+  const period_id = STATE.current.period_id || $("adminsPeriodsSel").value;
+  if(!period_id){ showToast("toastAdminsPeriod","Choisis/charge une période d’abord.",false); return; }
+
+  if(!confirm("Déverrouiller la période pour le responsable ?\n\n⚠️ Le responsable pourra à nouveau modifier et enregistrer.")){
+    return;
+  }
+
+  setLoading(btn,true);
+  try{
+    const res = await apiCall("adminUnlockPeriod", { admin_code: STATE.admins.code, period_id });
+    if(!res || !res.ok){
+      showToast("toastAdminsPeriod",(res&&res.message)||"Erreur",false);
+      return;
+    }
+
+    showToast("toastAdminsPeriod","Déverrouillé ✅",true);
+
+    // Recharge juste le groupe/responsable (sans sapin)
+    await adminsLoadPeriod({ target: $("btnAdminsLoadPeriod"), internal:true });
+
+  }catch(_){
+    showToast("toastAdminsPeriod","Erreur réseau.",false);
   }finally{
     setLoading(btn,false);
   }
