@@ -1171,15 +1171,14 @@ $("agentsCountTotal").textContent = ` (${total})`;
 $("agentsCountActive").textContent = ` 🟢 ${active}`;
 $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
 
-    tb.innerHTML = list.map(a=>`
-      <tr>
-        <td>${esc(a.nom)}</td>
-        <td>${a.actif ? "Oui":"Non"}</td>
-        <td class="right">
-  <div class="actionsWrap">
+   tb.innerHTML = list.map(a => `
+<tr>
+  <td>${esc(a.nom)}</td>
+  <td>${a.actif ? "Oui" : "Non"}</td>
+  <td class="right">
 
     <button class="btn small"
-      onclick="adminsToggleAgent('${a.agent_id}', ${a.actif ? "false" : "true"})">
+      onclick="adminsToggleAgent('${a.agent_id}', ${a.actif ? 'false' : 'true'})">
       ${a.actif ? "Désactiver" : "Activer"}
     </button>
 
@@ -1188,18 +1187,14 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       Reset 0000
     </button>
 
-     </div>
-</td>
+    <button class="btn small danger"
+      onclick="adminsRemoveFromGroup('${a.agent_id}')">
+      Retirer
+    </button>
 
-  <button
-    class="btn small danger"
-    onclick="adminsRemoveFromGroup('${a.agent_id}')"
-  >
-    Retirer
-  </button>
-      </td>
-      </td>
-    `).join("");
+  </td>
+</tr>
+`).join("");
 
     // met à jour dropdown “ajouter au groupe”
     const pub = await apiCall("listAgentsPublics", {});
