@@ -433,7 +433,33 @@
   z-index: 50 !important;
   background: rgba(15,23,36,.98) !important;
 }
-    
+
+  .passwordField{
+  position: relative;
+  width: 100%;
+}
+
+.passwordField input{
+  width: 100%;
+  padding-right: 44px; /* espace pour l’œil */
+}
+
+.togglePwd{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  opacity: 0.6;
+}
+
+.togglePwd:hover{
+  opacity: 1;
+}
+
 
   </style>
 </head>
