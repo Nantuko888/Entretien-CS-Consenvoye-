@@ -459,6 +459,38 @@
 .togglePwd:hover{
   opacity: 1;
 }
+/* ===== PC ONLY : ajustement boutons période ===== */
+@media (min-width: 1024px) {
+
+  .row.period-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .admin-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Charger groupe : plus compact */
+  #btnAdminsLoadPeriod {
+    padding: 8px 14px;
+    min-width: auto;
+    width: auto;
+    font-size: 14px;
+  }
+
+  /* Déverrouiller : petit bouton discret */
+  #btnAdminsUnlockPeriod {
+    padding: 6px 10px;
+    min-width: auto;
+    width: auto;
+    font-size: 13px;
+    line-height: 1;
+  }
+}
 
 
   </style>
