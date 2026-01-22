@@ -1820,7 +1820,28 @@ g.sort((a, b) =>
 }
 }
 
-  function onAgentDeclarationChange(sel){
+ function onAgentDeclarationChange(sel){
+  // couleur selon la valeur
+  if(sel.value === "Fait"){
+    sel.style.background = "rgba(31,211,107,.25)";
+    sel.style.borderColor = "rgba(31,211,107,.6)";
+    sel.style.color = "#bdf6d2";
+  } else if(sel.value === "Partiel"){
+    sel.style.background = "rgba(255,192,0,.25)";
+    sel.style.borderColor = "rgba(255,192,0,.7)";
+    sel.style.color = "#ffe9a6";
+  } else if(sel.value === "Non fait"){
+    sel.style.background = "rgba(255,59,48,.22)";
+    sel.style.borderColor = "rgba(255,59,48,.6)";
+    sel.style.color = "#ffd0cd";
+  } else {
+    // valeur vide
+    sel.style.background = "";
+    sel.style.borderColor = "";
+    sel.style.color = "";
+  }
+
+  // logique existante justificatif
   const mid = sel.dataset.mid;
   const row = document.querySelector(`.justifRow[data-mid="${mid}"]`);
   if(!row) return;
@@ -1833,6 +1854,7 @@ g.sort((a, b) =>
     if(input) input.value = "";
   }
 }
+
 
 async function softRefresh(ev){
   const btn = ev?.target || document.getElementById("btnRefresh");
