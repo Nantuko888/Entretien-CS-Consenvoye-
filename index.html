@@ -558,6 +558,20 @@ f<!doctype html>
     width: 100%;
   }
 }
+/* Déverrouiller : icône sur PC, texte sur mobile */
+.unlock-btn .icon{
+  font-size: 18px;
+}
+
+/* PC : on cache le texte */
+@media (min-width: 769px){
+  .unlock-btn .label{ display: none; }
+}
+
+/* Mobile : on cache l’icône */
+@media (max-width: 768px){
+  .unlock-btn .icon{ display: none; }
+}
 
 
 <div class="row period-actions">
@@ -573,11 +587,13 @@ f<!doctype html>
       Charger groupe
     </button>
 
-    <button class="btn danger outline"
-            id="btnAdminsUnlockPeriod"
-            onclick="adminsUnlockPeriod(event)">
-      Déverrouiller
-    </button>
+    <button class="btn danger outline unlock-btn"
+        id="btnAdminsUnlockPeriod"
+        onclick="adminsUnlockPeriod(event)">
+  <span class="icon">🔓</span>
+  <span class="label">Déverrouiller</span>
+</button>
+
   </div>
 </div>
 
