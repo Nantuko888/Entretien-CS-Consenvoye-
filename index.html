@@ -491,7 +491,25 @@
     line-height: 1;
   }
 }
+/* ===== PC ONLY : boutons Charger / Déverrouiller ===== */
+@media (min-width: 1024px) {
 
+  .admin-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  #btnAdminsLoadPeriod,
+  #btnAdminsUnlockPeriod {
+    padding: 7px 14px;
+    min-width: 0;
+    width: auto;
+    font-size: 14px;
+    line-height: 1;
+    height: 34px;
+  }
+}
 
   </style>
 </head>
@@ -751,7 +769,7 @@
                 <select id="adminsPeriodsSel"></select>
               </div>
               <div class="right">
-                <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriod(event)">Charger groupe</button>
+                <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriod(event)">Charger</button>
                 <button class="btn danger" id="btnAdminsUnlockPeriod" onclick="adminsUnlockPeriod(event)">Déverrouiller</button>
 
               </div>
