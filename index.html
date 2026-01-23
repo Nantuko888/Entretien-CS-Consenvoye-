@@ -1273,8 +1273,8 @@ async function adminsToggleAgent(agent_id, actif){
 const pub = await apiCall("listAgentsPublics", {});
 if(pub && pub.ok){
   STATE.agentsPublic = pub.agents || [];
+  
   renderAgentsSelect();
-  renderAdminsAddToGroupSelect();
 }
 
   }catch(e){
