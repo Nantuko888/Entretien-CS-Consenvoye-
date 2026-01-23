@@ -1260,8 +1260,8 @@ async function adminsToggleAgent(agent_id, actif){
     }
 
     showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
-    await adminsListAgents();
-    renderAgentsSelect();
+    await adminsListAgents(true);
+    
     // 🔄 Recharge la liste publique pour que les menus filtrés .actif soient à jour
 const pub = await apiCall("listAgentsPublics", {});
 if(pub && pub.ok){
