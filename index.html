@@ -1188,7 +1188,7 @@ async function adminsListAgents(){
         <td>${a.actif ? "Oui" : "Non"}</td>
         <td class="right">
           <button type="button" class="btn small"
-            onclick="adminsToggleAgent('${a.agent_id}', ${!a.actif})">
+            onclick="adminsToggleAgent('${a.agent_id}', ${a.actif})">
             ${a.actif ? "Désactiver" : "Activer"}
           </button>
 
@@ -1243,7 +1243,7 @@ async function adminsToggleAgent(agent_id, actif){
   }
 
   // actif = état désiré (true=activer, false=désactiver)
-  const desired = (actif === true || actif === "true" || actif === "TRUE");
+  const desired = !(actif === true || actif === "true" || actif === "TRUE");
 
   try{
     const res = await apiCall("adminToggleAgent", {
