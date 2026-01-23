@@ -1152,68 +1152,70 @@ async function adminsRefreshAll(){
 
 async function adminsListAgents(){
   if(!STATE.admins.ok) return;
+
   const tb = $("adminsAgentsTable");
-    try{
+  try{
     const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
-    const list = res.agents || [];
-      list.forEach(a => {
-  a.actif = (a.actif === true || a.actif === "TRUE" || a.actif === "true");
-});
 
-      // TRI alphabétique (ignore majuscules/accents)
-list.sort((a,b)=>
-  String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
-);
+    const list = (res.agents || []).map(a => ({
+      ...a,
+      agent_id: String(a.agent_id || "").trim(),
+      nom: String(a.nom || "").trim(),
+      // ✅ normalisation béton
+      actif: String(a.actif).toUpperCase() === "TRUE"
+    }));
 
-      // === Compteurs agents ===
-const total = list.length;
-const active = list.filter(a => a.actif).length;
-const inactive = total - active;
+    // ✅ On garde une copie pour adminsToggleAgent()
+    STATE.adminsAgents = list;
 
-$("agentsCountTotal").textContent = ` (${total})`;
-$("agentsCountActive").textContent = ` 🟢 ${active}`;
-$("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
+    // TRI
+    list.sort((a,b)=>
+      String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
+    );
 
-   list.forEach(a => a.actif = String(a.actif).toUpperCase() === "TRUE");
+    // compteurs
+    const total = list.length;
+    const active = list.filter(a => a.actif).length;
+    const inactive = total - active;
+    $("agentsCountTotal").textContent = ` (${total})`;
+    $("agentsCountActive").textContent = `🟢 ${active}`;
+    $("agentsCountInactive").textContent = `🔴 ${inactive}`;
 
-   tb.innerHTML = list.map(a => `
-<tr>
-  <td>${esc(a.nom)}</td>
-  <td>${a.actif ? "Oui" : "Non"}</td>
-  <td class="right">
+    // tableau
+    tb.innerHTML = list.map(a => `
+      <tr>
+        <td>${esc(a.nom)}</td>
+        <td>${a.actif ? "Oui" : "Non"}</td>
+        <td class="right">
+          <button type="button" class="btn small"
+            onclick="adminsToggleAgent('${esc(a.agent_id)}')">
+            ${a.actif ? "Désactiver" : "Activer"}
+          </button>
 
-   <button type="button" class="btn small"
-  onclick="adminsToggleAgent('${a.agent_id}', '${a.actif ? "FALSE" : "TRUE"}')">
-  ${a.actif ? "Désactiver" : "Activer"}
-</button>
+          <button type="button" class="btn small"
+            onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">
+            Reset 0000
+          </button>
 
-    <button type="button" class="btn small"
-      onclick="adminsResetAgentCode(event, '${a.agent_id}')">
-      Reset 0000
-    </button>
+          <button type="button" class="btn small danger"
+            onclick="adminsDeleteAgent('${esc(a.agent_id)}')">
+            Retirer
+          </button>
+        </td>
+      </tr>
+    `).join("");
 
-    <button class="btn small danger"
-      onclick="adminsDeleteAgent('${a.agent_id}')">
-      Retirer
-    </button>
-
-  </td>
-</tr>
-`).join("");
-
-    // met à jour dropdown “ajouter au groupe”
-    const pub = await apiCall("listAgentsPublics", {});
-    if(pub && pub.ok){
-      STATE.agentsPublic = pub.agents || [];
-      renderAgentsSelect();
-      renderAdminsAddToGroupSelect();
-    }
+    // ✅ (optionnel mais utile) rafraîchir aussi la liste publique des menus
+    // const pub = await apiCall("listAgentsPublics", {});
+    // if(pub && pub.ok){ STATE.agentsPublic = pub.agents || []; renderAgentsSelect(); }
 
   }catch(e){
-    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
+    console.error(e);
+    showToast("toastAdminsAgents","Erreur chargement agents",false);
   }
 }
+
 
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
