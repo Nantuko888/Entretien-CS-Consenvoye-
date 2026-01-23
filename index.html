@@ -1156,24 +1156,22 @@ async function adminsListAgents(){
   const tb = $("adminsAgentsTable");
 
   try{
-    const res = await apiCall("adminListAgents", {
-      admin_code: STATE.admins.code
-    });
-
+    const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
 
     const list = res.agents || [];
 
-    // 🔒 NORMALISATION BOOLÉENNE (OBLIGATOIRE)
+    // Normalisation booléenne
     list.forEach(a => {
       a.actif = (a.actif === true || a.actif === "TRUE" || a.actif === "true");
     });
 
-    // TRI
+    // Tri
     list.sort((a,b)=>
       String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
     );
 
+    // Compteurs
     const total = list.length;
     const active = list.filter(a => a.actif).length;
     const inactive = total - active;
@@ -1182,34 +1180,40 @@ async function adminsListAgents(){
     $("agentsCountActive").textContent = `🟢 ${active}`;
     $("agentsCountInactive").textContent = `🔴 ${inactive}`;
 
+    // Render table (sans logique fragile dans onclick)
     tb.innerHTML = list.map(a => `
       <tr>
         <td>${esc(a.nom)}</td>
         <td>${a.actif ? "Oui" : "Non"}</td>
         <td class="right">
-          <button type="button" class="btn small"
-            onclick="adminsToggleAgent('${a.agent_id}', ${a.actif})">
+          <button type="button"
+            class="btn small"
+            data-id="${esc(a.agent_id)}"
+            data-actif="${a.actif ? "1" : "0"}"
+            onclick="adminsToggleAgentFromBtn(this)">
             ${a.actif ? "Désactiver" : "Activer"}
           </button>
 
           <button type="button" class="btn small"
-            onclick="adminsResetAgentCode(event,'${a.agent_id}')">
+            onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">
             Reset 0000
           </button>
 
-          <button class="btn small danger"
-            onclick="adminsDeleteAgent('${a.agent_id}')">
+          <button type="button" class="btn small danger"
+            onclick="adminsDeleteAgent('${esc(a.agent_id)}')">
             Retirer
           </button>
         </td>
       </tr>
     `).join("");
 
-  } catch(e){
+  }catch(e){
     console.error(e);
+    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
     showToast("toastAdminsAgents","Erreur chargement agents",false);
   }
 }
+
  
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
@@ -1236,14 +1240,14 @@ async function adminsAddAgent(ev){
   }
 }
 
-async function adminsToggleAgent(agent_id, actif){
+async function adminsToggleAgent(agent_id, isActif){
   if(!STATE.admins.ok){
     showToast("toastAdminsAgents","Non connecté.",false);
     return;
   }
 
-  // actif = état désiré (true=activer, false=désactiver)
-  const desired = !(actif === true || actif === "true" || actif === "TRUE");
+  // isActif = état actuel → on inverse
+  const desired = !isActif;
 
   try{
     const res = await apiCall("adminToggleAgent", {
@@ -1259,13 +1263,18 @@ async function adminsToggleAgent(agent_id, actif){
 
     showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
 
-    // refresh table
+    // refresh UI
     await adminsListAgents();
 
   }catch(e){
     console.error(e);
     showToast("toastAdminsAgents","Erreur réseau.",false);
   }
+}
+function adminsToggleAgentFromBtn(btn){
+  const agent_id = btn.dataset.id;
+  const isActif = btn.dataset.actif === "1"; // état ACTUEL affiché
+  adminsToggleAgent(agent_id, isActif);
 }
 
   async function adminsResetAgentCode(ev, agent_id){
