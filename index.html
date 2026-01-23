@@ -1263,6 +1263,13 @@ async function adminsToggleAgent(agent_id, actif){
     showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
     await adminsListAgents();
     renderAgentsSelect();
+    // 🔄 Recharge la liste publique pour que les menus filtrés .actif soient à jour
+const pub = await apiCall("listAgentsPublics", {});
+if(pub && pub.ok){
+  STATE.agentsPublic = pub.agents || [];
+  renderAgentsSelect();
+  renderAdminsAddToGroupSelect();
+}
 
   }catch(e){
     console.log("[toggle] error =", e);
