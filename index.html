@@ -1157,7 +1157,7 @@ async function adminsListAgents(){
     const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.agents || [];
-      list.forEach(a => {
+            list.forEach(a => {
   a.actif = (a.actif === true || a.actif === "TRUE" || a.actif === "true");
 });
 
@@ -1266,9 +1266,13 @@ async function adminsToggleAgent(agent_id, actif){
     console.log("[toggle] API res =", res);
 
     if(!res || !res.ok){
-          showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
-    
-    await adminsListAgents();
+  showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
+  return;
+}
+
+showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
+console.log("REFRESH NOW");
+await adminsListAgents();
     
      }catch(e){
     console.log("[toggle] error =", e);
