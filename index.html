@@ -1262,6 +1262,7 @@ async function adminsToggleAgent(agent_id, actif){
 
     showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
     await adminsListAgents();
+    renderAgentsSelect();
 
   }catch(e){
     console.log("[toggle] error =", e);
