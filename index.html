@@ -1157,10 +1157,6 @@ async function adminsListAgents(){
     const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.agents || [];
-            list.forEach(a => {
-  a.actif = (a.actif === true || a.actif === "TRUE" || a.actif === "true");
-});
-
       // TRI alphabétique (ignore majuscules/accents)
 list.sort((a,b)=>
   String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
@@ -1175,34 +1171,17 @@ $("agentsCountTotal").textContent = ` (${total})`;
 $("agentsCountActive").textContent = ` 🟢 ${active}`;
 $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
 
-   tb.innerHTML = list.map(a => {
-  const isActif = (a.actif === true || a.actif === "TRUE" || a.actif === "true");
-  return `
-    <tr>
-      <td>${esc(a.nom)}</td>
-      <td>${isActif ? "Oui" : "Non"}</td>
-      <td class="right">
-
-        <button type="button" class="btn small"
-          onclick="adminsToggleAgent('${a.agent_id}', ${isActif ? "false" : "true"})">
-          ${isActif ? "Désactiver" : "Activer"}
-        </button>
-
-        <button type="button" class="btn small"
-          onclick="adminsResetAgentCode(event, '${a.agent_id}')">
-          Reset 0000
-        </button>
-
-        <button type="button" class="btn small danger"
-          onclick="adminsDeleteAgent('${a.agent_id}')">
-          Retirer
-        </button>
-
-      </td>
-    </tr>
-  `;
-}).join("");
-
+    tb.innerHTML = list.map(a=>`
+      <tr>
+        <td>${esc(a.nom)}</td>
+        <td>${a.actif ? "Oui":"Non"}</td>
+        <td class="right">
+          <button class="btn small" onclick="adminsToggleAgent('${esc(a.agent_id)}', ${a.actif ? "false":"true"})">${a.actif ? "Désactiver":"Activer"}</button>
+          <button type="button" class="btn small" onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">Reset 0000</button>
+          <button class="btn small danger" onclick="adminsRemoveFromGroup('${esc(a.agent_id)}')">Retirer</button>
+        </td>
+      </tr>
+    `).join("");
 
     // met à jour dropdown “ajouter au groupe”
     const pub = await apiCall("listAgentsPublics", {});
@@ -1235,56 +1214,20 @@ async function adminsAddAgent(ev){
     $("adminsNewAgentName").value="";
     $("adminsNewAgentCode").value="0000";
     await adminsListAgents();
-    renderAgentsSelect();
   }catch(_){
     showToast("toastAdminsAgents","Erreur réseau.",false);
-    const pub = await apiCall("listAgentsPublics", {});
-if (pub && pub.ok) {
-  STATE.agentsPublic = pub.agents || [];
-  renderAgentsSelect();
-}
-
   }finally{
     setLoading(btn,false);
   }
 }
 
 async function adminsToggleAgent(agent_id, actif){
-  if(!STATE.admins.ok){
-    showToast("toastAdminsAgents","Non connecté.",false);
-    return;
-  }
-
-  // Debug: on voit exactement ce qui arrive
-  console.log("[toggle] agent_id =", agent_id, "| actif param =", actif, "| typeof =", typeof actif);
-
-  // actif = état désiré (true = activer, false = désactiver)
-  const desired = (actif === true || actif === "true" || actif === "TRUE");
-
+  if(!STATE.admins.ok) return;
   try{
-    const res = await apiCall("adminToggleAgent", {
-      admin_code: STATE.admins.code,
-      agent_id: String(agent_id).trim(),
-      actif: desired ? "TRUE" : "FALSE"
-    });
-
-    console.log("[toggle] API res =", res);
-
-    if(!res || !res.ok){
-  showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
-  return;
+    await apiCall("adminToggleAgent", { admin_code: STATE.admins.code, agent_id, actif: actif ? "TRUE":"FALSE" });
+    await adminsListAgents();
+  }catch(_){}
 }
-
-showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
-console.log("REFRESH NOW");
-await adminsListAgents();
-    
-     }catch(e){
-    console.log("[toggle] error =", e);
-    showToast("toastAdminsAgents","Erreur réseau.",false);
-  }
-}
-
 async function adminsResetAgentCode(ev, agent_id){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(!STATE.admins.ok) return;
