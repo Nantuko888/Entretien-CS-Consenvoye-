@@ -1175,29 +1175,34 @@ $("agentsCountTotal").textContent = ` (${total})`;
 $("agentsCountActive").textContent = ` 🟢 ${active}`;
 $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
 
-   tb.innerHTML = list.map(a => `
-<tr>
-  <td>${esc(a.nom)}</td>
-  <td>${a.actif ? "Oui" : "Non"}</td>
-  <td class="right">
+   tb.innerHTML = list.map(a => {
+  const isActif = (a.actif === true || a.actif === "TRUE" || a.actif === "true");
+  return `
+    <tr>
+      <td>${esc(a.nom)}</td>
+      <td>${isActif ? "Oui" : "Non"}</td>
+      <td class="right">
 
-    <button type="button" class="btn small"
-  onclick="adminsToggleAgent('${a.agent_id}', !${a.actif})">
-  ${a.actif ? "Désactiver" : "Activer"}
-</button>
-    <button type="button" class="btn small"
-      onclick="adminsResetAgentCode(event, '${a.agent_id}')">
-      Reset 0000
-    </button>
+        <button type="button" class="btn small"
+          onclick="adminsToggleAgent('${a.agent_id}', ${isActif ? "false" : "true"})">
+          ${isActif ? "Désactiver" : "Activer"}
+        </button>
 
-    <button class="btn small danger"
-      onclick="adminsDeleteAgent('${a.agent_id}')">
-      Retirer
-    </button>
+        <button type="button" class="btn small"
+          onclick="adminsResetAgentCode(event, '${a.agent_id}')">
+          Reset 0000
+        </button>
 
-  </td>
-</tr>
-`).join("");
+        <button type="button" class="btn small danger"
+          onclick="adminsDeleteAgent('${a.agent_id}')">
+          Retirer
+        </button>
+
+      </td>
+    </tr>
+  `;
+}).join("");
+
 
     // met à jour dropdown “ajouter au groupe”
     const pub = await apiCall("listAgentsPublics", {});
