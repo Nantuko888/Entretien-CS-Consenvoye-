@@ -1155,7 +1155,7 @@ async function adminsListAgents(){
 
   const tb = $("adminsAgentsTable");
   try{
-    const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
+    const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code, _ts: Date.now() });
     if(!res || !res.ok) throw new Error("bad");
 
     const list = (res.agents || []).map(a => ({
