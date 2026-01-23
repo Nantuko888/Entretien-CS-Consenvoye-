@@ -1177,11 +1177,10 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   <td>${a.actif ? "Oui" : "Non"}</td>
   <td class="right">
 
-    <button class="btn small"
-      onclick="adminsToggleAgent('${a.agent_id}', ${a.actif ? false : true})">
-      ${a.actif ? "Désactiver" : "Activer"}
-    </button>
-
+    <button type="button" class="btn small"
+  onclick="adminsToggleAgent('${a.agent_id}', ${a.actif ? 'false' : 'true'})">
+  ${a.actif ? "Désactiver" : "Activer"}
+</button>
     <button type="button" class="btn small"
       onclick="adminsResetAgentCode(event, '${a.agent_id}')">
       Reset 0000
