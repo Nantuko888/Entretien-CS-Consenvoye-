@@ -1271,6 +1271,14 @@ async function adminsToggleAgent(agent_id){
     agent_id: String(agent_id).trim(),
     actif: desired ? "TRUE" : "FALSE"
   });
+  const res = await apiCall("adminToggleAgent", {
+  admin_code: STATE.admins.code,
+  agent_id: String(agent_id).trim(),
+  actif: desired ? "TRUE" : "FALSE"
+});
+
+console.log("TOGGLE RES =", res);
+
 
   if(!res || !res.ok){
     showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
