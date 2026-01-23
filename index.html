@@ -1171,17 +1171,32 @@ $("agentsCountTotal").textContent = ` (${total})`;
 $("agentsCountActive").textContent = ` 🟢 ${active}`;
 $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
 
-    tb.innerHTML = list.map(a=>`
-      <tr>
-        <td>${esc(a.nom)}</td>
-        <td>${a.actif ? "Oui":"Non"}</td>
-        <td class="right">
-          <button class="btn small" onclick="adminsToggleAgent('${esc(a.agent_id)}', ${a.actif ? "false":"true"})">${a.actif ? "Désactiver":"Activer"}</button>
-          <button type="button" class="btn small" onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">Reset 0000</button>
-          <button class="btn small danger" onclick="adminsRemoveFromGroup('${esc(a.agent_id)}')">Retirer</button>
-        </td>
-      </tr>
-    `).join("");
+    tb.innerHTML = (list || []).map(a => {
+  const isActif = (a.actif === true || a.actif === "TRUE" || a.actif === "true");
+  return `
+    <tr>
+      <td>${esc(a.nom)}</td>
+      <td>${isActif ? "Oui" : "Non"}</td>
+      <td class="right">
+        <button type="button" class="btn small"
+          onclick="adminsToggleAgent('${a.agent_id}', ${isActif ? "false" : "true"})">
+          ${isActif ? "Désactiver" : "Activer"}
+        </button>
+
+        <button type="button" class="btn small"
+          onclick="adminsResetAgentCode(event,'${a.agent_id}')">
+          Reset 0000
+        </button>
+
+        <button type="button" class="btn small danger"
+          onclick="adminsDeleteAgent('${a.agent_id}')">
+          Retirer
+        </button>
+      </td>
+    </tr>
+  `;
+}).join("");
+
 
     // met à jour dropdown “ajouter au groupe”
     const pub = await apiCall("listAgentsPublics", {});
@@ -1223,9 +1238,22 @@ async function adminsAddAgent(ev){
 
 async function adminsToggleAgent(agent_id, actif){
   if(!STATE.admins.ok) return;
-  try{
-    await apiCall("adminToggleAgent", { admin_code: STATE.admins.code, agent_id, actif: actif ? "TRUE":"FALSE" });
-    await adminsListAgents();
+  const desired = (actif === true || actif === "true" || actif === "TRUE");
+
+  const res = await apiCall("adminToggleAgent", {
+    admin_code: STATE.admins.code,
+    agent_id,
+    actif: desired ? "TRUE" : "FALSE"
+  });
+
+  if(!res || !res.ok){
+    showToast("toastAdminsAgents", (res && res.message) || "Erreur", false);
+    return;
+  }
+
+  await adminsListAgents();
+}
+
   }catch(_){}
 }
 async function adminsResetAgentCode(ev, agent_id){
