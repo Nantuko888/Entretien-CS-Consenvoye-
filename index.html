@@ -1179,7 +1179,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   <td class="right">
 
   <button type="button" class="btn small"
-  onclick="adminsToggleAgent('${esc(a.agent_id)}', ${!a.actif})">
+  onclick="adminsToggleAgentUI(this, '${esc(a.agent_id)}')">
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
 
@@ -1204,6 +1204,21 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       renderAgentsSelect();
       renderAdminsAddToGroupSelect();
     }
+      function adminsToggleAgentUI(btn, agent_id){
+  // 1) switch immédiat du texte
+  const willActivate = (btn.textContent.trim() === "Activer");
+  btn.textContent = willActivate ? "Désactiver" : "Activer";
+
+  // 2) envoi serveur (sans dépendre du refresh UI)
+  apiCall("adminToggleAgent", {
+    admin_code: STATE.admins.code,
+    agent_id: String(agent_id).trim(),
+    actif: willActivate ? "TRUE" : "FALSE"
+  });
+
+  // optionnel: rafraîchir la liste après 400ms (si ça marche chez toi)
+  setTimeout(() => { adminsListAgents(); }, 400);
+}
 
   }catch(e){
     tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
