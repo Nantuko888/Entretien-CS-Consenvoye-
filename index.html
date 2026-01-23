@@ -1160,12 +1160,12 @@ async function adminsListAgents(){
 
     const list = (res.agents || []).map(a => ({
       ...a,
-      agent_id: String(a.agent_id || "").trim(),
+           agent_id: String(a.agent_id || "").trim(),
       nom: String(a.nom || "").trim(),
       // ✅ normalisation béton
       actif: String(a.actif).toUpperCase() === "TRUE"
     }));
-
+     
     // ✅ On garde une copie pour adminsToggleAgent()
     STATE.adminsAgents = list;
 
@@ -1189,7 +1189,7 @@ async function adminsListAgents(){
         <td>${a.actif ? "Oui" : "Non"}</td>
         <td class="right">
          <button type="button" class="btn small"
-  onclick="adminsToggleAgent('${a.agent_id}', ${!a.actif})">
+  onclick="adminsToggleAgent('${a.agent_id}')">
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
 
@@ -1251,31 +1251,34 @@ if (pub && pub.ok) {
 }
 
 
- async function adminsToggleAgent(agent_id){
+async function adminsToggleAgent(agent_id){
   if(!STATE.admins.ok){
     showToast("toastAdminsAgents","Non connecté.",false);
     return;
   }
 
-  try{
-    const res = await apiCall("adminToggleAgent", {
-      admin_code: STATE.admins.code,
-      agent_id: String(agent_id).trim()
-      // volontairement PAS de "actif" => le serveur toggle
-    });
-
-    if(!res || !res.ok){
-      showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
-      return;
-    }
-
-    // rafraîchit la table (la vérité vient de Sheets)
-    await adminsListAgents();
-
-  }catch(e){
-    console.error(e);
-    showToast("toastAdminsAgents","Erreur réseau.",false);
+  // état courant depuis la dernière liste affichée
+  const cur = (STATE.adminsAgents || []).find(a => String(a.agent_id) === String(agent_id));
+  if(!cur){
+    showToast("toastAdminsAgents","Agent introuvable dans la liste (rafraîchis).",false);
+    return;
   }
+
+  const desired = !cur.actif; // on inverse
+
+  const res = await apiCall("adminToggleAgent", {
+    admin_code: STATE.admins.code,
+    agent_id: String(agent_id).trim(),
+    actif: desired ? "TRUE" : "FALSE"
+  });
+
+  if(!res || !res.ok){
+    showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
+    return;
+  }
+
+  // refresh UI (table + compteurs + texte bouton)
+  await adminsListAgents();
 }
 
 async function adminsResetAgentCode(ev, agent_id){
