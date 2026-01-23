@@ -1188,8 +1188,8 @@ async function adminsListAgents(){
         <td>${esc(a.nom)}</td>
         <td>${a.actif ? "Oui" : "Non"}</td>
         <td class="right">
-          <button type="button" class="btn small secondary"
-  onclick="adminsToggleAgent('${esc(a.agent_id)}')"
+         <button type="button" class="btn small"
+  onclick="adminsToggleAgent('${a.agent_id}', ${!a.actif})">
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
 
