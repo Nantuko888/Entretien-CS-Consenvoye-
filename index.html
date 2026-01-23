@@ -1186,13 +1186,10 @@ async function adminsListAgents(){
         <td>${esc(a.nom)}</td>
         <td>${a.actif ? "Oui" : "Non"}</td>
         <td class="right">
-          <button type="button"
-            class="btn small"
-            data-id="${esc(a.agent_id)}"
-            data-actif="${a.actif ? "1" : "0"}"
-            onclick="adminsToggleAgentFromBtn(this)">
-            ${a.actif ? "Désactiver" : "Activer"}
-          </button>
+          <button type="button" class="btn small"
+  onclick="adminsToggleAgent('${a.agent_id}')">
+  ${a.actif ? "Désactiver" : "Activer"}
+</button>
 
           <button type="button" class="btn small"
             onclick="adminsResetAgentCode(event,'${esc(a.agent_id)}')">
@@ -1240,39 +1237,45 @@ async function adminsAddAgent(ev){
   }
 }
 
-async function adminsToggleAgent(agent_id, isActif){
+async function adminsToggleAgent(agent_id){
   if(!STATE.admins.ok){
     showToast("toastAdminsAgents","Non connecté.",false);
     return;
   }
 
-  // isActif = état actuel → on inverse
-  const desired = !isActif;
-
   try{
-    const res = await apiCall("adminToggleAgent", {
+    // 1) On recharge la liste actuelle
+    const res = await apiCall("adminListAgents", {
+      admin_code: STATE.admins.code
+    });
+    if(!res || !res.ok) throw new Error("load_failed");
+
+    const agent = (res.agents || []).find(a => a.agent_id === agent_id);
+    if(!agent) throw new Error("agent_not_found");
+
+    // 2) On calcule l’état inverse
+    const isActif = (agent.actif === true || agent.actif === "TRUE" || agent.actif === "true");
+    const desired = !isActif;
+
+    // 3) On applique
+    const res2 = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
-      agent_id: String(agent_id).trim(),
+      agent_id,
       actif: desired ? "TRUE" : "FALSE"
     });
 
-    if(!res || !res.ok){
-      showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
+    if(!res2 || !res2.ok){
+      showToast("toastAdminsAgents","Erreur toggle",false);
       return;
     }
 
-    showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
-
-    // refresh UI
+    // 4) Refresh UI
     await adminsListAgents();
 
   }catch(e){
     console.error(e);
-    showToast("toastAdminsAgents","Erreur réseau.",false);
+    showToast("toastAdminsAgents","Erreur.",false);
   }
-}
-function adminsToggleAgentFromBtn(btn){
-  console.log("CLICK OK", btn.dataset);
 }
 
   async function adminsResetAgentCode(ev, agent_id){
