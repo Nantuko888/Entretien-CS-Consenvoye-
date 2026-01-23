@@ -1226,6 +1226,7 @@ async function adminsAddAgent(ev){
     $("adminsNewAgentName").value="";
     $("adminsNewAgentCode").value="0000";
     await adminsListAgents();
+    renderAgentsSelect();
   }catch(_){
     showToast("toastAdminsAgents","Erreur réseau.",false);
     const pub = await apiCall("listAgentsPublics", {});
