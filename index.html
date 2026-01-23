@@ -1178,8 +1178,10 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   <td>${a.actif ? "Oui" : "Non"}</td>
   <td class="right">
 
-  <button type="button" class="btn small"
-  onclick="adminsToggleAgentUI(this, '${esc(a.agent_id)}')">
+  <button
+  type="button"
+  class="btn small"
+  onclick="adminsToggleAgent('${esc(a.agent_id)}')">
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
 
@@ -1255,7 +1257,7 @@ if (pub && pub.ok) {
     setLoading(btn,false);
   }
 }
-
+  
 async function adminsToggleAgent(agent_id, actif){
   if(!STATE.admins.ok){
     showToast("toastAdminsAgents","Non connecté.",false);
