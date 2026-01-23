@@ -1242,15 +1242,12 @@ if (pub && pub.ok) {
 
 async function adminsToggleAgent(agent_id, actif){
   if(!STATE.admins.ok){
-    showToast("toastAdminsAgents","Non connecté.",false);
+    showToast("toastAdminsAgents","Non connecté.", false);
     return;
   }
 
-  // Debug: on voit exactement ce qui arrive
-  console.log("[toggle] agent_id =", agent_id, "| actif param =", actif, "| typeof =", typeof actif);
-
-  // actif = état désiré (true = activer, false = désactiver)
-  const desired = (actif === true || actif === "true" || actif === "TRUE");
+  // actif peut arriver en boolean (true/false) OU en string ("true"/"false")
+  const desired = String(actif).toLowerCase() === "true"; // true => activer, false => désactiver
 
   try{
     const res = await apiCall("adminToggleAgent", {
@@ -1259,28 +1256,17 @@ async function adminsToggleAgent(agent_id, actif){
       actif: desired ? "TRUE" : "FALSE"
     });
 
-    console.log("[toggle] API res =", res);
-
     if(!res || !res.ok){
       showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
       return;
     }
 
     showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
-    await new Promise(r => setTimeout(r, 300));
     await adminsListAgents();
-    
-    // 🔄 Recharge la liste publique pour que les menus filtrés .actif soient à jour
-const pub = await apiCall("listAgentsPublics", {});
-if(pub && pub.ok){
-  STATE.agentsPublic = pub.agents || [];
-  
-  renderAgentsSelect();
-}
 
   }catch(e){
-    console.log("[toggle] error =", e);
-    showToast("toastAdminsAgents","Erreur réseau.",false);
+    console.error(e);
+    showToast("toastAdminsAgents","Erreur réseau.", false);
   }
 }
 
