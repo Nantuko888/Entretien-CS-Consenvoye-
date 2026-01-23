@@ -1248,23 +1248,46 @@ if (pub && pub.ok) {
 }
 
 
- async function adminsToggleAgent(agent_id, actif){
-  if(!STATE.admins.ok) return;
+ async function adminsToggleAgent(agent_id, actif) {
+  if (!STATE.admins.ok) {
+    showToast("toastAdminsAgents", "Non connecté.", false);
+    return;
+  }
 
-  // 🔥 on envoie, point.
-  apiCall("adminToggleAgent", {
-    admin_code: STATE.admins.code,
-    agent_id: String(agent_id).trim(),
-    actif: actif ? "TRUE" : "FALSE"
-  });
+  try {
+    const desired = String(actif).toLowerCase() === "true";
 
-  // 🔥 on recharge APRÈS (source de vérité = Sheets)
-  setTimeout(() => {
-    adminsListAgents();
-  }, 400);
+    const res = await apiCall("adminToggleAgent", {
+      admin_code: STATE.admins.code,
+      agent_id: String(agent_id).trim(),
+      actif: desired ? "TRUE" : "FALSE"
+    });
+
+    if (!res || !res.ok) {
+      showToast(
+        "toastAdminsAgents",
+        (res && res.message) || "Erreur toggle",
+        false
+      );
+      return;
+    }
+
+    showToast(
+      "toastAdminsAgents",
+      desired ? "Agent activé ✅" : "Agent désactivé ⛔",
+      true
+    );
+
+    setTimeout(() => {
+      adminsListAgents();
+    }, 400);
+
+  } catch (e) {
+    console.error(e);
+    showToast("toastAdminsAgents", "Erreur réseau.", false);
+  }
 }
-    showToast("toastAdminsAgents","Erreur réseau.", false);
-}
+
 
 
 async function adminsResetAgentCode(ev, agent_id){
