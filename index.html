@@ -1254,9 +1254,7 @@ async function adminsToggleAgent(agent_id, actif){
   await adminsListAgents();
 }
 
-  
-}
-async function adminsResetAgentCode(ev, agent_id){
+  async function adminsResetAgentCode(ev, agent_id){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(!STATE.admins.ok) return;
 
