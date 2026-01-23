@@ -1266,28 +1266,15 @@ async function adminsToggleAgent(agent_id, actif){
     console.log("[toggle] API res =", res);
 
     if(!res || !res.ok){
-      showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
-      return;
-    }
-
-    showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
-    await new Promise(r => setTimeout(r, 300));
+          showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
+    
     await adminsListAgents();
     
-    // 🔄 Recharge la liste publique pour que les menus filtrés .actif soient à jour
-const pub = await apiCall("listAgentsPublics", {});
-if(pub && pub.ok){
-  STATE.agentsPublic = pub.agents || [];
-  
-  renderAgentsSelect();
-}
-
-  }catch(e){
+     }catch(e){
     console.log("[toggle] error =", e);
     showToast("toastAdminsAgents","Erreur réseau.",false);
   }
 }
-
 
 async function adminsResetAgentCode(ev, agent_id){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
