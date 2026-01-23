@@ -1189,7 +1189,7 @@ async function adminsListAgents(){
         <td>${a.actif ? "Oui" : "Non"}</td>
         <td class="right">
           <button type="button" class="btn small secondary"
-  onclick="adminsToggleAgent('${esc(a.agent_id)}', ${a.actif})">
+  onclick="adminsToggleAgent('${esc(a.agent_id)}')"
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
 
@@ -1261,6 +1261,7 @@ if (pub && pub.ok) {
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
       agent_id: String(agent_id).trim()
+      // volontairement PAS de "actif" => le serveur toggle
     });
 
     if(!res || !res.ok){
@@ -1268,14 +1269,14 @@ if (pub && pub.ok) {
       return;
     }
 
-    await adminsListAgents(); // recharge depuis Sheets
+    // rafraîchit la table (la vérité vient de Sheets)
+    await adminsListAgents();
+
   }catch(e){
     console.error(e);
     showToast("toastAdminsAgents","Erreur réseau.",false);
   }
 }
-
-
 
 async function adminsResetAgentCode(ev, agent_id){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
