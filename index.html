@@ -1178,8 +1178,10 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   <td>${a.actif ? "Oui" : "Non"}</td>
   <td class="right">
 
-  <button type="button" class="btn small"
-  onclick="adminsToggleAgentUI(this, '${esc(a.agent_id)}')">
+ <button
+  type="button"
+  class="btn small"
+  onclick="adminsToggleAgentUI(this,'${esc(a.agent_id)}', ${a.actif ? 'true' : 'false'})"
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
 
@@ -1204,26 +1206,46 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       renderAgentsSelect();
       renderAdminsAddToGroupSelect();
     }
-      function adminsToggleAgentUI(btn, agent_id){
-  // 1) switch immédiat du texte
-  const willActivate = (btn.textContent.trim() === "Activer");
-  btn.textContent = willActivate ? "Désactiver" : "Activer";
+      async function adminsToggleAgentUI(btn, agent_id, currentActif){
+  if(!STATE.admins.ok){
+    showToast("toastAdminsAgents","Non connecté.",false);
+    return;
+  }
 
-  // 2) envoi serveur (sans dépendre du refresh UI)
-  apiCall("adminToggleAgent", {
-    admin_code: STATE.admins.code,
-    agent_id: String(agent_id).trim(),
-    actif: willActivate ? "TRUE" : "FALSE"
-  });
+  // currentActif = état affiché au moment du rendu (true/false)
+  const cur = (currentActif === true || String(currentActif).toLowerCase() === "true");
+  const desired = !cur; // on inverse
 
-  // optionnel: rafraîchir la liste après 400ms (si ça marche chez toi)
-  setTimeout(() => { adminsListAgents(); }, 400);
-}
+  // feedback immédiat (facultatif mais propre)
+  btn.disabled = true;
+  btn.textContent = desired ? "Désactiver" : "Activer";
+
+  try{
+    const res = await apiCall("adminToggleAgent", {
+      admin_code: STATE.admins.code,
+      agent_id: String(agent_id).trim(),
+      actif: desired ? "TRUE" : "FALSE"
+    });
+
+    if(!res || !res.ok){
+      showToast("toastAdminsAgents",(res && res.message) ? res.message : "Erreur toggle", false);
+      // rollback visuel si erreur
+      btn.textContent = cur ? "Désactiver" : "Activer";
+      return;
+    }
+
+    // refresh UI = la vérité vient de Sheets
+    await adminsListAgents();
 
   }catch(e){
-    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
+    console.error(e);
+    showToast("toastAdminsAgents","Erreur réseau.",false);
+    btn.textContent = cur ? "Désactiver" : "Activer";
+  }finally{
+    btn.disabled = false;
   }
 }
+
 
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
