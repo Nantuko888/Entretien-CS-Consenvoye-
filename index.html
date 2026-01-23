@@ -1175,6 +1175,8 @@ $("agentsCountTotal").textContent = ` (${total})`;
 $("agentsCountActive").textContent = ` 🟢 ${active}`;
 $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
 
+   list.forEach(a => a.actif = String(a.actif).toUpperCase() === "TRUE");
+
    tb.innerHTML = list.map(a => `
 <tr>
   <td>${esc(a.nom)}</td>
