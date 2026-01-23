@@ -1166,10 +1166,7 @@ async function adminsListAgents(){
       actif: String(a.actif).toUpperCase() === "TRUE"
     }));
      
-    // ✅ On garde une copie pour adminsToggleAgent()
-    STATE.adminsAgents = list;
-
-    // TRI
+      // TRI
     list.sort((a,b)=>
       String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
     );
