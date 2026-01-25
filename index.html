@@ -1233,11 +1233,6 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   // erreur réseau -> on annule le changement visuel
   btn.textContent = willActivate ? "Activer" : "Désactiver";
   showToast("toastAdminsAgents", "Erreur réseau", false);
-}
-
-  }catch(e){
-    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
-  }
 }    
 
 async function adminsAddAgent(ev){
