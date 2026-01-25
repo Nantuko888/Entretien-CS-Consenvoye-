@@ -1207,7 +1207,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       renderAdminsAddToGroupSelect();
     }
       
-  function adminsToggleAgentUI(btn, agent_id){
+  window.adminsToggleAgentUI = function(btn, agent_id){
   // 1) switch immédiat du texte
   const willActivate = (btn.textContent.trim() === "Activer");
   btn.textContent = willActivate ? "Désactiver" : "Activer";
