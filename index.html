@@ -1206,7 +1206,8 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       renderAgentsSelect();
       renderAdminsAddToGroupSelect();
     }
-      function adminsToggleAgentUI(btn, agent_id){
+      
+  function adminsToggleAgentUI(btn, agent_id){
   // 1) switch immédiat du texte
   const willActivate = (btn.textContent.trim() === "Activer");
   btn.textContent = willActivate ? "Désactiver" : "Activer";
@@ -1225,7 +1226,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   }catch(e){
     tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
   }
-}
+}    
 
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
