@@ -2241,13 +2241,14 @@ $("doneImg").addEventListener("touchend", (e)=>{
 /* ===============================
    EVENTS INIT
    =============================== */
-(function init(){
+function init(){
   showView("agents");
   setPill("pillAdminsStatus","Admin : non connecté","bad");
   setPill("pillAgentsStatus","Agent : non connecté","bad");
   bootstrap();
-})();
+}
 
+init();
   function togglePassword(inputId, btn){
   const input = document.getElementById(inputId);
   if(!input) return;
