@@ -1206,34 +1206,26 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       renderAgentsSelect();
       renderAdminsAddToGroupSelect();
     }
-      
-  window.adminsToggleAgentUI = async function(btn, agent_id){
+      function adminsToggleAgentUI(btn, agent_id){
   // 1) switch immédiat du texte
   const willActivate = (btn.textContent.trim() === "Activer");
   btn.textContent = willActivate ? "Désactiver" : "Activer";
 
-  try{
-  const res = await apiCall("adminToggleAgent", {
+  // 2) envoi serveur (sans dépendre du refresh UI)
+  apiCall("adminToggleAgent", {
     admin_code: STATE.admins.code,
     agent_id: String(agent_id).trim(),
     actif: willActivate ? "TRUE" : "FALSE"
   });
 
-  if(!res || !res.ok){
-    // on annule le changement visuel si le serveur refuse
-    btn.textContent = willActivate ? "Activer" : "Désactiver";
-    showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur serveur", false);
-    return;
-  }
-
-  // OK serveur -> on refresh
+  // optionnel: rafraîchir la liste après 400ms (si ça marche chez toi)
   setTimeout(() => { adminsListAgents(); }, 400);
+}
 
-}catch(e){
-  // erreur réseau -> on annule le changement visuel
-  btn.textContent = willActivate ? "Activer" : "Désactiver";
-  showToast("toastAdminsAgents", "Erreur réseau", false);
-}    
+  }catch(e){
+    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
+  }
+}
 
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
@@ -2241,14 +2233,13 @@ $("doneImg").addEventListener("touchend", (e)=>{
 /* ===============================
    EVENTS INIT
    =============================== */
-function init(){
+(function init(){
   showView("agents");
   setPill("pillAdminsStatus","Admin : non connecté","bad");
   setPill("pillAgentsStatus","Agent : non connecté","bad");
   bootstrap();
-}
+})();
 
-init();
   function togglePassword(inputId, btn){
   const input = document.getElementById(inputId);
   if(!input) return;
@@ -2260,7 +2251,7 @@ init();
     input.type = "password";
     btn.textContent = "👁️";
   }
-    }
+}
 </script>
 </body>
 </html>
