@@ -1181,7 +1181,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   <button
   type="button"
   class="btn small"
-  onclick="adminsToggleAgent(event, '${esc(a.agent_id)}')">
+  onclick="adminsToggleAgentUI(this, '${esc(a.agent_id)}')">
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
 
