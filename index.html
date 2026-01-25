@@ -1258,7 +1258,8 @@ if (pub && pub.ok) {
   }
 }
   
-async function adminsToggleAgent(agent_id, actif){
+async function adminsToggleAgent(event, agent_id){
+  const btn = event.currentTarget;
   if(!STATE.admins.ok){
     showToast("toastAdminsAgents","Non connecté.",false);
     return;
@@ -1268,8 +1269,7 @@ async function adminsToggleAgent(agent_id, actif){
   console.log("[toggle] agent_id =", agent_id, "| actif param =", actif, "| typeof =", typeof actif);
 
   // actif = état désiré (true = activer, false = désactiver)
-  const desired = (actif === true || actif === "true" || actif === "TRUE");
-
+  const desired = (btn.textContent.trim() === "Activer");
   try{
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
