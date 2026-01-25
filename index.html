@@ -1207,20 +1207,32 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       renderAdminsAddToGroupSelect();
     }
       
-  window.adminsToggleAgentUI = function(btn, agent_id){
+  window.adminsToggleAgentUI = async function(btn, agent_id){
   // 1) switch immédiat du texte
   const willActivate = (btn.textContent.trim() === "Activer");
   btn.textContent = willActivate ? "Désactiver" : "Activer";
 
-  // 2) envoi serveur (sans dépendre du refresh UI)
-  apiCall("adminToggleAgent", {
+  try{
+  const res = await apiCall("adminToggleAgent", {
     admin_code: STATE.admins.code,
     agent_id: String(agent_id).trim(),
     actif: willActivate ? "TRUE" : "FALSE"
   });
 
-  // optionnel: rafraîchir la liste après 400ms (si ça marche chez toi)
+  if(!res || !res.ok){
+    // on annule le changement visuel si le serveur refuse
+    btn.textContent = willActivate ? "Activer" : "Désactiver";
+    showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur serveur", false);
+    return;
+  }
+
+  // OK serveur -> on refresh
   setTimeout(() => { adminsListAgents(); }, 400);
+
+}catch(e){
+  // erreur réseau -> on annule le changement visuel
+  btn.textContent = willActivate ? "Activer" : "Désactiver";
+  showToast("toastAdminsAgents", "Erreur réseau", false);
 }
 
   }catch(e){
