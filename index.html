@@ -1226,12 +1226,7 @@ async function adminsAddAgent(ev){
     await adminsListAgents();
   }catch(_){
     showToast("toastAdminsAgents","Erreur réseau.",false);
-    const pub = await apiCall("listAgentsPublics", {});
-if (pub && pub.ok) {
-  STATE.agentsPublic = pub.agents || [];
-  renderAgentsSelect();
-}
-
+    
   }finally{
     setLoading(btn,false);
   }
@@ -2224,8 +2219,7 @@ $("doneImg").addEventListener("touchend", (e)=>{
     btn.textContent = "👁️";
   }
   }
-   }
-</script>
+  </script>
 </body>
 </html>
 
