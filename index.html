@@ -1272,7 +1272,7 @@ async function adminsToggleAgent(event, agent_id){
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
       agent_id: String(agent_id).trim(),
-      actif: desired ? "TRUE" : "FALSE"
+      actif: desired 
     });
 
     console.log("[toggle] API res =", res);
