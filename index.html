@@ -1265,9 +1265,6 @@ async function adminsToggleAgent(event, agent_id){
     return;
   }
 
-  // actif = état désiré (true = activer, false = désactiver)
-  const desired = (btn.textContent.trim() === "Activer");
-  btn.textContent = desired ? "Désactiver" : "Activer";
   try{
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
@@ -1276,12 +1273,12 @@ async function adminsToggleAgent(event, agent_id){
     });
 
     console.log("[toggle] API res =", res);
-
+    
     if(!res || !res.ok){
       showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
       return;
     }
-
+    btn.textContent = res.actif ? "Désactiver" : "Activer";
     showToast("toastAdminsAgents", res.actif ? "Agent activé ✅" : "Agent désactivé ✅", true);
     await new Promise(r => setTimeout(r, 300));
     await adminsListAgents();
