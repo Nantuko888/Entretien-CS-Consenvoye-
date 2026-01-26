@@ -1205,8 +1205,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       STATE.agentsPublic = pub.agents || [];
       renderAgentsSelect();
       renderAdminsAddToGroupSelect();
-    }
-     
+         
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
   if(!STATE.admins.ok){ showToast("toastAdminsAgents","Non connecté.",false); return; }
@@ -2225,7 +2224,7 @@ $("doneImg").addEventListener("touchend", (e)=>{
     btn.textContent = "👁️";
   }
   }
-  }
+  
 </script>
 </body>
 </html>
