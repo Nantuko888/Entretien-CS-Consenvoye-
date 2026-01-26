@@ -1157,7 +1157,9 @@ async function adminsListAgents(){
     const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.agents || [];
-     list.forEach(a => { a.actif = (a.actif === true); });
+      list.forEach(a => {
+  a.actif = (a.actif === true) || (String(a.actif).trim().toUpperCase() === "TRUE");
+});
       // TRI alphabétique (ignore majuscules/accents)
 list.sort((a,b)=>
   String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
@@ -1205,7 +1207,25 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       STATE.agentsPublic = pub.agents || [];
       renderAgentsSelect();
       renderAdminsAddToGroupSelect();
-         
+    }
+      function adminsToggleAgentUI(btn, agent_id){
+ 
+  // 2) envoi serveur (sans dépendre du refresh UI)
+  apiCall("adminToggleAgent", {
+    admin_code: STATE.admins.code,
+    agent_id: String(agent_id).trim(),
+    actif: willActivate ? "TRUE" : "FALSE"
+  });
+
+  // optionnel: rafraîchir la liste après 400ms (si ça marche chez toi)
+  setTimeout(() => { adminsListAgents(); }, 400);
+}
+
+  }catch(e){
+    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
+  }
+}
+
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
   if(!STATE.admins.ok){ showToast("toastAdminsAgents","Non connecté.",false); return; }
@@ -1226,7 +1246,12 @@ async function adminsAddAgent(ev){
     await adminsListAgents();
   }catch(_){
     showToast("toastAdminsAgents","Erreur réseau.",false);
-    
+    const pub = await apiCall("listAgentsPublics", {});
+if (pub && pub.ok) {
+  STATE.agentsPublic = pub.agents || [];
+  renderAgentsSelect();
+}
+
   }finally{
     setLoading(btn,false);
   }
@@ -1253,7 +1278,8 @@ async function adminsToggleAgent(event, agent_id){
             showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
       return;
     }
-        showToast("toastAdminsAgents", res.actif ? "Agent activé ✅" : "Agent désactivé ✅", true);
+    await adminsListAgents();
+    showToast("toastAdminsAgents", res.actif ? "Agent activé ✅" : "Agent désactivé ✅", true);
         
     // 🔄 Recharge la liste publique pour que les menus filtrés .actif soient à jour
 const pub = await apiCall("listAgentsPublics", {});
@@ -2218,8 +2244,8 @@ $("doneImg").addEventListener("touchend", (e)=>{
     input.type = "password";
     btn.textContent = "👁️";
   }
-  }
-  </script>
+}
+</script>
 </body>
 </html>
 
