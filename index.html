@@ -1267,6 +1267,7 @@ async function adminsToggleAgent(event, agent_id){
 
   // actif = état désiré (true = activer, false = désactiver)
   const desired = (btn.textContent.trim() === "Activer");
+  btn.textContent = desired ? "Désactiver" : "Activer";
   try{
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
