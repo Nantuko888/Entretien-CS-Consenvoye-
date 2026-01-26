@@ -1157,10 +1157,7 @@ async function adminsListAgents(){
     const res = await apiCall("adminListAgents", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.agents || [];
-      list.forEach(a => {
-  const s = String(a.actif ?? "").trim().toUpperCase();
-  a.actif = (a.actif === true) || (s === "TRUE");
-});
+     list.forEach(a => { a.actif = (a.actif === true); });
       // TRI alphabétique (ignore majuscules/accents)
 list.sort((a,b)=>
   String(a.nom||"").localeCompare(String(b.nom||""), "fr", { sensitivity:"base" })
