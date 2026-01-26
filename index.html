@@ -1276,61 +1276,59 @@ if (pub && pub.ok) {
   
 async function adminsToggleAgent(event, agent_id){
   const btn = event.currentTarget;
-  if(!STATE.admins.ok){
-    showToast("toastAdminsAgents","Non connecté.",false);
+  if (!STATE.admins.ok) {
+    showToast("toastAdminsAgents", "Non connecté", false);
     return;
   }
 
-  try{
+  // ===== UI OPTIMISTE (INSTANTANÉ) =====
+  const row = btn.closest("tr");
+  const tdActif = row?.children?.[1];
+
+  const wasActive = btn.dataset.actif === "1";
+  const nowActive = !wasActive;
+
+  // bouton
+  btn.textContent = nowActive ? "Désactiver" : "Activer";
+  btn.classList.toggle("danger", nowActive);
+  btn.classList.toggle("success", !nowActive);
+  btn.dataset.actif = nowActive ? "1" : "0";
+
+  // colonne Actif
+  if (tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
+
+  // compteurs
+  let active = parseInt(document.getElementById("agentsCountActive").dataset.v, 10);
+  let inactive = parseInt(document.getElementById("agentsCountInactive").dataset.v, 10);
+
+  if (nowActive) {
+    active++; inactive--;
+  } else {
+    active--; inactive++;
+  }
+
+  document.getElementById("agentsCountActive").dataset.v = active;
+  document.getElementById("agentsCountInactive").dataset.v = inactive;
+  document.getElementById("agentsCountActive").textContent = `🟢 ${active}`;
+  document.getElementById("agentsCountInactive").textContent = `🔴 ${inactive}`;
+
+  // ===== APPEL SERVEUR (EN FOND) =====
+  try {
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
       agent_id: String(agent_id).trim(),
       actif: "toggle"
     });
 
-    console.log("[toggle] API res =", res);
-    btn.textContent = res.actif ? "Désactiver" : "Activer";
-    
-    if(!res || !res.ok){
-            showToast("toastAdminsAgents", (res && res.message) ? res.message : "Erreur toggle", false);
-      return;
-    }
-    
-    showToast("toastAdminsAgents", res.actif ? "Agent activé ✅" : "Agent désactivé ✅", true);
-        
- // ✅ MAJ locale (rapide) : bouton + colonne "Actif" + compteurs
-const row = btn.closest("tr");
-if (row) {
-  // Colonne "Actif" = 2e colonne du tableau agents (Nom | Actif | Actions)
-  const tdActif = row.children[1];
-  if (tdActif) tdActif.textContent = res.actif ? "Oui" : "Non";
-}
+    if (!res || !res.ok) throw new Error(res?.message || "Erreur toggle");
 
-// Compteurs (recalcul à partir du DOM, rapide)
-const rows = Array.from(document.querySelectorAll("#adminsAgentsTable tr"));
-let active = 0, total = 0;
-rows.forEach(r => {
-  const td = r.children && r.children[1];
-  if (!td) return;
-  const v = td.textContent.trim().toLowerCase();
-  if (v !== "oui" && v !== "non") return; // ignore placeholders
-  total++;
-  if (v === "oui") active++;
-});
-const inactive = total - active;
+  } catch (e) {
+    // ROLLBACK si erreur
+    btn.dataset.actif = wasActive ? "1" : "0";
+    btn.textContent = wasActive ? "Désactiver" : "Activer";
+    if (tdActif) tdActif.textContent = wasActive ? "Oui" : "Non";
 
-const elTotal = document.getElementById("agentsCountTotal");
-const elActive = document.getElementById("agentsCountActive");
-const elInactive = document.getElementById("agentsCountInactive");
-
-if (elTotal) elTotal.textContent = ` (${total})`;
-if (elActive) elActive.textContent = ` 🟢 ${active}`;
-if (elInactive) elInactive.textContent = ` 🔴 ${inactive}`;
-
-
-  }catch(e){
-    console.log("[toggle] error =", e);
-    showToast("toastAdminsAgents","Erreur réseau.",false);
+    showToast("toastAdminsAgents", "Erreur réseau", false);
   }
 }
 
