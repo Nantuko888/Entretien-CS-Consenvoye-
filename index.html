@@ -1272,7 +1272,7 @@ async function adminsToggleAgent(event, agent_id){
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
       agent_id: String(agent_id).trim(),
-      actif: desired 
+      actif: "toggle"
     });
 
     console.log("[toggle] API res =", res);
@@ -1282,7 +1282,7 @@ async function adminsToggleAgent(event, agent_id){
       return;
     }
 
-    showToast("toastAdminsAgents", desired ? "Agent activé ✅" : "Agent désactivé ✅", true);
+    showToast("toastAdminsAgents", res.actif ? "Agent activé ✅" : "Agent désactivé ✅", true);
     await new Promise(r => setTimeout(r, 300));
     await adminsListAgents();
     
