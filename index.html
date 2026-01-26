@@ -1200,6 +1200,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
   <button
   type="button"
   class="btn small toggle ${a.actif ? 'off' : 'on'}"
+  data-actif="${a.actif ? '1' : '0'}"
   onclick="adminsToggleAgent(event, '${esc(a.agent_id)}')">
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
@@ -1288,10 +1289,7 @@ async function adminsToggleAgent(event, agent_id){
   const wasActive = btn.dataset.actif === "1";
   const nowActive = !wasActive;
 
-  // bouton (texte + couleur FIXES)
-btn.textContent = nowActive ? "Désactiver" : "Activer";
-
-// reset couleurs
+ // reset couleurs
 btn.classList.remove("btn-danger", "btn-success");
 
 // appliquer la bonne couleur
@@ -1301,7 +1299,7 @@ if (nowActive) {
   btn.classList.add("btn-success"); // Activer = vert
 }
 
-// état interne
+// sync dataset
 btn.dataset.actif = nowActive ? "1" : "0";
   
   // colonne Actif
