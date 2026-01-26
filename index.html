@@ -1158,7 +1158,8 @@ async function adminsListAgents(){
     if(!res || !res.ok) throw new Error("bad");
     const list = res.agents || [];
       list.forEach(a => {
-  a.actif = (a.actif === true) || (String(a.actif).trim().toUpperCase() === "TRUE");
+  const s = String(a.actif ?? "").trim().toUpperCase();
+  a.actif = (a.actif === true) || (s === "TRUE");
 });
       // TRI alphabétique (ignore majuscules/accents)
 list.sort((a,b)=>
