@@ -1279,13 +1279,7 @@ async function adminsToggleAgent(event, agent_id){
     
     showToast("toastAdminsAgents", res.actif ? "Agent activé ✅" : "Agent désactivé ✅", true);
         
-    // 🔄 Recharge la liste publique pour que les menus filtrés .actif soient à jour
-const pub = await apiCall("listAgentsPublics", {});
-if(pub && pub.ok){
-  STATE.agentsPublic = pub.agents || [];
-  renderAgentsSelect();
-  renderAdminsAddToGroupSelect();
-}
+ adminsListAgents(); // refresh table + compteurs sans bloquer le clic
 
   }catch(e){
     console.log("[toggle] error =", e);
