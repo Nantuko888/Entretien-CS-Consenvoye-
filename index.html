@@ -1286,7 +1286,7 @@ async function adminsToggleAgent(event, agent_id){
   const row = btn.closest("tr");
   const tdActif = row?.children?.[1];
 
-  const wasActive = btn.dataset.actif === "1";
+  const wasActive = (tdActif && tdActif.textContent.trim().toLowerCase() === "oui");
   const nowActive = !wasActive;
 
  // reset couleurs
