@@ -1206,24 +1206,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
       renderAgentsSelect();
       renderAdminsAddToGroupSelect();
     }
-      function adminsToggleAgentUI(btn, agent_id){
- 
-  // 2) envoi serveur (sans dépendre du refresh UI)
-  apiCall("adminToggleAgent", {
-    admin_code: STATE.admins.code,
-    agent_id: String(agent_id).trim(),
-    actif: willActivate ? "TRUE" : "FALSE"
-  });
-
-  // optionnel: rafraîchir la liste après 400ms (si ça marche chez toi)
-  setTimeout(() => { adminsListAgents(); }, 400);
-}
-
-  }catch(e){
-    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
-  }
-}
-
+     
 async function adminsAddAgent(ev){
   hideToast("toastAdminsAgents");
   if(!STATE.admins.ok){ showToast("toastAdminsAgents","Non connecté.",false); return; }
