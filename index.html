@@ -1288,29 +1288,48 @@ async function adminsToggleAgent(event, agent_id){
   const wasActive = btn.dataset.actif === "1";
   const nowActive = !wasActive;
 
-  // bouton
-  btn.textContent = nowActive ? "Désactiver" : "Activer";
-  btn.classList.toggle("danger", nowActive);
-  btn.classList.toggle("success", !nowActive);
-  btn.dataset.actif = nowActive ? "1" : "0";
+  // bouton (texte + couleur FIXES)
+btn.textContent = nowActive ? "Désactiver" : "Activer";
 
+// reset couleurs
+btn.classList.remove("btn-danger", "btn-success");
+
+// appliquer la bonne couleur
+if (nowActive) {
+  btn.classList.add("btn-danger"); // Désactiver = rouge
+} else {
+  btn.classList.add("btn-success"); // Activer = vert
+}
+
+// état interne
+btn.dataset.actif = nowActive ? "1" : "0";
+  
   // colonne Actif
   if (tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
 
-  // compteurs
-  let active = parseInt(document.getElementById("agentsCountActive").dataset.v, 10);
-  let inactive = parseInt(document.getElementById("agentsCountInactive").dataset.v, 10);
+  // ✅ Compteurs : recalcul rapide depuis le tableau (pas de dataset)
+const rows = Array.from(document.querySelectorAll("#adminsAgentsTable tr"));
+let active = 0, total = 0;
 
-  if (nowActive) {
-    active++; inactive--;
-  } else {
-    active--; inactive++;
-  }
+rows.forEach(r => {
+  const td = r.children && r.children[1];
+  if (!td) return;
+  const v = td.textContent.trim().toLowerCase();
+  if (v !== "oui" && v !== "non") return; // ignore placeholders
+  total++;
+  if (v === "oui") active++;
+});
 
-  document.getElementById("agentsCountActive").dataset.v = active;
-  document.getElementById("agentsCountInactive").dataset.v = inactive;
-  document.getElementById("agentsCountActive").textContent = `🟢 ${active}`;
-  document.getElementById("agentsCountInactive").textContent = `🔴 ${inactive}`;
+const inactive = total - active;
+
+const elTotal = document.getElementById("agentsCountTotal");
+const elActive = document.getElementById("agentsCountActive");
+const elInactive = document.getElementById("agentsCountInactive");
+
+if (elTotal) elTotal.textContent = ` (${total})`;
+if (elActive) elActive.textContent = ` 🟢 ${active}`;
+if (elInactive) elInactive.textContent = ` 🔴 ${inactive}`;
+
 
   // ===== APPEL SERVEUR (EN FOND) =====
   try {
