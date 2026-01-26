@@ -1265,9 +1265,6 @@ async function adminsToggleAgent(event, agent_id){
     return;
   }
 
-  // Debug: on voit exactement ce qui arrive
-  console.log("[toggle] agent_id =", agent_id, "| actif param =", actif, "| typeof =", typeof actif);
-
   // actif = état désiré (true = activer, false = désactiver)
   const desired = (btn.textContent.trim() === "Activer");
   try{
