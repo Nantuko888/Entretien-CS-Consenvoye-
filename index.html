@@ -510,6 +510,25 @@
     height: 34px;
   }
 }
+/* Bouton toggle Activer/Désactiver : même largeur + couleurs */
+.btn.toggle {
+  min-width: 110px; /* garde la même taille */
+  justify-content: center; /* centre le texte */
+}
+
+/* Etat "Activer" (vert) */
+.btn.toggle.on{
+  background: rgba(31,211,107,.14);
+  border-color: rgba(31,211,107,.35);
+  color: #bdf6d2;
+}
+
+/* Etat "Désactiver" (rouge) */
+.btn.toggle.off{
+  background: rgba(255,59,48,.14);
+  border-color: rgba(255,59,48,.35);
+  color: #ffd0cd;
+}
 
   </style>
 </head>
@@ -1180,7 +1199,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
 
   <button
   type="button"
-  class="btn small"
+  class="btn small toggle ${a.actif ? 'off' : 'on'}"
   onclick="adminsToggleAgent(event, '${esc(a.agent_id)}')">
   ${a.actif ? "Désactiver" : "Activer"}
 </button>
