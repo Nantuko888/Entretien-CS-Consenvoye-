@@ -1460,13 +1460,34 @@ async function adminsAddMission(ev){
     setLoading(btn,false);
   }
 }
-async function adminsToggleMission(mission_id, actif){
+async function adminsToggleMission(ev, mission_id, actif){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(!STATE.admins.ok) return;
+
+  const btn = ev?.currentTarget || null;
+  setLoading(btn, true);
+
   try{
-    await apiCall("adminToggleMission", { admin_code: STATE.admins.code, mission_id, actif: actif ? "TRUE":"FALSE" });
-    await adminsListMissions();
-  }catch(_){}
+    const res = await apiCall("adminToggleMission", {
+      admin_code: STATE.admins.code,
+      mission_id: String(mission_id).trim(),
+      actif: (actif ? "TRUE" : "FALSE")
+    });
+
+    if(!res || !res.ok){
+      showToast("toastAdminsMissions", (res && res.message) ? res.message : "Erreur toggle mission", false);
+      return;
+    }
+
+    showToast("toastAdminsMissions", actif ? "Mission activée ✅" : "Mission désactivée ✅", true);
+    await adminsListMissions(); // refresh la table
+  }catch(e){
+    showToast("toastAdminsMissions", "Erreur réseau.", false);
+  }finally{
+    setLoading(btn, false);
+  }
 }
+
 async function adminsDeleteMission(mission_id){
   if(!STATE.admins.ok) return;
   if(!confirm("Supprimer définitivement cette mission ?")) return;
