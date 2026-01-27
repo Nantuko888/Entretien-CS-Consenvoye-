@@ -1473,31 +1473,47 @@ async function adminsAddMission(ev){
     setLoading(btn,false);
   }
 }
-async function adminsToggleMission(ev, mission_id, actif){
-  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
-  if(!STATE.admins.ok) return;
+async function adminsToggleMission(event, mission_id) {
+  const btn = event.currentTarget;
 
-  const btn = ev?.currentTarget || null;
-  setLoading(btn, true);
+  if (!STATE.admins.ok) {
+    showToast("toastAdminsMissions", "Non connecté", false);
+    return;
+  }
 
-  try{
+  // --- UI optimiste (instantané) ---
+  const row = btn.closest("tr");
+  const tdActif = row?.children?.[1];
+
+  const wasActive = tdActif.textContent.trim().toLowerCase() === "oui";
+  const nowActive = !wasActive;
+
+  // texte colonne Actif
+  tdActif.textContent = nowActive ? "Oui" : "Non";
+
+  // bouton
+  btn.textContent = nowActive ? "Désactiver" : "Activer";
+  btn.classList.remove("btn-danger", "btn-success");
+  btn.classList.add(nowActive ? "btn-danger" : "btn-success");
+
+  try {
     const res = await apiCall("adminToggleMission", {
       admin_code: STATE.admins.code,
-      mission_id: String(mission_id).trim(),
-      actif: (actif ? "TRUE" : "FALSE")
+      mission_id: String(mission_id).trim()
     });
 
-    if(!res || !res.ok){
-      showToast("toastAdminsMissions", (res && res.message) ? res.message : "Erreur toggle mission", false);
-      return;
+    if (!res || !res.ok) {
+      throw new Error("toggle failed");
     }
 
-    showToast("toastAdminsMissions", actif ? "Mission activée ✅" : "Mission désactivée ✅", true);
-    await adminsListMissions(); // refresh la table
-  }catch(e){
-    showToast("toastAdminsMissions", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
+  } catch (e) {
+    // rollback UI si erreur
+    tdActif.textContent = wasActive ? "Oui" : "Non";
+    btn.textContent = wasActive ? "Désactiver" : "Activer";
+    btn.classList.remove("btn-danger", "btn-success");
+    btn.classList.add(wasActive ? "btn-danger" : "btn-success");
+
+    showToast("toastAdminsMissions", "Erreur réseau", false);
   }
 }
 
