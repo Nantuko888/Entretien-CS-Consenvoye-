@@ -1417,6 +1417,11 @@ async function adminsListMissions(){
     const res = await apiCall("adminListCatalog", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.catalog || [];
+    // NORMALISATION du booléen actif (Sheets renvoie "TRUE"/"FALSE")
+list.forEach(m => {
+  m.actif = (m.actif === true) || (String(m.actif ?? "").trim().toUpperCase() === "TRUE");
+});
+
     STATE.catalogById = {};
 list.forEach(m => {
   STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
