@@ -1328,7 +1328,14 @@ if (elTotal) elTotal.textContent = ` (${total})`;
 if (elActive) elActive.textContent = ` 🟢 ${active}`;
 if (elInactive) elInactive.textContent = ` 🔴 ${inactive}`;
 
+// ===== UI INSTANTANÉE (AVANT SERVEUR) =====
+btn.dataset.actif = nowActive ? "1" : "0";
+btn.textContent = nowActive ? "Désactiver" : "Activer";
+if (tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
 
+// couleurs (CSS on/off)
+btn.classList.remove("on", "off");
+btn.classList.add(nowActive ? "off" : "on");
   // ===== APPEL SERVEUR (EN FOND) =====
   try {
     const res = await apiCall("adminToggleAgent", {
