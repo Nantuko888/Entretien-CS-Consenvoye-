@@ -529,6 +529,11 @@
   border-color: rgba(255,59,48,.35);
   color: #ffd0cd;
 }
+.btn.success{
+  background: rgba(31,211,107,.14);
+  border-color: rgba(31,211,107,.35);
+  color: #bdf6d2;
+}
 
   </style>
 </head>
@@ -1432,11 +1437,10 @@ list.forEach(m => {
         <td>${m.actif ? "Oui":"Non"}</td>
         <td class="right">
   <button type="button"
-          class="btn small ${m.actif ? 'danger' : 'success'}"
-          onclick="adminsToggleMission(event, '${esc(m.mission_id)}', this)">
-    ${m.actif ? "Désactiver" : "Activer"}
-  </button>
-
+  class="btn small ${m.actif ? "danger" : "success"}"
+  onclick="adminsToggleMission(event, '${esc(m.mission_id)}', ${m.actif ? "false" : "true"}, this)">
+  ${m.actif ? "Désactiver" : "Activer"}
+</button>
   <button type="button"
           class="btn small danger"
           onclick="adminsDeleteMission(event, '${esc(m.mission_id)}', this)">
