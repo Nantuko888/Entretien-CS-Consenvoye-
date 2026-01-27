@@ -1450,9 +1450,10 @@ list.forEach(m => {
 
       </tr>
     `).join("");
-  }catch(_){
-    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
-  }
+  }catch(e){
+  console.error("adminsListMissions ERROR", e);
+  tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur (voir console)</td></tr>`;
+}
 }
 
 async function adminsAddMission(ev){
