@@ -1438,7 +1438,7 @@ list.forEach(m => {
         <td class="right">
   <button type="button"
   class="btn small ${m.actif ? "danger" : "success"}"
-  onclick="adminsToggleMission(event, '${esc(m.mission_id)}', ${m.actif ? "false" : "true"}, this)">
+  onclick="adminsToggleMission(event, '${esc(m.mission_id)}', !${m.actif}, this)"
   ${m.actif ? "Désactiver" : "Activer"}
 </button>
   <button type="button"
