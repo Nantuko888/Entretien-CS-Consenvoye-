@@ -965,46 +965,25 @@ function showView(which){
 function apiCall(action, params){
   return new Promise((resolve, reject)=>{
     const cb = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-
+    window[cb] = (data)=>{ try{ delete window[cb]; }catch(_){}
+      try{ script.remove(); }catch(_){}
+      resolve(data);
+    };
     const q = new URLSearchParams();
     q.set("action", action);
     q.set("callback", cb);
-    for (const [k,v] of Object.entries(params || {})){
-      if (v === undefined || v === null) continue;
+    for(const [k,v] of Object.entries(params||{})){
+      if(v===undefined || v===null) continue;
       q.set(k, String(v));
     }
-    // anti-cache
-    q.set("_", String(Date.now()));
-
     const script = document.createElement("script");
-
-    // timeout (sinon "chargement…" infini)
-    const t = setTimeout(()=>{
-      cleanup();
-      reject(new Error("timeout_jsonp"));
-    }, 12000);
-
-    function cleanup(){
-      clearTimeout(t);
-      try{ delete window[cb]; }catch(_){}
-      try{ script.remove(); }catch(_){}
-    }
-
-    window[cb] = (data)=>{
-      cleanup();
-      resolve(data);
-    };
-
-    script.onerror = ()=>{
-      cleanup();
-      reject(new Error("jsonp_load_error"));
-    };
-
     script.src = API_EXEC + "?" + q.toString();
+    script.onerror = ()=>{ try{ delete window[cb]; }catch(_){}
+      reject(new Error("network"));
+    };
     document.head.appendChild(script);
   });
 }
-
 
 /* ===============================
    STATE
@@ -1232,7 +1211,7 @@ $("agentsCountInactive").textContent = ` 🔴 ${inactive}`;
     </button>
 
     <button class="btn small danger"
-      onclick="adminsDeleteAgent('${a.agent_id}', this)">
+      onclick="adminsDeleteAgent('${a.agent_id}')">
       Retirer
     </button>
 
@@ -1430,45 +1409,32 @@ async function adminsDeleteAgent(agent_id){
   }catch(_){}
 }
 
-async function adminsDeleteAgent(agent_id, btn) {
-  if (!STATE.admins.ok) {
-    showToast("toastAdminsAgents", "Non connecté", false);
-    return;
-  }
-
-  if (!confirm("Confirmer la suppression de cet agent ?")) return;
-
-  // === UI : chargement immédiat ===
-  const oldText = btn.textContent;
-  btn.textContent = "Suppression…";
-  btn.disabled = true;
-  btn.classList.add("loading");
-
-  try {
-    const res = await apiCall("adminDeleteAgent", {
-      admin_code: STATE.admins.code,
-      agent_id: String(agent_id).trim()
-    });
-
-    if (!res || !res.ok) {
-      throw new Error(res?.message || "Erreur suppression");
-    }
-
-    showToast("toastAdminsAgents", "Agent supprimé 🗑️", true);
-
-    // recharge la liste (l’agent disparaît)
-    await adminsListAgents();
-
-  } catch (e) {
-    // rollback bouton
-    btn.textContent = oldText;
-    btn.disabled = false;
-    btn.classList.remove("loading");
-
-    showToast("toastAdminsAgents", "Erreur suppression", false);
+async function adminsListMissions(){
+  if(!STATE.admins.ok) return;
+  const tb = $("adminsMissionsTable");
+  tb.innerHTML = `<tr><td class="ghost" colspan="3">Chargement…</td></tr>`;
+  try{
+    const res = await apiCall("adminListCatalog", { admin_code: STATE.admins.code });
+    if(!res || !res.ok) throw new Error("bad");
+    const list = res.catalog || [];
+    STATE.catalogById = {};
+list.forEach(m => {
+  STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
+});
+    tb.innerHTML = list.map(m=>`
+      <tr>
+        <td>${esc(m.libelle)}</td>
+        <td>${m.actif ? "Oui":"Non"}</td>
+        <td class="right">
+          <button class="btn small" onclick="adminsToggleMission('${esc(m.mission_id)}', ${m.actif ? "false":"true"})">${m.actif ? "Désactiver":"Activer"}</button>
+          <button class="btn small danger" onclick="adminsDeleteMission('${esc(m.mission_id)}')">Supprimer</button>
+        </td>
+      </tr>
+    `).join("");
+  }catch(_){
+    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur.</td></tr>`;
   }
 }
-
 
 async function adminsAddMission(ev){
   hideToast("toastAdminsMissions");
