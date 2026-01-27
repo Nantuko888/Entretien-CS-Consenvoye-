@@ -1388,9 +1388,6 @@ function refreshAgentsCountersFromDOM_(){
   if(elInactive) elInactive.textContent = ` 🔴 ${inactive}`;
 }
 
-}
-
-
 async function adminsResetAgentCode(ev, agent_id){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(!STATE.admins.ok) return;
