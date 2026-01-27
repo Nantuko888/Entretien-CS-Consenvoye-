@@ -1338,6 +1338,22 @@ if (elInactive) elInactive.textContent = ` 🔴 ${inactive}`;
     });
 
     if (!res || !res.ok) throw new Error(res?.message || "Erreur toggle");
+    // ✅ synchro immédiate UI avec la vérité serveur
+const row = btn.closest("tr");
+const tdActif = row?.children?.[1];
+
+const isActiveSrv = (res.actif === true) || (String(res.actif).trim().toUpperCase() === "TRUE");
+
+if (tdActif) tdActif.textContent = isActiveSrv ? "Oui" : "Non";
+
+// bouton = action possible
+btn.textContent = isActiveSrv ? "Désactiver" : "Activer";
+btn.classList.remove("btn-danger", "btn-success");
+btn.classList.add(isActiveSrv ? "btn-danger" : "btn-success");
+
+// dataset aligné
+btn.dataset.actif = isActiveSrv ? "1" : "0";
+
 
   } catch (e) {
     // ROLLBACK si erreur
