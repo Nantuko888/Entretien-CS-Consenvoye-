@@ -529,18 +529,7 @@
   border-color: rgba(255,59,48,.35);
   color: #ffd0cd;
 }
-/* Bouton toggle Activer/Désactiver : largeur fixe + couleurs */
-.btn.toggle{ min-width:110px; text-align:center; }
-.btn.toggle.on{
-  background:rgba(31,211,107,.14);
-  border-color:rgba(31,211,107,.35);
-  color:#c9f9db;
-}
-.btn.toggle.off{
-  background:rgba(255,59,48,.14);
-  border-color:rgba(255,59,48,.35);
-  color:#ffd0cd;
-}
+
   </style>
 </head>
 
@@ -1288,106 +1277,99 @@ if (pub && pub.ok) {
   
 async function adminsToggleAgent(event, agent_id){
   const btn = event.currentTarget;
-
-  if(!STATE.admins.ok){
-    showToast("toastAdminsAgents","Non connecté.",false);
+  if (!STATE.admins.ok) {
+    showToast("toastAdminsAgents", "Non connecté", false);
     return;
   }
 
-  // anti double-clic
-  if(btn.classList.contains("loading")) return;
-
+  // ===== UI OPTIMISTE (INSTANTANÉ) =====
   const row = btn.closest("tr");
-  const tdActif = row?.children?.[1] || null;
+  const tdActif = row?.children?.[1];
 
-  // ✅ SOURCE UNIQUE pour décider : dataset du bouton
-  const wasActive = (String(btn.dataset.actif || "0") === "1");
+  const wasActive = (tdActif && tdActif.textContent.trim().toLowerCase() === "oui");
   const nowActive = !wasActive;
 
-  // ===== UI INSTANTANÉE (optimiste) =====
-  btn.dataset.actif = nowActive ? "1" : "0";
-  btn.textContent = nowActive ? "Désactiver" : "Activer";
-  btn.classList.remove("on","off");
-  btn.classList.add(nowActive ? "off" : "on");
-  if(tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
+ // reset couleurs
+btn.classList.remove("btn-danger", "btn-success");
 
-  // Compteurs instant (sur ce tableau)
-  refreshAgentsCountersFromDOM_();
+// appliquer la bonne couleur
+if (nowActive) {
+  btn.classList.add("btn-danger"); // Désactiver = rouge
+} else {
+  btn.classList.add("btn-success"); // Activer = vert
+}
 
-  setLoading(btn,true);
+// sync dataset
+btn.dataset.actif = nowActive ? "1" : "0";
+  
+  // colonne Actif
+  if (tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
 
-  try{
+  // ✅ Compteurs : recalcul rapide depuis le tableau (pas de dataset)
+const rows = Array.from(document.querySelectorAll("#adminsAgentsTable tr"));
+let active = 0, total = 0;
+
+rows.forEach(r => {
+  const td = r.children && r.children[1];
+  if (!td) return;
+  const v = td.textContent.trim().toLowerCase();
+  if (v !== "oui" && v !== "non") return; // ignore placeholders
+  total++;
+  if (v === "oui") active++;
+});
+
+const inactive = total - active;
+
+const elTotal = document.getElementById("agentsCountTotal");
+const elActive = document.getElementById("agentsCountActive");
+const elInactive = document.getElementById("agentsCountInactive");
+
+if (elTotal) elTotal.textContent = ` (${total})`;
+if (elActive) elActive.textContent = ` 🟢 ${active}`;
+if (elInactive) elInactive.textContent = ` 🔴 ${inactive}`;
+
+// ===== UI INSTANTANÉE (AVANT SERVEUR) =====
+btn.dataset.actif = nowActive ? "1" : "0";
+btn.textContent = nowActive ? "Désactiver" : "Activer";
+if (tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
+
+// couleurs (CSS on/off)
+btn.classList.remove("on", "off");
+btn.classList.add(nowActive ? "off" : "on");
+  // ===== APPEL SERVEUR (EN FOND) =====
+  try {
     const res = await apiCall("adminToggleAgent", {
       admin_code: STATE.admins.code,
       agent_id: String(agent_id).trim(),
-      // on envoie l'état désiré (plus fiable que "toggle" côté serveur)
-      actif: nowActive ? "TRUE" : "FALSE"
+      actif: "toggle"
     });
 
-    if(!res || !res.ok) throw new Error((res && res.message) || "Erreur toggle");
+    if (!res || !res.ok) throw new Error(res?.message || "Erreur toggle");
+    // ✅ synchro immédiate UI avec la vérité serveur
+const row = btn.closest("tr");
+const tdActif = row?.children?.[1];
 
-    // ===== SYNC avec vérité serveur =====
-    const srvActive =
-      (res.actif === true) ||
-      (String(res.actif || "").toUpperCase() === "TRUE");
+const isActiveSrv = (res.actif === true) || (String(res.actif).trim().toUpperCase() === "TRUE");
 
-    btn.dataset.actif = srvActive ? "1" : "0";
-    btn.textContent = srvActive ? "Désactiver" : "Activer";
-    btn.classList.remove("on","off");
-    btn.classList.add(srvActive ? "off" : "on");
-    if(tdActif) tdActif.textContent = srvActive ? "Oui" : "Non";
+if (tdActif) tdActif.textContent = isActiveSrv ? "Oui" : "Non";
 
-    refreshAgentsCountersFromDOM_();
-    showToast("toastAdminsAgents", srvActive ? "Agent activé ✅" : "Agent désactivé ✅", true);
+// bouton = action possible
+btn.textContent = isActiveSrv ? "Désactiver" : "Activer";
+btn.classList.remove("btn-danger", "btn-success");
+btn.classList.add(isActiveSrv ? "btn-danger" : "btn-success");
 
-    // IMPORTANT : on refresh la liste publique pour le select agent (sans recharger tout le tableau)
-    const pub = await apiCall("listAgentsPublics", {});
-    if(pub && pub.ok){
-      STATE.agentsPublic = pub.agents || [];
-      renderAgentsSelect();
-      renderAdminsAddToGroupSelect();
-    }
+// dataset aligné
+btn.dataset.actif = isActiveSrv ? "1" : "0";
 
-  }catch(e){
-    // ===== ROLLBACK =====
+
+  } catch (e) {
+    // ROLLBACK si erreur
     btn.dataset.actif = wasActive ? "1" : "0";
     btn.textContent = wasActive ? "Désactiver" : "Activer";
-    btn.classList.remove("on","off");
-    btn.classList.add(wasActive ? "off" : "on");
-    if(tdActif) tdActif.textContent = wasActive ? "Oui" : "Non";
+    if (tdActif) tdActif.textContent = wasActive ? "Oui" : "Non";
 
-    refreshAgentsCountersFromDOM_();
-    showToast("toastAdminsAgents", e.message || "Erreur réseau.", false);
-
-  }finally{
-    setLoading(btn,false);
+    showToast("toastAdminsAgents", "Erreur réseau", false);
   }
-}
-
-/* Recalcule les compteurs à partir du tableau DOM (rapide + fiable) */
-function refreshAgentsCountersFromDOM_(){
-  const rows = Array.from(document.querySelectorAll("#adminsAgentsTable tr"));
-  let total = 0, active = 0;
-
-  rows.forEach(r=>{
-    const td = r.children && r.children[1];
-    if(!td) return;
-    const v = td.textContent.trim().toLowerCase();
-    if(v !== "oui" && v !== "non") return;
-    total++;
-    if(v === "oui") active++;
-  });
-
-  const inactive = total - active;
-  const elTotal = document.getElementById("agentsCountTotal");
-  const elActive = document.getElementById("agentsCountActive");
-  const elInactive = document.getElementById("agentsCountInactive");
-
-  if(elTotal) elTotal.textContent = ` (${total})`;
-  if(elActive) elActive.textContent = ` 🟢 ${active}`;
-  if(elInactive) elInactive.textContent = ` 🔴 ${inactive}`;
-}
-
 }
 
 
