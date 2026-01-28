@@ -1435,31 +1435,33 @@ list.forEach(m => {
 list.forEach(m => {
   STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
 });
-    tb.innerHTML = list.map(m=>`
-      <tr>
-        <td>${esc(m.libelle)}</td>
-        const isOn = (m.actif === true) || (String(m.actif ?? "").trim().toUpperCase() === "TRUE");
-return `
-<tr>
-  <td>${esc(m.libelle)}</td>
-  <td>${isOn ? "Oui" : "Non"}</td>
-  <td class="right">
-    <button type="button"
-      class="btn small toggle ${isOn ? "off" : "on"}"
-      data-actif="${isOn ? "1" : "0"}"
-      onclick="adminsToggleMission(event,'${esc(m.mission_id)}', this)">
-      ${isOn ? "Désactiver" : "Activer"}
-    </button>
+    tb.innerHTML = list.map(m => {
+  const isOn = (m.actif === true);
 
-    <button type="button" class="btn small danger"
-      onclick="adminsDeleteMission(event,'${esc(m.mission_id)}', this)">
-      Supprimer
-    </button>
-  </td>
-</tr>`;
+  return `
+    <tr>
+      <td>${esc(m.libelle)}</td>
+      <td>${isOn ? "Oui" : "Non"}</td>
+      <td class="right">
+        <button
+          type="button"
+          class="btn small toggle ${isOn ? 'off' : 'on'}"
+          data-actif="${isOn ? '1' : '0'}"
+          onclick="adminsToggleMission(event, '${esc(m.mission_id)}', this)">
+          ${isOn ? "Désactiver" : "Activer"}
+        </button>
 
-      </tr>
-    `).join("");
+        <button
+          type="button"
+          class="btn small danger"
+          onclick="adminsDeleteMission(event, '${esc(m.mission_id)}', this)">
+          Supprimer
+        </button>
+      </td>
+    </tr>
+  `;
+}).join("");
+
   }catch(e){
   console.error("adminsListMissions ERROR", e);
   tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur (voir console)</td></tr>`;
