@@ -1441,8 +1441,9 @@ list.forEach(m => {
         <td>${m.actif ? "Oui":"Non"}</td>
         <td class="right">
  <button type="button"
-  class="btn small ${m.actif ? 'danger' : 'success'}"
- onclick="adminsToggleMission(event, '${esc(m.mission_id)}')">
+  class="btn small toggle ${m.actif ? 'off' : 'on'}"
+  data-actif="${m.actif ? '1' : '0'}"
+  onclick="adminsToggleMission(event, '${esc(m.mission_id)}', this)">
   ${m.actif ? 'Désactiver' : 'Activer'}
 </button>
   <button type="button"
@@ -1482,29 +1483,56 @@ async function adminsAddMission(ev){
     setLoading(btn,false);
   }
 }
-async function adminsToggleMission(event, mission_id) {
-  const btn = event.currentTarget;
-  if (!STATE.admins.ok) return;
+async function adminsToggleMission(ev, mission_id, btn){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  if(!STATE.admins.ok) return;
 
-  setLoading(btn, true);
+  btn = btn || ev?.currentTarget;
+  if(!btn) return;
 
-  try {
+  const row = btn.closest("tr");
+  const tdActif = row?.children?.[1]; // colonne "Actif"
+
+  const wasActive = (btn.dataset.actif === "1");
+  const nowActive = !wasActive;
+
+  // --- UI instantanée ---
+  btn.dataset.actif = nowActive ? "1" : "0";
+  btn.textContent = nowActive ? "Désactiver" : "Activer";
+
+  // couleur via classes toggle on/off (comme agents)
+  btn.classList.remove("on","off");
+  btn.classList.add(nowActive ? "off" : "on");
+
+  if(tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
+
+  // --- Appel serveur ---
+  setLoading(btn,true);
+  try{
     const res = await apiCall("adminToggleMission", {
       admin_code: STATE.admins.code,
-      mission_id: String(mission_id).trim()
+      mission_id: String(mission_id).trim(),
+      actif: nowActive ? "TRUE" : "FALSE"
     });
 
-    if (!res || !res.ok) throw new Error("toggle failed");
+    if(!res || !res.ok) throw new Error(res?.message || "Erreur toggle mission");
 
-    // 🔥 IMPORTANT : on recharge depuis Sheets
-    await adminsListMissions();
+    showToast("toastAdminsMissions", nowActive ? "Mission activée ✅" : "Mission désactivée ✅", true);
 
-  } catch (e) {
-    showToast("toastAdminsMissions", "Erreur lors du changement d’état", false);
-  } finally {
-    setLoading(btn, false);
+  }catch(e){
+    // --- rollback UI ---
+    btn.dataset.actif = wasActive ? "1" : "0";
+    btn.textContent = wasActive ? "Désactiver" : "Activer";
+    btn.classList.remove("on","off");
+    btn.classList.add(wasActive ? "off" : "on");
+    if(tdActif) tdActif.textContent = wasActive ? "Oui" : "Non";
+
+    showToast("toastAdminsMissions", "Erreur réseau.", false);
+  }finally{
+    setLoading(btn,false);
   }
 }
+
 
 
 
