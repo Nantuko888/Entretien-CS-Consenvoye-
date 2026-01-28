@@ -1442,7 +1442,7 @@ list.forEach(m => {
         <td class="right">
  <button type="button"
   class="btn small ${m.actif ? 'danger' : 'success'}"
-  onclick="adminsToggleMission(event, '${esc(m.mission_id)}', ${m.actif ? 'false' : 'true'})">
+ onclick="adminsToggleMission(event, '${esc(m.mission_id)}')">
   ${m.actif ? 'Désactiver' : 'Activer'}
 </button>
   <button type="button"
@@ -1483,7 +1483,6 @@ async function adminsAddMission(ev){
   }
 }
 async function adminsToggleMission(ev, mission_id){
-  // bloque le comportement par défaut (au cas où)
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
 
   if(!STATE.admins.ok){
@@ -1491,11 +1490,10 @@ async function adminsToggleMission(ev, mission_id){
     return;
   }
 
-  const btn = ev?.currentTarget || ev?.target || null;
+  const btn = ev.currentTarget || ev.target || null;
   setLoading(btn, true);
 
   try{
-    // 🔥 Sheets = vérité -> on demande juste "toggle" au serveur
     const res = await apiCall("adminToggleMission", {
       admin_code: STATE.admins.code,
       mission_id: String(mission_id).trim()
@@ -1506,10 +1504,8 @@ async function adminsToggleMission(ev, mission_id){
       return;
     }
 
-    // ✅ on recharge la liste depuis Sheets (source de vérité)
+    // recharge table depuis Sheets (source de vérité)
     await adminsListMissions();
-
-    showToast("toastAdminsMissions","OK ✅", true);
 
   }catch(e){
     showToast("toastAdminsMissions","Erreur réseau.",false);
@@ -1517,6 +1513,7 @@ async function adminsToggleMission(ev, mission_id){
     setLoading(btn, false);
   }
 }
+
 
 
 async function adminsDeleteMission(mission_id){
