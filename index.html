@@ -1494,15 +1494,13 @@ async function adminsToggleMission(event, mission_id) {
       mission_id: String(mission_id).trim()
     });
 
-    if (!res || !res.ok) {
-      throw new Error("toggle failed");
-    }
+    if (!res || !res.ok) throw new Error("toggle failed");
 
-    // 🔥 RECHARGEMENT TOTAL — source de vérité = Sheets
+    // 🔥 IMPORTANT : on recharge depuis Sheets
     await adminsListMissions();
 
   } catch (e) {
-    showToast("toastAdminsMissions", "Erreur réseau", false);
+    showToast("toastAdminsMissions", "Erreur lors du changement d’état", false);
   } finally {
     setLoading(btn, false);
   }
