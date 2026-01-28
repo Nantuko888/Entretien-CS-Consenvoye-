@@ -1436,10 +1436,11 @@ list.forEach(m => {
         <td>${esc(m.libelle)}</td>
         <td>${m.actif ? "Oui":"Non"}</td>
         <td class="right">
-  <button type="button"
-  class="btn small ${m.actif ? "danger" : "success"}"
-  onclick="adminsToggleMission(event, '${esc(m.mission_id)}', !${m.actif}, this)"
-  ${m.actif ? "Désactiver" : "Activer"}
+ <button
+  type="button"
+  class="btn small toggle ${m.actif ? 'off' : 'on'}"
+  onclick="adminsToggleMission(event, '${esc(m.mission_id)}')">
+  ${m.actif ? 'Désactiver' : 'Activer'}
 </button>
   <button type="button"
           class="btn small danger"
