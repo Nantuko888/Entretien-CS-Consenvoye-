@@ -539,6 +539,45 @@
   border-color:rgba(31,211,107,.35);
   color:#bdf6d2;
 }
+/* --- Compteurs (comme Agents) --- */
+.headRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.badges{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:rgba(232,238,249,.92);
+  white-space:nowrap;
+}
+
+.pill.success{
+  border-color: rgba(31,211,107,.35);
+  background: rgba(31,211,107,.12);
+}
+
+.pill.danger{
+  border-color: rgba(255,59,48,.35);
+  background: rgba(255,59,48,.12);
+}
+
   </style>
 </head>
 
