@@ -1437,27 +1437,29 @@ list.forEach(m => {
   STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
 });
     tb.innerHTML = list.map(m => {
-  const isOn = (m.actif === true);
+  const isOn = m.actif === true;
 
   return `
     <tr>
       <td>${esc(m.libelle)}</td>
       <td>${isOn ? "Oui" : "Non"}</td>
       <td class="right">
-
-        <button type="button"
+        <button
+          type="button"
           class="btn small toggle ${isOn ? "off" : "on"}"
           data-actif="${isOn ? "1" : "0"}"
-          onclick="adminsToggleMission(event, '${esc(m.mission_id)}', this)">
+          onclick="adminsToggleMission(event, '${esc(m.mission_id)}', this)"
+        >
           ${isOn ? "Désactiver" : "Activer"}
         </button>
 
-        <button type="button"
+        <button
+          type="button"
           class="btn small danger"
-          onclick="adminsDeleteMission(event, '${esc(m.mission_id)}', this)">
+          onclick="adminsDeleteMission(event, '${esc(m.mission_id)}', this)"
+        >
           Supprimer
         </button>
-
       </td>
     </tr>
   `;
