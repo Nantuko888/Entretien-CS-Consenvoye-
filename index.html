@@ -1436,7 +1436,7 @@ list.forEach(m => {
   STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
 });
     tb.innerHTML = list.map(m => {
-  cconst isOn = (m.actif === true) || (String(m.actif ?? "").trim().toUpperCase() === "TRUE");
+  const isOn = (m.actif === true) || (String(m.actif ?? "").trim().toUpperCase() === "TRUE");
   return `
     <tr>
       <td>${esc(m.libelle)}</td>
