@@ -1506,15 +1506,7 @@ async function adminsToggleMission(ev, mission_id, btn){
 
   if(tdActif) tdActif.textContent = nowActive ? "Oui" : "Non";
 
-  // --- Appel serveur ---
-  setLoading(btn,true);
-  try{
-    const res = await apiCall("adminToggleMission", {
-      admin_code: STATE.admins.code,
-      mission_id: String(mission_id).trim(),
-      actif: nowActive ? "TRUE" : "FALSE"
-    });
-
+ 
     if(!res || !res.ok) throw new Error(res?.message || "Erreur toggle mission");
 
     showToast("toastAdminsMissions", nowActive ? "Mission activée ✅" : "Mission désactivée ✅", true);
