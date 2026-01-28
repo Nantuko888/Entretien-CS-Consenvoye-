@@ -1482,34 +1482,32 @@ async function adminsAddMission(ev){
     setLoading(btn,false);
   }
 }
-async function adminsToggleMission(ev, mission_id){
-  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+async function adminsToggleMission(event, mission_id) {
+  const btn = event.currentTarget;
 
-  if(!STATE.admins.ok){
-    showToast("toastAdminsMissions","Non connecté.",false);
+  if (!STATE.admins.ok) {
+    showToast("toastAdminsMissions", "Non connecté", false);
     return;
   }
 
-  const btn = ev.currentTarget || ev.target || null;
   setLoading(btn, true);
 
-  try{
+  try {
     const res = await apiCall("adminToggleMission", {
       admin_code: STATE.admins.code,
       mission_id: String(mission_id).trim()
     });
 
-    if(!res || !res.ok){
+    if (!res || !res.ok) {
       showToast("toastAdminsMissions", (res && res.message) ? res.message : "Erreur toggle", false);
       return;
     }
 
-    // recharge table depuis Sheets (source de vérité)
-    await adminsListMissions();
+    await adminsListMissions(); // recharge depuis Sheets (vérité)
 
-  }catch(e){
-    showToast("toastAdminsMissions","Erreur réseau.",false);
-  }finally{
+  } catch (e) {
+    showToast("toastAdminsMissions", "Erreur réseau", false);
+  } finally {
     setLoading(btn, false);
   }
 }
