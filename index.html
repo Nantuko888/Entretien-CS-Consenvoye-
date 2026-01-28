@@ -1484,11 +1484,7 @@ async function adminsAddMission(ev){
 }
 async function adminsToggleMission(event, mission_id) {
   const btn = event.currentTarget;
-
-  if (!STATE.admins.ok) {
-    showToast("toastAdminsMissions", "Non connecté", false);
-    return;
-  }
+  if (!STATE.admins.ok) return;
 
   setLoading(btn, true);
 
@@ -1499,11 +1495,11 @@ async function adminsToggleMission(event, mission_id) {
     });
 
     if (!res || !res.ok) {
-      showToast("toastAdminsMissions", (res && res.message) ? res.message : "Erreur toggle", false);
-      return;
+      throw new Error("toggle failed");
     }
 
-    await adminsListMissions(); // recharge depuis Sheets (vérité)
+    // 🔥 RECHARGEMENT TOTAL — source de vérité = Sheets
+    await adminsListMissions();
 
   } catch (e) {
     showToast("toastAdminsMissions", "Erreur réseau", false);
