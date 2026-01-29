@@ -2114,23 +2114,28 @@ async function adminsLoadRetours(ev){
   }
 }
   function populateRetoursPeriodes(retours = []) {
-  const select = document.getElementById("adminsRetoursPeriodSel");
+  const select =
+    document.getElementById("adminsRetoursPeriodSel") ||
+    document.getElementById("adminsRetoursPeriodeSel") ||
+    document.getElementById("retoursPeriodeSelect");
+
   if (!select) return;
 
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1; // 1..12
 
-  // mois qui ont AU MOINS un retour
+  // mois qui ont AU MOINS un retour (format attendu "YYYY-MM")
   const monthsWithRetour = new Set(
-    retours
-      .map(r => r.period_id)
+    (retours || [])
+      .map(r => String(r.period_id || r.periodId || r.periode_id || r.periodeId || "").trim())
       .filter(Boolean)
       .map(pid => pid.split("-"))
-      .filter(p => p.length === 2)
+      .filter(p => p.length === 2 && p[0].length === 4 && p[1].length === 2)
       .map(p => `${p[0]}-${p[1]}`)
   );
 
+  // reset menu
   select.innerHTML = `<option value="">— Choisir période —</option>`;
 
   for (let m = 1; m <= 12; m++) {
@@ -2144,23 +2149,30 @@ async function adminsLoadRetours(ev){
     const opt = document.createElement("option");
     opt.value = pid;
 
-   const label = new Date(currentYear, m - 1, 1)
-  .toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
-    
-const isValid = validatedMap[pid] === true;
-let statusIcon = "❌"; // par défaut : rien / non validé
-if (hasRetour) statusIcon = "⏳"; // retours présents mais pas validé
-if (isValid) statusIcon = "🟦"; // validé par responsable (bleu)
+    // Libellé lisible "janvier 2026"
+    opt.textContent = new Date(currentYear, m - 1, 1).toLocaleDateString("fr-FR", {
+      month: "long",
+      year: "numeric",
+    });
 
-opt.textContent = `${label} ${statusIcon}`;
-    // logique d’activation
+    // Activation:
+    // - mois passés : cliquables
+    // - mois courant : cliquable (même sans retour)
+    // - mois futurs : grisés
+    // (si tu veux que le mois courant soit cliquable SEULEMENT s'il y a un retour, dis-moi)
     if (isPast) {
       opt.disabled = false;
     } else if (isCurrent) {
-  opt.disabled = false; // mois courant toujours cliquable
-} else {
-  opt.disabled = true; // futur
-}
+      opt.disabled = false;
+    } else {
+      opt.disabled = true;
+    }
+
+    // Optionnel : si tu veux griser le mois courant quand il n'y a aucun retour
+    // (ça reste cliquable, juste visuel)
+    if (isCurrent && !hasRetour) {
+      opt.style.opacity = "0.6";
+    }
 
     select.appendChild(opt);
   }
@@ -2174,8 +2186,6 @@ function monthLabel(mm) {
   ];
   return names[parseInt(mm,10)-1];
 }
-
-
 
   async function adminsUnlockPeriod(ev){
   hideToast("toastAdminsPeriod");
