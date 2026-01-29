@@ -2034,7 +2034,8 @@ async function adminsLoadRetours(ev){
 ];
 
 opt.textContent = `${mois[m - 1]} ${year}`;
-
+const currentMonth = new Date().getMonth() + 1; // 1..12
+if (m > currentMonth) opt.disabled = true;
     select.appendChild(opt);
   }
 }
