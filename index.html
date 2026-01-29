@@ -933,10 +933,18 @@ select option:checked {
         <div class="card">
           <div class="headRow"><div class="h2">📌 Retours (Non fait / Partiel)</div></div>
           <div class="row">
-            <div class="right">
-              <button class="btn" id="btnAdminsLoadRetours" onclick="adminsLoadRetours(event)">Charger (par période)</button>
-            </div>
-          </div>
+  <select id="retoursPeriodeSelect" class="select">
+    <option value="">— Choisir une période —</option>
+  </select>
+
+  <div class="right">
+    <button class="btn" id="btnAdminsLoadRetours"
+            onclick="adminsLoadRetours(event)">
+      Charger (par période)
+    </button>
+  </div>
+</div>
+
           <div id="toastAdminsRetours" class="toast"></div>
           <div class="divider"></div>
           <div class="scrollBox">
