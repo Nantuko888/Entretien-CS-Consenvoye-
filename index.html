@@ -1095,6 +1095,13 @@ function showView(which){
   $("tabAdmins").classList.toggle("active", which==="admins");
   $("viewAgents").style.display = (which==="agents") ? "" : "none";
   $("viewAdmins").style.display = (which==="admins") ? "" : "none";
+
+  // 👉 quand on ENTRE dans la vue admin
+  if (which === "admins") {
+    if (typeof populateRetoursPeriodes === "function") {
+      populateRetoursPeriodes();
+    }
+  }
 }
 
 /* ===============================
@@ -1289,11 +1296,7 @@ async function adminsLogin(ev){
     // ✅ charge tout ce qui dépend du login (agents, missions, périodes, etc.)
     await adminsRefreshAll();
 
-    // ✅ prépare le menu “Retours -> période” (si la fonction existe)
-    if(typeof populateRetoursPeriodes === "function"){
-      populateRetoursPeriodes();
-    }
-
+    
     showToast("toastAdminsLogin","Admin connecté ✅",true);
 
   } catch(e){
