@@ -810,13 +810,11 @@
           </div>
 
           <div class="card">
-           <div class="headRow">
-  <div class="h2">🧾 Liste missions (<span id="missionsCountTotal">0</span>)</div>
-  <div class="badges">
-    <span class="pill success" id="missionsCountActive">🟢 0</span>
-    <span class="pill danger" id="missionsCountInactive">🔴 0</span>
-  </div>
-</div>
+          <h2 class="h2">
+  📋 Liste missions <span id="missionsCountTotal">(0)</span>
+  <span class="pill success" id="missionsCountActive">🟢 0</span>
+  <span class="pill danger" id="missionsCountInactive">🔴 0</span>
+</h2>
 
             <div class="scrollBox">
               <table class="table">
@@ -2584,6 +2582,20 @@ document.addEventListener("DOMContentLoaded", () => {
   bindEnter("periodeSel", () => $("btnLoadPeriod")?.click()); // exemple : Enter = Charger
   bindEnter("btnSaveActiveMissions", () => $("btnSaveActiveMissions")?.click(), {ctrl:true}); // Ctrl+Enter = Enregistrer (optionnel)
 });
+
+  function updateMissionsCounters(list) {
+  const total = list.length;
+  const active = list.filter(m => m.actif).length;
+  const inactive = total - active;
+
+  const elTotal = document.getElementById("missionsCountTotal");
+  const elActive = document.getElementById("missionsCountActive");
+  const elInactive = document.getElementById("missionsCountInactive");
+
+  if (elTotal) elTotal.textContent = `(${total})`;
+  if (elActive) elActive.textContent = active;
+  if (elInactive) elInactive.textContent = inactive;
+}
 
 </script>
 </body>
