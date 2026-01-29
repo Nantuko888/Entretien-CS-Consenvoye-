@@ -731,7 +731,7 @@
 </div>
         </div>
         <div class="right">
-          <button class="btn primary" id="btnAdminsLogin" onclick="adminsLogin(event)">Se connecter</button>
+          <button class="btn primary" id="btn" onclick="adminsLogin(event)">Se connecter</button>
         </div>
       </div>
       <div id="toastAdminsLogin" class="toast"></div>
@@ -1195,7 +1195,7 @@ async function adminsLogin(ev){
     await adminsRefreshAll();
     showToast("toastAdminsLogin","Admin connecté ✅", true);
   }catch(e){
-    showToast("toastAdminsLogin","Erreur réseau.", false);
+    
   }finally{
     setLoading(btn,false);
   }
