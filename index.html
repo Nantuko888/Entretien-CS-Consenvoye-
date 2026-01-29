@@ -1991,6 +1991,7 @@ async function adminsLoadRetours(ev){
     }
     const tb = $("adminsRetoursTable");
     const items = res.items || [];
+    populateRetoursPeriodes(items);
     if(!items.length){
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
     }else{
@@ -2012,6 +2013,46 @@ async function adminsLoadRetours(ev){
     setLoading(btn,false);
   }
 }
+  function populateRetoursPeriodes(retours) {
+  const select = document.getElementById("retoursPeriodeSelect");
+  if (!select) return;
+
+  // année cible : année courante (ex: 2026)
+  const YEAR = new Date().getFullYear();
+
+  // mois (01..12) qui ont au moins un retour
+  const monthsWithRetour = new Set(
+    (retours || [])
+      .map(r => String(r.period_id || "").trim()) // "2026-01"
+      .filter(pid => pid.startsWith(String(YEAR) + "-"))
+      .map(pid => pid.split("-")[1]) // "01"
+      .filter(m => m && m.length === 2)
+  );
+
+  // reset menu
+  select.innerHTML = `<option value="">— Choisir une période —</option>`;
+
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1; // 1..12
+
+  for (let m = 1; m <= 12; m++) {
+    const mm = String(m).padStart(2, "0");
+    const pid = `${YEAR}-${mm}`;
+
+    const isPastOrCurrent = (m <= currentMonth);
+    const hasRetour = monthsWithRetour.has(mm);
+
+    const enabled = isPastOrCurrent || hasRetour;
+
+    const opt = document.createElement("option");
+    opt.value = pid;
+    opt.textContent = formatPeriodeLabel(pid);
+    opt.disabled = !enabled;
+
+    select.appendChild(opt);
+  }
+}
+
 
   async function adminsUnlockPeriod(ev){
   hideToast("toastAdminsPeriod");
