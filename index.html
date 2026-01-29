@@ -577,7 +577,25 @@
   border-color: rgba(255,59,48,.35);
   background: rgba(255,59,48,.12);
 }
+/* === SELECT sombre (PC principalement) === */
+select {
+  background-color: #151515; /* fond sombre */
+  color: #f0f0f0; /* texte clair */
+  border: 1px solid #2a2a2a;
+}
 
+/* Options du select (PC uniquement) */
+select option {
+  background-color: #1b1b1b; /* fond sombre */
+  color: #f0f0f0; /* texte lisible */
+}
+
+/* Option survolée (PC) */
+select option:hover,
+select option:checked {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
   </style>
 </head>
 
