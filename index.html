@@ -1498,7 +1498,9 @@ async function adminsDeleteAgent(agent_id){
 async function adminsListMissions(){
   if(!STATE.admins.ok) return;
   const tb = $("adminsMissionsTable");
-  tb.innerHTML = `<tr><td class="ghost" colspan="3">Chargement…</td></tr>`;
+if (!tb.dataset.loaded) {
+  tb.innerHTML = '<tr><td class="ghost" colspan="3">Chargement...</td></tr>';
+}
   try{
     const res = await apiCall("adminListCatalog", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
@@ -1541,6 +1543,7 @@ list.forEach(m => {
     </tr>
   `;
 }).join("");
+    tb.dataset.loaded = "1";
 
   }catch(e){
   console.error("adminsListMissions ERROR", e);
