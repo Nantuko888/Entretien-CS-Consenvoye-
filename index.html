@@ -1599,63 +1599,48 @@ async function adminsAddMission(ev){
 }
 async function adminsToggleMission(ev, mission_id, btn){
   if(ev){ ev.preventDefault(); ev.stopPropagation(); }
-  if(!STATE.admins.ok){ showToast("toastAdminsMissions","Non connecté.",false); return; }
+  if(!STATE.admins.ok) return;
 
-  const b = btn || ev?.currentTarget;
-  if(!b) return;
+  const tr = btn.closest("tr");
+  if(!tr) return;
 
-  // ligne + colonne "Actif"
-  const row = b.closest("tr");
-  const tdActif = row ? row.children[1] : null; // 2e colonne: "Actif"
+  const tdActif = tr.children[1]; // colonne "Actif"
+  if(!tdActif) return;
 
-  // sauvegarde UI actuelle (pour rollback si erreur)
-  const prevTxt = b.textContent;
-  const prevClass = b.className;
-  const prevActifTxt = tdActif ? tdActif.textContent : "";
+  const wasOn = tdActif.textContent.trim().toLowerCase() === "oui";
+  const nowOn = !wasOn;
 
-  // petit feedback sans sablier
-  b.disabled = true;
+  // 🔥 1) UPDATE UI IMMÉDIATE
+  tdActif.textContent = nowOn ? "Oui" : "Non";
+  btn.textContent = nowOn ? "Désactiver" : "Activer";
+  btn.classList.toggle("on", !nowOn);
+  btn.classList.toggle("off", nowOn);
+  btn.dataset.actif = nowOn ? "1" : "0";
 
+  updateMissionCountersFromDOM();
+
+  // 🚀 2) API EN ARRIÈRE-PLAN
   try{
     const res = await apiCall("adminToggleMission", {
       admin_code: STATE.admins.code,
-      mission_id: String(mission_id).trim()
-      // on ne passe PAS "actif": le serveur toggle et renvoie la vérité
+      mission_id: String(mission_id).trim(),
+      desired: nowOn ? "TRUE" : "FALSE",
     });
 
-    if(!res || !res.ok) throw new Error(res?.message || "Erreur toggle mission");
+    if(!res || !res.ok){
+      throw new Error(res?.message || "toggle_failed");
+    }
 
-    // vérité serveur
-    const isActiveSrv =
-      (res.actif === true) ||
-      (String(res.actif ?? "").trim().toUpperCase() === "TRUE");
+  }catch(e){
+    // ❌ 3) ROLLBACK SI ERREUR
+    tdActif.textContent = wasOn ? "Oui" : "Non";
+    btn.textContent = wasOn ? "Désactiver" : "Activer";
+    btn.classList.toggle("on", !wasOn);
+    btn.classList.toggle("off", wasOn);
+    btn.dataset.actif = wasOn ? "1" : "0";
 
-    // UI = vérité serveur
-    if(tdActif) tdActif.textContent = isActiveSrv ? "Oui" : "Non";
-
-    b.textContent = isActiveSrv ? "Désactiver" : "Activer";
-
-    // couleurs (même logique que agents)
-    b.classList.remove("on","off","danger","success","btn-danger","btn-success","btn-dang","btn-succ");
-    b.classList.add("toggle");
-    b.classList.add(isActiveSrv ? "off" : "on");
-
-    // si ton CSS utilise danger/success :
-    b.classList.add(isActiveSrv ? "danger" : "success");
-
-    // dataset aligné (si tu t’en sers ailleurs)
-    b.dataset.actif = isActiveSrv ? "1" : "0";
-
-    showToast("toastAdminsMissions", isActiveSrv ? "Mission activée ✅" : "Mission désactivée ⛔", true);
-
-  } catch(e){
-    // rollback UI
-    if(tdActif) tdActif.textContent = prevActifTxt;
-    b.textContent = prevTxt;
-    b.className = prevClass;
-    showToast("toastAdminsMissions","Erreur réseau.",false);
-  } finally{
-    b.disabled = false;
+    updateMissionCountersFromDOM();
+    showToast("toastAdminsMissions", "Erreur réseau.", false);
   }
 }
 
