@@ -596,6 +596,35 @@ select option:checked {
   background-color: #2a2a2a;
   color: #ffffff;
 }
+<thead>
+  <tr>
+    <th>Période</th>
+    <th>Missions</th>
+    <th style="width:80px;text-align:center">Validation</th>
+  </tr>
+</thead>
+
+.val-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  border-radius:4px;
+  color:#fff;
+  font-weight:700;
+  font-size:16px;
+}
+
+.val-ok{
+  background:#2f80ed; /* bleu validé responsable */
+}
+
+.val-no{
+  background:#eb5757; /* rouge non validé */
+}
+
+    
   </style>
 </head>
 
@@ -947,8 +976,20 @@ select option:checked {
           <div class="divider"></div>
           <div class="scrollBox">
             <table class="table">
-              <thead><tr><th>Période</th><th>Agent</th><th>Mission</th><th>Déclaration</th><th>Justificatif</th><th>Remarque</th></tr></thead>
-              <tbody id="adminsRetoursTable"><tr><td class="ghost" colspan="6">—</td></tr></tbody>
+              <thead>
+  <tr>
+    <th>Période</th>
+    <th>Agent</th>
+    <th>Mission</th>
+    <th>Déclaration</th>
+    <th>Justificatif</th>
+    <th>Remarque</th>
+    <th style="width:80px;text-align:center;">Validation</th>
+  </tr>
+</thead>
+<tbody id="adminsRetoursTable">
+  <tr><td class="ghost" colspan="7"></td></tr>
+</tbody>
             </table>
           </div>
         </div>
