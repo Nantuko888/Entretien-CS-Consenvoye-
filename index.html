@@ -1569,9 +1569,10 @@ list.forEach(m => {
   const elActive = document.getElementById("missionsCountActive");
   const elInactive = document.getElementById("missionsCountInactive");
 
-  if(elTotal) elTotal.textContent = ` ${total}`;
-  if(elActive) elActive.textContent = ` ● ${active}`;
-  if(elInactive) elInactive.textContent = ` ● ${inactive}`;
+if (elTotal) elTotal.textContent = `(${total})`;
+if (elActive) elActive.textContent = `🟢 ${active}`;
+if (elInactive) elInactive.textContent = `🔴 ${inactive}`;
+
 }
 
 
