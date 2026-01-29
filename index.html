@@ -1018,31 +1018,36 @@ function showView(which){
    JSONP (évite CORS GitHub -> Apps Script)
    =============================== */
 function apiCall(action, params){
-  // Bloque les appels admin tant que l’admin n’est pas connecté
-if (String(action || "").startsWith("admin") && !(STATE && STATE.admins && STATE.admins.ok)) {
-  return Promise.reject(new Error("admin_not_logged_in"));
-}
   return new Promise((resolve, reject)=>{
-    const cb = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-    window[cb] = (data)=>{ try{ delete window[cb]; }catch(_){}
+    const cb = "cb_" + action + "-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+
+    window[cb] = (data)=>{
+      try{ delete window[cb]; }catch(_){}
       try{ script.remove(); }catch(_){}
       resolve(data);
     };
+
     const q = new URLSearchParams();
     q.set("action", action);
     q.set("callback", cb);
-    for(const [k,v] of Object.entries(params||{})){
-      if(v===undefined || v===null) continue;
+
+    for(const [k,v] of Object.entries(params || {})){
+      if(v === undefined || v === null) continue;
       q.set(k, String(v));
     }
+
     const script = document.createElement("script");
     script.src = API_EXEC + "?" + q.toString();
-    script.onerror = ()=>{ try{ delete window[cb]; }catch(_){}
+    script.onerror = ()=>{
+      try{ delete window[cb]; }catch(_){}
+      try{ script.remove(); }catch(_){}
       reject(new Error("network"));
     };
+
     document.head.appendChild(script);
   });
 }
+
 
 /* ===============================
    STATE
