@@ -2144,10 +2144,14 @@ async function adminsLoadRetours(ev){
     const opt = document.createElement("option");
     opt.value = pid;
 
-    // libellé lisible
-    opt.textContent = new Date(currentYear, m - 1, 1)
-      .toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+   const label = new Date(currentYear, m - 1, 1)
+  .toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
+let statusIcon = "❌"; // par défaut : rien / non validé
+if (hasRetour) statusIcon = "⏳"; // retours présents mais pas validé
+if (isValid) statusIcon = "🟦"; // validé par responsable (bleu)
+
+opt.textContent = `${label} ${statusIcon}`;
     // logique d’activation
     if (isPast) {
       opt.disabled = false;
