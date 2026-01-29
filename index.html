@@ -2028,7 +2028,13 @@ async function adminsLoadRetours(ev){
     const value = `${year}-${mm}`;
     const opt = document.createElement("option");
     opt.value = value;
-    opt.textContent = value;
+   const mois = [
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+];
+
+opt.textContent = `${mois[m - 1]} ${year}`;
+
     select.appendChild(opt);
   }
 }
