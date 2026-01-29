@@ -1505,9 +1505,7 @@ list.forEach(m => {
           type="button"
           class="btn small danger"
           onclick="adminsDeleteMission(event, '${esc(m.mission_id)}', this)"
-        >
-          Supprimer
-        </button>
+        >Supprimer</button>
       </td>
     </tr>
   `;
@@ -1607,24 +1605,35 @@ async function adminsToggleMission(ev, mission_id, btn){
 
 
 
-async function adminsDeleteMission(mission_id){
+async function adminsDeleteMission(ev, mission_id, btn){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
   if(!STATE.admins.ok) return;
   if(!confirm("Supprimer définitivement cette mission ?")) return;
+
+  const b = btn || (ev && ev.currentTarget) || null;
+  setLoading(b, true);
+
   try{
-    await apiCall("adminDeleteMission", { admin_code: STATE.admins.code, mission_id });
+    const res = await apiCall("adminDeleteMission", {
+      admin_code: STATE.admins.code,
+      mission_id: String(mission_id || "").trim()
+    });
+
+    if(!res || !res.ok){
+      showToast("toastAdminsMissions", (res && res.message) ? res.message : "Erreur suppression", false);
+      return;
+    }
+
+    showToast("toastAdminsMissions", "Mission supprimée ✅", true);
     await adminsListMissions();
-  }catch(_){}
+
+  }catch(e){
+    showToast("toastAdminsMissions", "Erreur réseau.", false);
+  }finally{
+    setLoading(b, false);
+  }
 }
 
-async function adminsListPeriods(){
-  if(!STATE.admins.ok) return;
-  try{
-    const res = await apiCall("adminListPeriodes", { admin_code: STATE.admins.code });
-    if(!res || !res.ok) return;
-    STATE.periods = res.periodes || [];
-    renderPeriodsSelects();
-  }catch(_){}
-}
 
 async function adminsLoadPeriod(ev){
   hideToast("toastAdminsPeriod");
