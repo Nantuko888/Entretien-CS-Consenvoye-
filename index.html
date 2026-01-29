@@ -2113,42 +2113,54 @@ async function adminsLoadRetours(ev){
     setLoading(btn,false);
   }
 }
-  function populateRetoursPeriodes(validations = []) {
-  const select = document.getElementById("adminsRetoursPeriodeSel");
+  function populateRetoursPeriodes(retours = []) {
+  const select = document.getElementById("adminsRetoursPeriodSel");
   if (!select) return;
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // 1..12
+
+  // mois qui ont AU MOINS un retour
+  const monthsWithRetour = new Set(
+    retours
+      .map(r => r.period_id)
+      .filter(Boolean)
+      .map(pid => pid.split("-"))
+      .filter(p => p.length === 2)
+      .map(p => `${p[0]}-${p[1]}`)
+  );
 
   select.innerHTML = `<option value="">— Choisir période —</option>`;
 
-  const now = new Date();
-  const year = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-
-  // map rapide des validations
-  const validatedMap = {};
-  validations.forEach(v => {
-    validatedMap[v.period_id] = v.validated === true;
-  });
-
   for (let m = 1; m <= 12; m++) {
     const mm = String(m).padStart(2, "0");
-    const pid = `${year}-${mm}`;
+    const pid = `${currentYear}-${mm}`;
+
+    const isPast = m < currentMonth;
+    const isCurrent = m === currentMonth;
+    const hasRetour = monthsWithRetour.has(pid);
 
     const opt = document.createElement("option");
     opt.value = pid;
 
     // libellé lisible
-    opt.textContent = new Date(year, m - 1, 1)
+    opt.textContent = new Date(currentYear, m - 1, 1)
       .toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
-    // mois futurs → bloqués + gris
-    if (m > currentMonth) {
-      opt.disabled = true;
-      opt.classList.add("periode-future");
+    // logique d’activation
+    if (isPast) {
+      opt.disabled = false;
+    } else if (isCurrent) {
+      opt.disabled = !hasRetour;
+    } else {
+      opt.disabled = true; // futur
     }
 
     select.appendChild(opt);
   }
 }
+
 
 function monthLabel(mm) {
   const names = [
