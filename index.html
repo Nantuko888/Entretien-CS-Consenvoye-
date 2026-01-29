@@ -2554,7 +2554,36 @@ $("doneImg").addEventListener("touchend", (e)=>{
     input.type = "password";
     btn.textContent = "👁️";
   }
+    }
+  function bindEnter(inputId, fn, opts={}){
+  const el = $(inputId);
+  if(!el) return;
+
+  el.addEventListener("keydown", (e) => {
+    if(e.key !== "Enter") return;
+    if(opts.ctrl && !e.ctrlKey) return;
+    if(opts.shift && !e.shiftKey) return;
+
+    e.preventDefault();
+    fn(e);
+  });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  // --- LOGIN ---
+  bindEnter("agentCode", agentsLogin); // si ton champ agent s’appelle comme ça
+  bindEnter("adminsCode", adminsLogin);
+
+  // --- AJOUTS ---
+  bindEnter("adminsNewAgentName", adminsAddAgent);
+  bindEnter("adminsNewAgentCode", adminsAddAgent);
+  bindEnter("adminsNewMissionLib", adminsAddMission);
+
+  // --- PÉRIODES / CHARGER / ENREGISTRER ---
+  bindEnter("periodeSel", () => $("btnLoadPeriod")?.click()); // exemple : Enter = Charger
+  bindEnter("btnSaveActiveMissions", () => $("btnSaveActiveMissions")?.click(), {ctrl:true}); // Ctrl+Enter = Enregistrer (optionnel)
+});
+
 </script>
 </body>
 </html>
