@@ -2014,15 +2014,18 @@ async function adminsLoadRetours(ev){
   }
 }
   function populateRetoursPeriodes() {
-  const select = document.getElementById("retoursPeriodeSelect");
+  // accepte plusieurs IDs possibles (car ton code a changé plusieurs fois)
+  const select =
+    document.getElementById("retoursPeriodeSelect") ||
+    document.getElementById("adminsRetoursPeriodeSel") ||
+    document.getElementById("adminsRetoursPeriodeSel");
+
   if (!select) return;
 
   const year = new Date().getFullYear();
 
-  // reset
   select.innerHTML = `<option value="">— Choisir période —</option>`;
 
-  // 12 mois
   for (let m = 1; m <= 12; m++) {
     const mm = String(m).padStart(2, "0");
     const value = `${year}-${mm}`;
@@ -2032,6 +2035,7 @@ async function adminsLoadRetours(ev){
     select.appendChild(opt);
   }
 }
+
 
 
   async function adminsUnlockPeriod(ev){
