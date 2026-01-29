@@ -1644,29 +1644,49 @@ async function adminsDeleteMission(ev, mission_id, btn){
   if(!STATE.admins.ok) return;
   if(!confirm("Supprimer définitivement cette mission ?")) return;
 
-  const b = btn || (ev && ev.currentTarget) || null;
-  setLoading(b, true);
+  const tr = btn?.closest("tr") || null;
 
+  setLoading(btn, true);
   try{
     const res = await apiCall("adminDeleteMission", {
       admin_code: STATE.admins.code,
-      mission_id: String(mission_id || "").trim()
+      mission_id: String(mission_id).trim(),
     });
 
-    if(!res || !res.ok){
-      showToast("toastAdminsMissions", (res && res.message) ? res.message : "Erreur suppression", false);
-      return;
-    }
+    if(!res || !res.ok) throw new Error(res?.message || "Erreur suppression");
+
+    // ✅ UI instantanée: on enlève la ligne sans recharger tout le tableau
+    if(tr) tr.remove();
+
+    // ✅ Mise à jour des compteurs depuis le DOM (rapide)
+    // (si tu as déjà missionsCountTotal / Active / Inactive)
+    const rows = Array.from(document.querySelectorAll("#adminsMissionsTable tr"));
+    let total = 0, active = 0;
+    rows.forEach(r=>{
+      const td = r.children && r.children[1]; // colonne "Actif"
+      if(!td) return;
+      const v = td.textContent.trim().toLowerCase();
+      if(v !== "oui" && v !== "non") return;
+      total++;
+      if(v === "oui") active++;
+    });
+    const inactive = total - active;
+    const elTotal = document.getElementById("missionsCountTotal");
+    const elActive = document.getElementById("missionsCountActive");
+    const elInactive = document.getElementById("missionsCountInactive");
+    if(elTotal) elTotal.textContent = ` ${total}`;
+    if(elActive) elActive.textContent = ` ● ${active}`;
+    if(elInactive) elInactive.textContent = ` ● ${inactive}`;
 
     showToast("toastAdminsMissions", "Mission supprimée ✅", true);
-    await adminsListMissions();
 
   }catch(e){
     showToast("toastAdminsMissions", "Erreur réseau.", false);
   }finally{
-    setLoading(b, false);
+    setLoading(btn, false);
   }
 }
+
 
 
 async function adminsLoadPeriod(ev){
