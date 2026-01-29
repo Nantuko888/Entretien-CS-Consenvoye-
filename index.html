@@ -802,10 +802,10 @@ option.periode-future {
 </div>
         </div>
         <div class="right">
-          <button class="btn primary" id="btn" onclick="adminsLogin(event)">Se connecter</button>
+          <button class="btn primary" id="btn" onclick="(event)">Se connecter</button>
         </div>
       </div>
-      <div id="toastAdminsLogin" class="toast"></div>
+      <div id="toast" class="toast"></div>
 
       <!-- changer code admin -->
       <div id="boxAdminsKey" style="display:none;margin-top:12px">
@@ -1300,6 +1300,13 @@ async function adminsLogin(ev){
 
     // ✅ charge tout ce qui dépend du login (agents, missions, périodes, etc.)
     await adminsRefreshAll();
+
+    try{
+  const r = await apiCall("adminListRetoursPeriods", { admin_code: STATE.admins.code });
+  if(r && r.ok){
+    populateRetoursPeriodes(r.periods || []);
+  }
+}catch(_){}
 
     
     showToast("toastAdminsLogin","Admin connecté ✅",true);
