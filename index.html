@@ -2152,10 +2152,10 @@ async function adminsLoadRetours(ev){
     if (isPast) {
       opt.disabled = false;
     } else if (isCurrent) {
-      opt.disabled = !hasRetour;
-    } else {
-      opt.disabled = true; // futur
-    }
+  opt.disabled = false; // mois courant toujours cliquable
+} else {
+  opt.disabled = true; // futur
+}
 
     select.appendChild(opt);
   }
