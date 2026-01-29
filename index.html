@@ -623,7 +623,26 @@ select option:checked {
 .val-no{
   background:#eb5757; /* rouge non validé */
 }
+.option-period {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
+.period-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.period-dot.valid {
+  background: #2f80ff; /* bleu */
+}
+
+.period-dot.invalid {
+  background: #d32f2f; /* rouge */
+}
     
   </style>
 </head>
@@ -1237,31 +1256,50 @@ function renderAdminsAddToGroupSelect(){
    =============================== */
 async function adminsLogin(ev){
   hideToast("toastAdminsLogin");
+
   const btn = ev?.target || $("btnAdminsLogin");
   const code = $("adminsCode").value.trim();
-  if(!code){ showToast("toastAdminsLogin","Code requis.", false); return; }
+
+  if(!code){
+    showToast("toastAdminsLogin","Code requis.",false);
+    return;
+  }
 
   setLoading(btn,true);
+
   try{
     const res = await apiCall("adminLogin", { code });
+
     if(!res || !res.ok){
       setPill("pillAdminsStatus","Admin : non connecté","bad");
-      showToast("toastAdminsLogin","Code admin incorrect.", false);
+      showToast("toastAdminsLogin","Code admin incorrect.",false);
       return;
     }
+
+    // ✅ état admin
     STATE.admins.ok = true;
     STATE.admins.code = code;
-    setPill("pillAdminsStatus","Admin : connecté ✅","ok");
-    $("btnAdminsKey").style.display="";
-    $("btnAdminsLogout").style.display="";
-    $("boxAdminsWork").style.display="";
 
+    // ✅ UI admin connectée
+    setPill("pillAdminsStatus","Admin : connecté ✅","ok");
+    $("btnAdminsKey").style.display = "";
+    $("btnAdminsLogout").style.display = "";
+    $("boxAdminsWork").style.display = "";
+
+    // ✅ charge tout ce qui dépend du login (agents, missions, périodes, etc.)
     await adminsRefreshAll();
-    populateRetoursPeriodes();
-    showToast("toastAdminsLogin","Admin connecté ✅", true);
-  }catch(e){
-    
-  }finally{
+
+    // ✅ prépare le menu “Retours -> période” (si la fonction existe)
+    if(typeof populateRetoursPeriodes === "function"){
+      populateRetoursPeriodes();
+    }
+
+    showToast("toastAdminsLogin","Admin connecté ✅",true);
+
+  } catch(e){
+    showToast("toastAdminsLogin","Erreur réseau.",false);
+
+  } finally{
     setLoading(btn,false);
   }
 }
@@ -2016,6 +2054,19 @@ async function adminsSaveActiveMissions(ev){
   }
 }
 
+async function adminsLoadRetoursValidations(){
+  if(!STATE.admins.ok) return;
+
+  try{
+    const res = await apiCall("adminListValidations", { admin_code: STATE.admins.code });
+    if(!res || !res.ok) throw new Error(res?.message || "bad");
+    populateRetoursPeriodes(res.items || []);
+  }catch(e){
+    // si ça foire, on laisse le menu sans icônes, mais on ne casse rien
+    populateRetoursPeriodes([]);
+  }
+}
+  
 async function adminsLoadRetours(ev){
   populateRetoursPeriodes();
   hideToast("toastAdminsRetours");
@@ -2054,33 +2105,47 @@ async function adminsLoadRetours(ev){
     setLoading(btn,false);
   }
 }
-  function populateRetoursPeriodes() {
-  // accepte plusieurs IDs possibles (car ton code a changé plusieurs fois)
+  function populateRetoursPeriodes(validations = []) {
   const select = document.getElementById("adminsRetoursPeriodSel");
-
   if (!select) return;
 
   const year = new Date().getFullYear();
+
+  // map rapide des validations
+  const validatedMap = {};
+  validations.forEach(v => {
+    validatedMap[v.period_id] = v.validated === true;
+  });
 
   select.innerHTML = `<option value="">— Choisir période —</option>`;
 
   for (let m = 1; m <= 12; m++) {
     const mm = String(m).padStart(2, "0");
-    const value = `${year}-${mm}`;
-    const opt = document.createElement("option");
-    opt.value = value;
-   const mois = [
-  "janvier", "février", "mars", "avril", "mai", "juin",
-  "juillet", "août", "septembre", "octobre", "novembre", "décembre"
-];
+    const pid = `${year}-${mm}`;
 
-opt.textContent = `${mois[m - 1]} ${year}`;
-const currentMonth = new Date().getMonth() + 1; // 1..12
-if (m > currentMonth) opt.disabled = true;
+    const isValid = validatedMap[pid] === true;
+
+    const opt = document.createElement("option");
+    opt.value = pid;
+    opt.innerHTML = `
+      <span class="option-period">
+        <span class="period-dot ${isValid ? "valid" : "invalid"}"></span>
+        ${monthLabel(mm)} ${year}
+      </span>
+    `;
+
     select.appendChild(opt);
   }
 }
- populateRetoursPeriodes();
+
+function monthLabel(mm) {
+  const names = [
+    "janvier","février","mars","avril","mai","juin",
+    "juillet","août","septembre","octobre","novembre","décembre"
+  ];
+  return names[parseInt(mm,10)-1];
+}
+
 
 
   async function adminsUnlockPeriod(ev){
