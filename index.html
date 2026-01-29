@@ -1590,7 +1590,35 @@ async function adminsAddMission(ev){
     }
     showToast("toastAdminsMissions","Mission ajoutée ✅",true);
     $("adminsNewMissionLib").value="";
-    await adminsListMissions();
+
+    const tb = $("adminsMissionsTable");
+
+const tr = document.createElement("tr");
+tr.innerHTML = `
+  <td>${esc(libelle)}</td>
+  <td>Oui</td>
+  <td class="right">
+    <button
+      type="button"
+      class="btn small toggle off"
+      data-actif="1"
+      onclick="adminsToggleMission(event, '${esc(res.mission_id)}', this)"
+    >Désactiver</button>
+
+    <button
+      type="button"
+      class="btn small danger"
+      onclick="adminsDeleteMission(event, '${esc(res.mission_id)}', this)"
+    >Supprimer</button>
+  </td>
+`;
+
+tb.prepend(tr);
+
+// mise à jour immédiate des compteurs
+updateMissionCountersFromDOM();
+
+    
   }catch(_){
     showToast("toastAdminsMissions","Erreur réseau.",false);
   }finally{
