@@ -2120,70 +2120,54 @@ async function adminsLoadRetours(ev){
     setLoading(btn,false);
   }
 }
-  function populateRetoursPeriodes(retours = []) {
-  const select =
-    document.getElementById("adminsRetoursPeriodSel") ||
-    document.getElementById("adminsRetoursPeriodeSel") ||
-    document.getElementById("retoursPeriodeSelect");
-
+  async function populateRetoursPeriodes(){
+  const select = document.getElementById("adminsRetoursPeriodSel");
   if (!select) return;
 
   const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1; // 1..12
+  const year = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
 
-  // mois qui ont AU MOINS un retour (format attendu "YYYY-MM")
-  const monthsWithRetour = new Set(
-    (retours || [])
-      .map(r => String(r.period_id || r.periodId || r.periode_id || r.periodeId || "").trim())
-      .filter(Boolean)
-      .map(pid => pid.split("-"))
-      .filter(p => p.length === 2 && p[0].length === 4 && p[1].length === 2)
-      .map(p => `${p[0]}-${p[1]}`)
-  );
+  // charge depuis Apps Script
+  const res = await apiCall("adminListRetoursPeriods", { admin_code: STATE.admins.code, year });
+  const periods = (res && res.ok && Array.isArray(res.periods)) ? res.periods : [];
 
-  // reset menu
+  const byId = {};
+  periods.forEach(p => byId[p.period_id] = p);
+
   select.innerHTML = `<option value="">— Choisir période —</option>`;
 
-  for (let m = 1; m <= 12; m++) {
-    const mm = String(m).padStart(2, "0");
-    const pid = `${currentYear}-${mm}`;
+  for (let m = 1; m <= 12; m++){
+    const mm = String(m).padStart(2,"0");
+    const pid = `${year}-${mm}`;
+    const info = byId[pid] || {has_retours:false, validated:false};
 
-    const isPast = m < currentMonth;
-    const isCurrent = m === currentMonth;
-    const hasRetour = monthsWithRetour.has(pid);
+    // libellé mois
+    const label = new Date(year, m-1, 1).toLocaleDateString("fr-FR", {month:"long", year:"numeric"});
+
+    // icône
+    // 🟦 = validé, 🟧 = retours présents mais pas validé, 🟥 = aucun retour
+    let icon = "🟥";
+    if (info.validated) icon = "🟦";
+    else if (info.has_retours) icon = "🟧";
 
     const opt = document.createElement("option");
     opt.value = pid;
+    opt.textContent = `${label} ${icon}`;
 
-    // Libellé lisible "janvier 2026"
-    opt.textContent = new Date(currentYear, m - 1, 1).toLocaleDateString("fr-FR", {
-      month: "long",
-      year: "numeric",
-    });
+    // règles d’accès
+    const isPast = m < currentMonth;
+    const isCurrent = m === currentMonth;
+    const isFuture = m > currentMonth;
 
-    // Activation:
-    // - mois passés : cliquables
-    // - mois courant : cliquable (même sans retour)
-    // - mois futurs : grisés
-    // (si tu veux que le mois courant soit cliquable SEULEMENT s'il y a un retour, dis-moi)
-    if (isPast) {
-      opt.disabled = false;
-    } else if (isCurrent) {
-      opt.disabled = false;
-    } else {
-      opt.disabled = true;
-    }
-
-    // Optionnel : si tu veux griser le mois courant quand il n'y a aucun retour
-    // (ça reste cliquable, juste visuel)
-    if (isCurrent && !hasRetour) {
-      opt.style.opacity = "0.6";
-    }
+    if (isFuture) opt.disabled = true;
+    else if (isCurrent) opt.disabled = !info.has_retours; // mois courant cliquable seulement s’il y a des retours
+    else opt.disabled = false; // mois passés toujours cliquables
 
     select.appendChild(opt);
   }
 }
+
 
 
 function monthLabel(mm) {
