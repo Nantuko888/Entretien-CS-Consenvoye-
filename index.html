@@ -643,6 +643,11 @@ select option:checked {
 .period-dot.invalid {
   background: #d32f2f; /* rouge */
 }
+
+option.periode-future {
+  color: #777;
+  background-color: #1e1e1e;
+}
     
   </style>
 </head>
@@ -2109,10 +2114,14 @@ async function adminsLoadRetours(ev){
   }
 }
   function populateRetoursPeriodes(validations = []) {
-  const select = document.getElementById("adminsRetoursPeriodSel");
+  const select = document.getElementById("adminsRetoursPeriodeSel");
   if (!select) return;
 
-  const year = new Date().getFullYear();
+  select.innerHTML = `<option value="">— Choisir période —</option>`;
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
 
   // map rapide des validations
   const validatedMap = {};
@@ -2120,22 +2129,22 @@ async function adminsLoadRetours(ev){
     validatedMap[v.period_id] = v.validated === true;
   });
 
-  select.innerHTML = `<option value="">— Choisir période —</option>`;
-
   for (let m = 1; m <= 12; m++) {
     const mm = String(m).padStart(2, "0");
     const pid = `${year}-${mm}`;
 
-    const isValid = validatedMap[pid] === true;
-
     const opt = document.createElement("option");
     opt.value = pid;
-    opt.innerHTML = `
-      <span class="option-period">
-        <span class="period-dot ${isValid ? "valid" : "invalid"}"></span>
-        ${monthLabel(mm)} ${year}
-      </span>
-    `;
+
+    // libellé lisible
+    opt.textContent = new Date(year, m - 1, 1)
+      .toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
+    // mois futurs → bloqués + gris
+    if (m > currentMonth) {
+      opt.disabled = true;
+      opt.classList.add("periode-future");
+    }
 
     select.appendChild(opt);
   }
