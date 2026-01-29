@@ -2146,7 +2146,8 @@ async function adminsLoadRetours(ev){
 
    const label = new Date(currentYear, m - 1, 1)
   .toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
-
+    
+const isValid = validatedMap[pid] === true;
 let statusIcon = "❌"; // par défaut : rien / non validé
 if (hasRetour) statusIcon = "⏳"; // retours présents mais pas validé
 if (isValid) statusIcon = "🟦"; // validé par responsable (bleu)
