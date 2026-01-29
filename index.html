@@ -1018,6 +1018,10 @@ function showView(which){
    JSONP (évite CORS GitHub -> Apps Script)
    =============================== */
 function apiCall(action, params){
+  // Bloque les appels admin tant que l’admin n’est pas connecté
+if (String(action || "").startsWith("admin") && !(STATE && STATE.admins && STATE.admins.ok)) {
+  return Promise.reject(new Error("admin_not_logged_in"));
+}
   return new Promise((resolve, reject)=>{
     const cb = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
     window[cb] = (data)=>{ try{ delete window[cb]; }catch(_){}
