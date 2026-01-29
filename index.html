@@ -2015,10 +2015,7 @@ async function adminsLoadRetours(ev){
 }
   function populateRetoursPeriodes() {
   // accepte plusieurs IDs possibles (car ton code a changé plusieurs fois)
-  const select =
-    document.getElementById("retoursPeriodeSelect") ||
-    document.getElementById("adminsRetoursPeriodeSel") ||
-    document.getElementById("adminsRetoursPeriodeSel");
+  const select = document.getElementById("adminsRetoursPeriodSel");
 
   if (!select) return;
 
@@ -2035,7 +2032,7 @@ async function adminsLoadRetours(ev){
     select.appendChild(opt);
   }
 }
-
+ populateRetoursPeriodes();
 
 
   async function adminsUnlockPeriod(ev){
