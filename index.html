@@ -1550,6 +1550,30 @@ list.forEach(m => {
   tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur (voir console)</td></tr>`;
 }
 }
+  function updateMissionCountersFromDOM(){
+  const rows = Array.from(document.querySelectorAll("#adminsMissionsTable tr"));
+  let total = 0, active = 0;
+
+  rows.forEach(r=>{
+    const td = r.children && r.children[1]; // colonne "Actif"
+    if(!td) return;
+    const v = td.textContent.trim().toLowerCase();
+    if(v !== "oui" && v !== "non") return;
+    total++;
+    if(v === "oui") active++;
+  });
+
+  const inactive = total - active;
+
+  const elTotal = document.getElementById("missionsCountTotal");
+  const elActive = document.getElementById("missionsCountActive");
+  const elInactive = document.getElementById("missionsCountInactive");
+
+  if(elTotal) elTotal.textContent = ` ${total}`;
+  if(elActive) elActive.textContent = ` ● ${active}`;
+  if(elInactive) elInactive.textContent = ` ● ${inactive}`;
+}
+
 
 async function adminsAddMission(ev){
   hideToast("toastAdminsMissions");
@@ -1644,46 +1668,37 @@ async function adminsDeleteMission(ev, mission_id, btn){
   if(!STATE.admins.ok) return;
   if(!confirm("Supprimer définitivement cette mission ?")) return;
 
-  const tr = btn?.closest("tr") || null;
+  const tr = btn.closest("tr");
+  if(!tr) return;
 
-  setLoading(btn, true);
+  // 🔥 1) DISPARITION IMMÉDIATE (UI instantanée)
+  const parent = tr.parentNode;
+  const next = tr.nextSibling;
+  tr.remove();
+
+  // 🔢 2) Mise à jour immédiate des compteurs
+  updateMissionCountersFromDOM();
+
+  // 🚀 3) Appel API EN ARRIÈRE-PLAN
   try{
     const res = await apiCall("adminDeleteMission", {
       admin_code: STATE.admins.code,
       mission_id: String(mission_id).trim(),
     });
 
-    if(!res || !res.ok) throw new Error(res?.message || "Erreur suppression");
-
-    // ✅ UI instantanée: on enlève la ligne sans recharger tout le tableau
-    if(tr) tr.remove();
-
-    // ✅ Mise à jour des compteurs depuis le DOM (rapide)
-    // (si tu as déjà missionsCountTotal / Active / Inactive)
-    const rows = Array.from(document.querySelectorAll("#adminsMissionsTable tr"));
-    let total = 0, active = 0;
-    rows.forEach(r=>{
-      const td = r.children && r.children[1]; // colonne "Actif"
-      if(!td) return;
-      const v = td.textContent.trim().toLowerCase();
-      if(v !== "oui" && v !== "non") return;
-      total++;
-      if(v === "oui") active++;
-    });
-    const inactive = total - active;
-    const elTotal = document.getElementById("missionsCountTotal");
-    const elActive = document.getElementById("missionsCountActive");
-    const elInactive = document.getElementById("missionsCountInactive");
-    if(elTotal) elTotal.textContent = ` ${total}`;
-    if(elActive) elActive.textContent = ` ● ${active}`;
-    if(elInactive) elInactive.textContent = ` ● ${inactive}`;
+    if(!res || !res.ok){
+      throw new Error(res?.message || "delete_failed");
+    }
 
     showToast("toastAdminsMissions", "Mission supprimée ✅", true);
 
   }catch(e){
+    // ❌ 4) En cas d’erreur → on remet la ligne
+    if(next) parent.insertBefore(tr, next);
+    else parent.appendChild(tr);
+
+    updateMissionCountersFromDOM();
     showToast("toastAdminsMissions", "Erreur réseau.", false);
-  }finally{
-    setLoading(btn, false);
   }
 }
 
