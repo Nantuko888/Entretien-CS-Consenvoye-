@@ -2124,6 +2124,15 @@ async function adminsLoadRetoursValidations(){
 async function adminsLoadRetours(ev){
   
   hideToast("toastAdminsRetours");
+  async function adminsLoadRetours(ev){
+  hideToast("toastAdminsRetours");
+
+  const card = document.getElementById("retoursSynthCard");
+  if(card) card.style.display = "";
+
+  // le reste de ton code existant...
+}
+
   if(!STATE.admins.ok){ showToast("toastAdminsRetours","Non connecté.",false); return; }
   const btn = ev?.target || $("btnAdminsLoadRetours");
   const period_id = $("adminsRetoursPeriodSel").value.trim();
