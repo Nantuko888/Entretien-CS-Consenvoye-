@@ -2161,23 +2161,61 @@ if(!period_id){
     if(!res || !res.ok){
       showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false); return;
     }
-    const tb = $("adminsRetoursTable");
-    const items = res.items || [];
-    
-    if(!items.length){
-      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-    }else{
-      tb.innerHTML = items.map(it=>`
-        <tr>
-          <td>${esc(it.period_id)}</td>
-          <td>${esc(it.agent)}</td>
-          <td>${esc(it.mission)}</td>
-          <td>${esc(it.declaration)}</td>
-          <td>${esc(it.justificatif)}</td>
-          <td>${esc(it.remark||"")}</td>
-        </tr>
-      `).join("");
-    }
+    // --- rendu tableau Retours (6 colonnes) ---
+const tb = $("adminsRetoursTable");
+const items = res.items || [];
+
+function pick(obj, keys, def="") {
+  for (const k of keys) {
+    const v = obj && obj[k];
+    if (v !== undefined && v !== null && String(v).trim() !== "") return v;
+  }
+  return def;
+}
+
+function asBool(v){
+  if (v === true) return true;
+  const s = String(v ?? "").trim().toLowerCase();
+  return (s === "true" || s === "1" || s === "yes" || s === "oui" || s === "ok");
+}
+
+// badge "validation responsable" : bleu si validé, gris sinon
+function renderValidationBadge(isValid){
+  const cls = isValid ? "badge-validate" : "badge-validate is-off";
+  return `
+    <span class="${cls}" title="${isValid ? "Validé" : "Non validé"}">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9.2 16.2L4.9 11.9l-1.4 1.4 5.7 5.7L20.3 8l-1.4-1.4z"></path>
+      </svg>
+    </span>`;
+}
+
+if(!items.length){
+  tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
+} else {
+  tb.innerHTML = items.map(it=>{
+    const agent = esc(pick(it, ["agent_name","agent","nom","agent_nom","agentId","agent_id"], "—"));
+    const mission = esc(pick(it, ["mission_label","mission","libelle","mission_libelle","mission_id"], "—"));
+
+    const declaration = esc(pick(it, ["declaration","etat","status"], "—"));
+    const justificatif = esc(pick(it, ["justificatif","justif","commentaire","preuve"], "—"));
+    const remarque = esc(pick(it, ["remarque","note","details","detail"], "—"));
+
+    // si ton API renvoie validated / validated_by / validated_ts
+    const validated = asBool(pick(it, ["validated","is_validated","validation","valide"], false));
+
+    return `
+      <tr>
+        <td>${agent}</td>
+        <td>${mission}</td>
+        <td>${declaration}</td>
+        <td>${justificatif}</td>
+        <td>${remarque}</td>
+        <td style="text-align:center">${renderValidationBadge(validated)}</td>
+      </tr>`;
+  }).join("");
+}
+
     showToast("toastAdminsRetours","Chargé ✅",true);
   }catch(_){
     showToast("toastAdminsRetours","Erreur réseau.",false);
