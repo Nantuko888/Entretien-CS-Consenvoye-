@@ -2083,12 +2083,15 @@ async function adminsLoadRetoursValidations(){
 }
   
 async function adminsLoadRetours(ev){
-  populateRetoursPeriodes();
+  
   hideToast("toastAdminsRetours");
   if(!STATE.admins.ok){ showToast("toastAdminsRetours","Non connecté.",false); return; }
   const btn = ev?.target || $("btnAdminsLoadRetours");
-  const period_id = STATE.current.period_id;
-  if(!period_id){ showToast("toastAdminsRetours","Charge une période d’abord.",false); return; }
+  const period_id = $("adminsRetoursPeriodSel").value.trim();
+if(!period_id){
+  showToast("toastAdminsRetours","Choisis une période.",false);
+  return;
+}
 
   setLoading(btn,true);
   try{
@@ -2098,7 +2101,7 @@ async function adminsLoadRetours(ev){
     }
     const tb = $("adminsRetoursTable");
     const items = res.items || [];
-    populateRetoursPeriodes(items);
+    
     if(!items.length){
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
     }else{
