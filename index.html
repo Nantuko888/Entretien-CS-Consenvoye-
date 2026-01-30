@@ -663,7 +663,11 @@ option.periode-future {
 .badge-validate.is-off{ background: rgba(255,255,255,.10); }
 .badge-validate.is-off svg path{ fill: rgba(255,255,255,.35); }
 
-  
+ .periodSelect {
+  width: max-content;
+  min-width: 140px; /* sécurité */
+  padding-right: 28px; /* place pour la flèche */
+} 
     
   </style>
 </head>
@@ -923,16 +927,7 @@ option.periode-future {
               <div class="status" id="pillResponsable">Responsable : —</div>
             </div>
 
-            <div class="row">
-              <div>
-                <label>Période</label>
-                <select id="adminsPeriodsSel"></select>
-              </div>
-              <div class="right">
-                <button class="btn primary" id="btnAdminsLoadPeriod" onclick="adminsLoadPeriod(event)">Charger</button>
-                <button class="btn danger" id="btnAdminsUnlockPeriod" onclick="adminsUnlockPeriod(event)">Déverrouiller</button>
-
-              </div>
+            
             </div>
             <div id="toastAdminsPeriod" class="toast"></div>
 
@@ -1001,6 +996,17 @@ option.periode-future {
 
         <div class="card">
           <div class="headRow"><div class="h2">📌 Retours (Non fait / Partiel)</div></div>
+          <div class="row align-center">
+  <label>Période</label>
+
+  <select id="adminsRetoursPeriodSel" class="periodSelect">
+    <option value="">— Choisir période —</option>
+  </select>
+
+  <button class="btn primary" id="btnAdminsLoadRetours">
+    Charger
+  </button>
+</div>
           <div class="row">
   <div class="periodeRow">
   <span class="periodeLabel">Période</span>
