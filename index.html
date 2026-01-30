@@ -662,6 +662,8 @@ option.periode-future {
 .badge-validate svg{ width:12px; height:12px; display:block; }
 .badge-validate.is-off{ background: rgba(255,255,255,.10); }
 .badge-validate.is-off svg path{ fill: rgba(255,255,255,.35); }
+
+  
     
   </style>
 </head>
@@ -1000,15 +1002,18 @@ option.periode-future {
         <div class="card">
           <div class="headRow"><div class="h2">📌 Retours (Non fait / Partiel)</div></div>
           <div class="row">
-  <label>Période</label>
-  <select id="adminsRetoursPeriodSel">
+  <div class="periodeRow">
+  <span class="periodeLabel">Période</span>
+
+  <select id="adminsRetoursPeriodSel" class="periodeSelect">
     <option value="">— Choisir période —</option>
   </select>
 
-  <div class="right">
-    <button class="btn" id="btnAdminsLoadRetours" onclick="adminsLoadRetours(event)">Charger</button>
-    <span id="retoursValidBadge"></span>
-  </div>
+  <span id="retoursChargedInline" class="chargedInline hidden">
+    Chargé
+  </span>
+</div>
+
 </div>
 
           <div id="toastAdminsRetours" class="toast"></div>
