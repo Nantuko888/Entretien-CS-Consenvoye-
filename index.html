@@ -998,6 +998,45 @@ option.periode-future {
 
           <div id="toastAdminsRetours" class="toast"></div>
           <div class="divider"></div>
+          <!-- ===== RETOURS : VUE SYNTHÈSE PAR PÉRIODE ===== -->
+<div class="divider"></div>
+
+<div class="card" id="retoursSynthCard" style="display:none;">
+  <div class="headRow">
+    <div class="h2">📌 Synthèse retours — <span id="retoursSynthTitle">—</span></div>
+  </div>
+
+  <div class="row">
+    <div class="status" id="retoursSynthMeta">Sélectionne une période puis "Charger".</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="scrollBox">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mission</th>
+          <th style="width:140px;">Déclaration</th>
+          <th>Justificatif</th>
+        </tr>
+      </thead>
+      <tbody id="retoursSynthMissions">
+        <tr><td class="ghost" colspan="3">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <div style="width:100%;">
+      <div class="status" style="margin-bottom:6px;">Remarques</div>
+      <div id="retoursSynthRemarques" class="status">—</div>
+    </div>
+  </div>
+</div>
+
           <div class="scrollBox">
             <table class="table">
               <thead>
