@@ -1046,6 +1046,12 @@ button#btnAdminsLoadRetoursS,
 </div>
 </div>
 
+        <!-- Agents du mois (à droite) -->
+<div class="twoColBlock" id="retoursAgentsWrap" style="display:none; margin-top:10px;">
+  <div class="card">
+    <div class="headRow">
+      <div class="h2">👥 Agents du mois</div>
+    </div>
 
     <div class="scrollBox">
       <table class="table">
@@ -1057,7 +1063,15 @@ button#btnAdminsLoadRetoursS,
     </div>
   </div>
 
-           <div id="toastAdminsRetours" class="toast"></div>
+  <div class="card">
+    <div class="headRow">
+      <div class="h2">🧾 Retours</div>
+    </div>
+    <div class="status" id="retoursAgentsHint">Charge une période puis “Charger”.</div>
+  </div>
+</div>
+
+          <div id="toastAdminsRetours" class="toast"></div>
           <div class="divider"></div>
           <!-- ===== RETOURS : VUE SYNTHÈSE PAR PÉRIODE ===== -->
 <div class="divider"></div>
@@ -1102,12 +1116,12 @@ button#btnAdminsLoadRetoursS,
             <table class="table">
               <thead>
   <tr>
-    <th style="width:32%;">Missions du mois</th>
-    <th style="width:18%;">Fait par</th>
-    <th style="width:8%; text-align:center;">Nombre</th>
-    <th style="width:18%;">Justificatifs</th>
-    <th style="width:14%;">Date</th>
-    <th style="width:10%; text-align:center;">Validation responsable</th>
+    <th>Période</th>
+    <th>Agent</th>
+    <th>Mission</th>
+    <th>Déclaration</th>
+    <th>Justificatif</th>
+      <th style="width:80px;text-align:center;">Validation</th>
   </tr>
 </thead>
 <tbody id="adminsRetoursTable">
