@@ -663,13 +663,34 @@ option.periode-future {
 .badge-validate.is-off{ background: rgba(255,255,255,.10); }
 .badge-validate.is-off svg path{ fill: rgba(255,255,255,.35); }
 
-  /* Bouton Charger - Retours : largeur comme les autres boutons */
-#btnAdminsLoadRetours {
+ /* Retours : forcer le bouton Charger à taille contenu (même si flex ou width:100% ailleurs) */
+#btnAdminsLoadRetours,
+button#btnAdminsLoadRetours,
+#btnAdminsLoadRetours.btn,
+#btnAdminsLoadRetours.btn.primary{
   width: auto !important;
-  min-width: unset !important;
-  padding: 6px 14px;
-  white-space: nowrap;
+  max-width: fit-content !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  padding: 6px 14px !important;
+  white-space: nowrap !important;
 }
+
+/* Si ton ID a une variante (au cas où) */
+#btnAdminsLoadRetoursS,
+button#btnAdminsLoadRetoursS,
+#btnAdminsLoadRetoursS.btn,
+#btnAdminsLoadRetoursS.btn.primary{
+  width: auto !important;
+  max-width: fit-content !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  padding: 6px 14px !important;
+  white-space: nowrap !important;
+}
+
     
   </style>
 </head>
