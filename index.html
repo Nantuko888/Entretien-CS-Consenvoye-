@@ -2226,18 +2226,69 @@ if(!period_id){
     
     if(!items.length){
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-    }else{
-      tb.innerHTML = items.map(it=>`
-<tr>
-  <td>${esc(it.mission)}</td>
-  <td>${esc(it.agent)}</td>
-  <td style="text-align:center;">${esc(it.declaration)}</td>
-  <td>${esc(it.justificatif || "")}</td>
-  <td>${esc(it.period_id)}</td>
-  <td style="text-align:center;">—</td>
-</tr>
-`).join("");
+    } else {
+
+  // --- 1) helpers ---
+  const labelForMission = (mid) => {
+    const k = String(mid ?? "");
+    return (window.STATE && STATE.catalogById && STATE.catalogById[k]) ? STATE.catalogById[k] : k;
+  };
+
+  const tsValue = (it) => {
+    // on prend le ts si présent, sinon on retombe sur period_id (moins précis)
+    return it.ts || it.validated_ts || it.date || it._ts || it.period_id || "";
+  };
+
+  // --- 2) group by (mission_id + agent) ---
+  const map = new Map();
+  for (const it of items) {
+
+    // IMPORTANT: on préfère mission_id si ton API l’a, sinon mission
+    const mid = (it.mission_id != null) ? it.mission_id : it.mission;
+    const agent = it.agent || it.nom || it.name || "";
+
+    const key = `${String(mid)}||${String(agent)}`;
+    let r = map.get(key);
+    if (!r) {
+      r = {
+        mid,
+        agent,
+        count: 0,
+        declaration: "",
+        justificatif: "",
+        ts: ""
+      };
+      map.set(key, r);
     }
+
+    r.count += 1;
+
+    // on garde la "dernière" saisie (si ts existe)
+    const curTs = String(tsValue(it));
+    if (!r.ts || (curTs && curTs > r.ts)) {
+      r.ts = curTs;
+      r.declaration = it.declaration || "";
+      r.justificatif = it.justificatif || "";
+    }
+  }
+
+  // --- 3) build rows ---
+  const rows = Array.from(map.values())
+    .sort((a,b) => (labelForMission(a.mid)).localeCompare(labelForMission(b.mid), "fr", {sensitivity:"base"}) 
+                || (a.agent||"").localeCompare(b.agent||"", "fr", {sensitivity:"base"}));
+
+  tb.innerHTML = rows.map(r => `
+    <tr>
+      <td>${esc(labelForMission(r.mid))}</td>
+      <td>${esc(r.agent)}</td>
+      <td style="text-align:center;">${esc(String(r.count))}</td>
+      <td>${esc(r.justificatif)}</td>
+      <td style="white-space:nowrap;">${esc(r.ts)}</td>
+      <td style="text-align:center;">—</td>
+    </tr>
+  `).join("");
+}
+
     showToast("toastAdminsRetours","Chargé ✅",true);
   }catch(_){
     showToast("toastAdminsRetours","Erreur réseau.",false);
