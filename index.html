@@ -2228,15 +2228,15 @@ if(!period_id){
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
     }else{
       tb.innerHTML = items.map(it=>`
-        <tr>
-          <td>${esc(it.period_id)}</td>
-          <td>${esc(it.agent)}</td>
-          <td>${esc(it.mission)}</td>
-          <td>${esc(it.declaration)}</td>
-          <td>${esc(it.justificatif)}</td>
-          <td>${esc(it.remark||"")}</td>
-        </tr>
-      `).join("");
+<tr>
+  <td>${esc(it.mission)}</td>
+  <td>${esc(it.agent)}</td>
+  <td style="text-align:center;">${esc(it.declaration)}</td>
+  <td>${esc(it.justificatif || "")}</td>
+  <td>${esc(it.period_id)}</td>
+  <td style="text-align:center;">—</td>
+</tr>
+`).join("");
     }
     showToast("toastAdminsRetours","Chargé ✅",true);
   }catch(_){
