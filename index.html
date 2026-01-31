@@ -1046,22 +1046,51 @@ button#btnAdminsLoadRetoursS,
 </div>
 </div>
 
-        <!-- Agents du mois (à droite) -->
-<div class="twoColBlock" id="retoursAgentsWrap" style="display:none; margin-top:10px;">
+<div class="twoColBlock" id="retoursTwoCol">
+
+  <!-- GAUCHE : RETOURS -->
   <div class="card">
+    <div class="headRow">
+      <div class="h2">📌 Retours (Non fait / Partiel)</div>
+    </div>
+
+    <div class="row align-center" style="gap:12px; margin-top:10px;">
+      <select id="adminsRetoursPeriodSel" class="periodeSelect" style="max-width:240px;">
+        <option value="">— Choisir période —</option>
+      </select>
+
+      <button
+        class="btn primary"
+        id="btnAdminsLoadRetours"
+        onclick="adminsLoadRetours(event)"
+        style="width:auto; padding:6px 14px; white-space:nowrap;">
+        Charger
+      </button>
+
+      <span id="retoursValidBadge"></span>
+    </div>
+  </div>
+
+  <!-- DROITE : AGENTS DU MOIS -->
+  <div class="card" id="retoursAgentsWrap" style="display:none;">
     <div class="headRow">
       <div class="h2">👥 Agents du mois</div>
     </div>
 
     <div class="scrollBox">
       <table class="table">
-        <thead><tr><th>Nom</th></tr></thead>
+        <thead>
+          <tr><th>Nom</th></tr>
+        </thead>
         <tbody id="retoursAgentsTable">
           <tr><td class="ghost">—</td></tr>
         </tbody>
       </table>
     </div>
   </div>
+
+</div>
+
 
   <div class="card">
     <div class="headRow">
