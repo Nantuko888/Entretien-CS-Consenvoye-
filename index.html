@@ -2194,25 +2194,6 @@ async function adminsLoadRetoursValidations(){
     populateRetoursPeriodes([]);
   }
 }
-
-  function renderRetoursAgents_(items){
-  const wrap = $("retoursAgentsWrap");
-  const tb = $("retoursAgentsTable");
-  if(!wrap || !tb) return;
-
-  const names = [...new Set(
-    (items || [])
-      .map(it => String(it.agent || "").trim())
-      .filter(Boolean)
-  )].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
-
-  // Affiche le bloc uniquement si on a des lignes
-  wrap.style.display = names.length ? "grid" : "none";
-
-  tb.innerHTML = names.length
-    ? names.map(n=>`<tr><td>${esc(n)}</td></tr>`).join("")
-    : `<tr><td class="ghost">—</td></tr>`;
-}
   
 async function adminsLoadRetours(ev){
   
@@ -2242,7 +2223,6 @@ if(!period_id){
     }
     const tb = $("adminsRetoursTable");
     const items = res.items || [];
-    renderRetoursAgents_(items);
     
     if(!items.length){
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
