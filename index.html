@@ -2308,14 +2308,6 @@ for (const mid of missionIds) {
     `);
   });
 }
-try {
-  tb.innerHTML = out.join("");
-  showToast("toastAdminsRetours", "Chargé ✅", true);
-} catch (_) {
-  showToast("toastAdminsRetours", "Erreur réseau.", false);
-} finally {
-  setLoading(btn, false);
-}
 
 }
   function populateRetoursPeriodes(retours = []) {
