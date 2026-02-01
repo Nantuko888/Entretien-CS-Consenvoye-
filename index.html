@@ -2233,12 +2233,7 @@ console.log("retours:", items.length);
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
     } else {
 
-  // --- 1) helpers ---
-  const labelForMission = (mid) => {
-    const k = String(mid ?? "");
-    return (window.STATE && STATE.catalogById && STATE.catalogById[k]) ? STATE.catalogById[k] : k;
-  };
-
+ 
   const tsValue = (it) => {
     // on prend le ts si présent, sinon on retombe sur period_id (moins précis)
     return it.ts || it.validated_ts || it.date || it._ts || it.period_id || "";
