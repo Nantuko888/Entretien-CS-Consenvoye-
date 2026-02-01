@@ -2194,6 +2194,19 @@ async function adminsLoadRetoursValidations(){
     populateRetoursPeriodes([]);
   }
 }
+
+function formatTsFR(ts){
+  if(!ts) return "—";
+  // ts peut être une Date, un ISO, ou un texte
+  const d = (ts instanceof Date) ? ts : new Date(ts);
+  if(isNaN(d)) return String(ts); // si pas parsable, on affiche brut
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit"
+  }).format(d);
+}
+
   
 async function adminsLoadRetours(ev){
   
@@ -2288,6 +2301,19 @@ for (const m of missions) {
     continue;
   }
 
+  const fmtDT = (ts) => {
+  if (!ts) return "";
+  const d = new Date(ts);
+  if (isNaN(d)) return String(ts);
+  // jj/mm/aaaa hh:mm
+  return d.toLocaleString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).replace(",", "");
+};
   rows.forEach((r, i) => {
     out.push(`
       <tr>
@@ -2295,7 +2321,7 @@ for (const m of missions) {
         <td>${esc(r.agent)}</td>
         <td class="center">${r.count}</td>
         <td>${esc(r.justificatif || "—")}</td>
-        <td class="ghost">${esc(period_id)}</td>
+        <td class="ghost">${esc(fmtDT(r.ts) || period_id)}</td>
         <td class="center">—</td>
       </tr>
     `);
