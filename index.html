@@ -2244,54 +2244,80 @@ console.log("retours:", items.length);
     return it.ts || it.validated_ts || it.date || it._ts || it.period_id || "";
   };
 
-  // --- 2) group by (mission_id + agent) ---
-  const map = new Map();
-  for (const it of items) {
+ // ===== rendu basé sur "missions du mois" =====
 
-    // IMPORTANT: on préfère mission_id si ton API l’a, sinon mission
-    const mid = (it.mission_id != null) ? it.mission_id : it.mission;
-    const agent = it.agent || it.nom || it.name || "";
+// helper : label mission
+const labelForMission = (mid) => {
+  const k = String(mid ?? "");
+  return (window.STATE && STATE.catalogById && STATE.catalogById[k]) ? STATE.catalogById[k] : k;
+};
 
-    const key = `${String(mid)}||${String(agent)}`;
-    let r = map.get(key);
-    if (!r) {
-      r = {
-        mid,
-        agent,
-        count: 0,
-        declaration: "",
-        justificatif: "",
-        ts: ""
-      };
-      map.set(key, r);
-    }
+// index retours par mission+agent (pour compter / justificatif / date)
+const idx = new Map(); // key = mid||agent => {mid, agent, count, justificatif, ts}
+const tsValue = (it) => String(it.ts || it.validated_ts || it.date || it._ts || "");
 
-    r.count += 1;
+for (const it of items) {
+  const mid = (it.mission_id != null) ? it.mission_id : it.mission;
+  const agent = it.agent || it.nom || it.name || "";
+  const key = `${String(mid)}||${String(agent)}`;
 
-    // on garde la "dernière" saisie (si ts existe)
-    const curTs = String(tsValue(it));
-    if (!r.ts || (curTs && curTs > r.ts)) {
-      r.ts = curTs;
-      r.declaration = it.declaration || "";
-      r.justificatif = it.justificatif || "";
-    }
+  let r = idx.get(key);
+  if (!r) {
+    r = { mid, agent, count: 0, justificatif: "", ts: "" };
+    idx.set(key, r);
+  }
+  r.count += 1;
+
+  const just = (it.justificatif || it.remark || it.remarque || "").trim();
+  if (just) r.justificatif = just;
+
+  const curTs = tsValue(it);
+  if (!r.ts || (curTs && curTs > r.ts)) r.ts = curTs;
+}
+
+// construit les lignes : 1 mission du mois + lignes supplémentaires (agent) ; mission vide sur les lignes suivantes
+const out = [];
+const missionIds = (missions || []).map(m => m.mission_id || m.id || m.mid || m).filter(Boolean);
+
+for (const mid of missionIds) {
+  // récupère tous les agents ayant déclaré cette mission
+  const list = [];
+  for (const r of idx.values()) {
+    if (String(r.mid) === String(mid)) list.push(r);
+  }
+  list.sort((a,b)=> String(a.agent).localeCompare(String(b.agent), "fr", {sensitivity:"base"}));
+
+  // personne -> 1 ligne avec tirets
+  if (!list.length) {
+    out.push(`
+      <tr>
+        <td>${esc(labelForMission(mid))}</td>
+        <td class="ghost">—</td>
+        <td class="center ghost">—</td>
+        <td class="ghost">—</td>
+        <td class="ghost">—</td>
+        <td class="center"><span class="badge-validate is-off"><svg viewBox="0 0 24 24"><path d="M9.2 16.2L4.9 12l-1.4 1.4 5.7 5.7 11.3-11.3-1.4-1.4z"/></svg></span></td>
+      </tr>
+    `);
+    continue;
   }
 
-  // --- 3) build rows ---
-  const rows = Array.from(map.values())
-    .sort((a,b) => (labelForMission(a.mid)).localeCompare(labelForMission(b.mid), "fr", {sensitivity:"base"}) 
-                || (a.agent||"").localeCompare(b.agent||"", "fr", {sensitivity:"base"}));
+  list.forEach((r, i) => {
+    out.push(`
+      <tr>
+        <td>${i===0 ? esc(labelForMission(mid)) : ""}</td>
+        <td>${esc(r.agent)}</td>
+        <td class="center">${esc(String(r.count))}</td>
+        <td>${esc(r.justificatif || "—")}</td>
+        <td class="ghost" style="white-space:nowrap;">${esc(r.ts || "—")}</td>
+        <td class="center"><span class="badge-validate is-off"><svg viewBox="0 0 24 24"><path d="M9.2 16.2L4.9 12.0l-1.4 1.4 5.7 5.7 11.3-11.3-1.4-1.4z"/></svg></span></td>
+      </tr>
+    `);
+  });
+}
 
-  tb.innerHTML = rows.map(r => `
-    <tr>
-      <td>${esc(labelForMission(r.mid))}</td>
-      <td>${esc(r.agent)}</td>
-      <td style="text-align:center;">${esc(String(r.count))}</td>
-      <td>${esc(r.justificatif)}</td>
-      <td style="white-space:nowrap;">${esc(r.ts)}</td>
-      <td style="text-align:center;">—</td>
-    </tr>
-  `).join("");
+tb.innerHTML = out.join("");
+
 }
 
     showToast("toastAdminsRetours","Chargé ✅",true);
