@@ -2236,6 +2236,7 @@ if(!period_id){
     }
     const tb = $("adminsRetoursTable");
     const items = res.items || [];
+    console.log("items[0] =", items[0]);
 
     const month = await apiCall("adminGetMonthMissions", { admin_code: STATE.admins.code, period_id });
 const missions = (month && month.missionsOn) ? month.missionsOn : [];
