@@ -2315,6 +2315,8 @@ for (const m of missions) {
     minute: "2-digit"
   }).replace(",", "");
 };
+  console.log("DEBUG r.ts:", rows.map(r => r.ts));
+
   rows.forEach((r, i) => {
     out.push(`
       <tr>
