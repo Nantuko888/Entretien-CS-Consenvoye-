@@ -2233,65 +2233,77 @@ console.log("retours:", items.length);
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
     } else {
 
-  // --- 1) helpers ---
-  const labelForMission = (mid) => {
-    const k = String(mid ?? "");
-    return (window.STATE && STATE.catalogById && STATE.catalogById[k]) ? STATE.catalogById[k] : k;
-  };
+ // 1) récupère les missions actives du mois (source officielle)
+const month = await apiCall("adminGetMonthMissions", {
+  admin_code: STATE.admins.code,
+  period_id
+});
+const missions = (month && month.missionsOn) ? month.missionsOn : [];
 
-  const tsValue = (it) => {
-    // on prend le ts si présent, sinon on retombe sur period_id (moins précis)
-    return it.ts || it.validated_ts || it.date || it._ts || it.period_id || "";
-  };
+// 2) regroupe les retours par mission_id + agent
+const byMissionAgent = new Map(); // key = mid||agent -> {mid, agent, count, justificatif}
+for (const it of items) {
+  const mid = String(it.mission_id || "").trim();
+  const agent = String(it.agent || "").trim();
+  if(!mid || !agent) continue;
 
-  // --- 2) group by (mission_id + agent) ---
-  const map = new Map();
-  for (const it of items) {
+  const key = `${mid}||${agent}`;
+  let r = byMissionAgent.get(key);
+  if(!r){
+    r = { mid, agent, count:0, justificatif:"" };
+    byMissionAgent.set(key, r);
+  }
+  r.count += 1;
+  if (it.justificatif && String(it.justificatif).trim()) {
+    r.justificatif = String(it.justificatif).trim(); // dernier justificatif non vide
+  }
+}
 
-    // IMPORTANT: on préfère mission_id si ton API l’a, sinon mission
-    const mid = (it.mission_id != null) ? it.mission_id : it.mission;
-    const agent = it.agent || it.nom || it.name || "";
+// 3) rend : 1 mission = 1 bloc ; mission écrite 1 fois, puis vide dessous
+const out = [];
 
-    const key = `${String(mid)}||${String(agent)}`;
-    let r = map.get(key);
-    if (!r) {
-      r = {
-        mid,
-        agent,
-        count: 0,
-        declaration: "",
-        justificatif: "",
-        ts: ""
-      };
-      map.set(key, r);
-    }
+for (const m of missions) {
+  const mid = String(m.mission_id || "").trim();
+  const lib = String(m.libelle || mid).trim();
 
-    r.count += 1;
+  // récupère les agents pour cette mission
+  const rows = [];
+  for (const r of byMissionAgent.values()) {
+    if (String(r.mid) === mid) rows.push(r);
+  }
+  rows.sort((a,b)=> a.agent.localeCompare(b.agent, "fr", {sensitivity:"base"}));
 
-    // on garde la "dernière" saisie (si ts existe)
-    const curTs = String(tsValue(it));
-    if (!r.ts || (curTs && curTs > r.ts)) {
-      r.ts = curTs;
-      r.declaration = it.declaration || "";
-      r.justificatif = it.justificatif || "";
-    }
+  if (!rows.length) {
+    // mission du mois sans retour => une ligne avec tirets
+    out.push(`
+      <tr>
+        <td>${esc(lib)}</td>
+        <td class="ghost">—</td>
+        <td class="center ghost">—</td>
+        <td class="ghost">—</td>
+        <td class="ghost">${esc(period_id)}</td>
+        <td class="center ghost">—</td>
+      </tr>
+    `);
+    continue;
   }
 
-  // --- 3) build rows ---
-  const rows = Array.from(map.values())
-    .sort((a,b) => (labelForMission(a.mid)).localeCompare(labelForMission(b.mid), "fr", {sensitivity:"base"}) 
-                || (a.agent||"").localeCompare(b.agent||"", "fr", {sensitivity:"base"}));
+  rows.forEach((r, i) => {
+    out.push(`
+      <tr>
+        <td>${i === 0 ? esc(lib) : ""}</td>
+        <td>${esc(r.agent)}</td>
+        <td class="center">${r.count}</td>
+        <td>${esc(r.justificatif || "—")}</td>
+        <td class="ghost">${esc(period_id)}</td>
+        <td class="center">—</td>
+      </tr>
+    `);
+  });
+}
 
-  tb.innerHTML = rows.map(r => `
-    <tr>
-      <td>${esc(labelForMission(r.mid))}</td>
-      <td>${esc(r.agent)}</td>
-      <td style="text-align:center;">${esc(String(r.count))}</td>
-      <td>${esc(r.justificatif)}</td>
-      <td style="white-space:nowrap;">${esc(r.ts)}</td>
-      <td style="text-align:center;">—</td>
-    </tr>
-  `).join("");
+tb.innerHTML = out.join("");
+
 }
 
     showToast("toastAdminsRetours","Chargé ✅",true);
