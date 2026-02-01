@@ -2264,10 +2264,11 @@ for (const it of items) {
   const key = `${mid}||${agent}`;
   let r = byMissionAgent.get(key);
   if(!r){
-    r = { mid, agent, count:0, justificatif:"" };
+    r = { mid, agent, count:0, justificatif:"", ts:0 };
     byMissionAgent.set(key, r);
   }
   r.count += 1;
+  r.ts = Math.max(r.ts || 0, Number(it.ts || 0));
   if (it.justificatif && String(it.justificatif).trim()) {
     r.justificatif = String(it.justificatif).trim(); // dernier justificatif non vide
   }
@@ -2315,9 +2316,7 @@ for (const m of missions) {
     minute: "2-digit"
   }).replace(",", "");
 };
-  console.log("DEBUG r.ts:", rows.map(r => r.ts));
-
-  rows.forEach((r, i) => {
+    rows.forEach((r, i) => {
     out.push(`
       <tr>
         <td>${i === 0 ? esc(lib) : ""}</td>
