@@ -2587,6 +2587,7 @@ function toPeriodYM(period_id, label){
 async function agentsLoadPeriod(ev){
   hideToast("toastAgentsLoad");
   if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.",false); return; }
+
   const btn = ev?.target || $("btnAgentsLoad");
   const period_id = $("agentsPeriodsSel").value;
   if(!period_id){ showToast("toastAgentsLoad","Choisis une période.",false); return; }
@@ -2595,7 +2596,7 @@ async function agentsLoadPeriod(ev){
   try{
     const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
     if(!res || !res.ok){
-      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); 
+      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false);
       return;
     }
 
@@ -2607,7 +2608,7 @@ async function agentsLoadPeriod(ev){
       is_period_open: !!res.is_period_open
     };
 
-    // Verrouillage UI selon ouverture
+    // UI lock/unlock
     setAgentPeriodLocked(!STATE.agentWork.is_period_open);
 
     $("boxAgentsAfterLoad").style.display = "";
