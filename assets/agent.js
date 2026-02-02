@@ -173,22 +173,18 @@ async function agentsSave(ev) {
   const btn = ev?.target;
   setLoading(btn, true);
 
-  const data = {
-    agent: STATE.agents.id,
-    period: STATE.agents.activePeriod.id,
+  const items = STATE.agents.missions.map(m => ({
+    mission_id: m.id,
+    declaration: $("dec_" + m.id).value,
+    justificatif: $("just_" + m.id).value.trim()
+  }));
+
+  const res = await apiCall("agentSaveDeclarations", {
+    agent_id: STATE.agents.id,
+    period_id: STATE.agents.activePeriod.id,
     remark: $("agentsRemark").value.trim(),
-    missions: []
-  };
-
-  STATE.agents.missions.forEach(m => {
-    data.missions.push({
-      id: m.id,
-      dec: $("dec_" + m.id).value,
-      justif: $("just_" + m.id).value.trim()
-    });
+    items
   });
-
-  const res = await apiCall("agentsSave", data);
 
   if (!res.ok) {
     showToast("toastAgentsSave", res.message || "Erreur", false);
@@ -199,7 +195,6 @@ async function agentsSave(ev) {
   showToast("toastAgentsSave", "Enregistré", true);
   setLoading(btn, false);
 }
-
 
 /* ===============================
    AGENT — VALIDATION
