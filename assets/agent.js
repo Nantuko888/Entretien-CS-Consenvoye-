@@ -54,6 +54,8 @@ async function agentsLogin(ev) {
 
   setLoading(btn, false);
 }
+
+
 /* ===============================
    AGENT — PÉRIODES
 ================================ */
@@ -108,6 +110,8 @@ async function agentsLoadPeriod(ev) {
   showToast("toastAgentsLoad", "Période chargée", true);
   setLoading(btn, false);
 }
+
+
 /* ===============================
    AGENT — AFFICHAGE DU TRAVAIL
 ================================ */
@@ -157,6 +161,8 @@ function agentsRenderWork() {
   const resp = STATE.agents.team.find(t => t.resp);
   $("agentsResponsable").textContent = resp ? `Responsable : ${resp.name}` : "Aucun responsable";
 }
+
+
 /* ===============================
    AGENT — SAUVEGARDE
 ================================ */
@@ -191,6 +197,8 @@ async function agentsSave(ev) {
   showToast("toastAgentsSave", "Enregistré", true);
   setLoading(btn, false);
 }
+
+
 /* ===============================
    AGENT — VALIDATION
 ================================ */
@@ -212,34 +220,16 @@ async function agentsValidate(ev) {
 
   showToast("toastAgentsSave", "Validé ✔️", true);
 
-  // Affiche l’overlay "Bravo"
   $("doneOverlay").classList.add("show");
   setTimeout(() => $("doneOverlay").classList.remove("show"), 2000);
 
   setLoading(btn, false);
 }
 
-// ===============================
-// AGENT – SAUVEGARDE PARTIELLE
-// ===============================
 
-$("#btnAgentsSave").addEventListener("click", async () => {
-    try {
-        // Récupération des missions actuelles
-        const missions = STATE.agents.missions || [];
-        const remark = $("#agentsRemark")?.value || "";
+/* ===============================
+   AGENT — LIENS BOUTONS
+================================ */
 
-        // Construction du payload
-        const payload = {
-            missions,
-            remark
-        };
-
-        // Envoi au serveur (ou localStorage si hors-ligne)
-        await adapter.saveAgentWork(payload);
-
-        showToast("toastAgentsSave", "Enregistrement effectué", true);
-    } catch (e) {
-        showToast("toastAgentsSave", "Erreur lors de l'enregistrement", false);
-    }
-});
+$("#btnAgentsSave").addEventListener("click", agentsSave);
+$("#btnAgentsValidate").addEventListener("click", agentsValidate);
