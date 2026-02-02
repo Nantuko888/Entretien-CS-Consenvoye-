@@ -51,6 +51,8 @@ async function agentsLogin(ev) {
   showToast("toastAgentsLogin", "Connecté", true);
 
   await agentsLoadPeriods();
+   console.log("LOAD PERIOD FUNCTION EXECUTED");
+
 
   setLoading(btn, false);
 }
