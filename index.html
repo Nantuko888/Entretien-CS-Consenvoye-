@@ -2601,6 +2601,16 @@ async function agentsLoadPeriod(ev){
     }
 
     // 🔥 INITIALISATION CORRECTE
+STATE.agentWork = {
+  period_id,
+  missions: res.missions || [],
+  is_responsable: !!res.is_responsable,
+  is_period_open: !!res.is_period_open
+};
+
+console.log("DEBUG agentWork =", STATE.agentWork);
+
+    // 🔥 INITIALISATION CORRECTE
     STATE.agentWork = {
       period_id,
       missions: res.missions || [],
