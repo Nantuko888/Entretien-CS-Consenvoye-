@@ -2595,29 +2595,34 @@ async function agentsLoadPeriod(ev){
   try{
     const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
     if(!res || !res.ok){
-      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
+      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); 
+      return;
     }
-    // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
-STATE.agentWork.is_period_open = !!res.is_period_open;
-STATE.agentWork.is_responsable = !!res.is_responsable;
 
-setAgentPeriodLocked(!STATE.agentWork.is_period_open);
-    STATE.agentWork.period_id = period_id;
-    STATE.agentWork.missions = res.missions || [];
-    STATE.agentWork.is_responsable = !!res.is_responsable;
+    // 🔥 INITIALISATION CORRECTE
+    STATE.agentWork = {
+      period_id,
+      missions: res.missions || [],
+      is_responsable: !!res.is_responsable,
+      is_period_open: !!res.is_period_open
+    };
+
+    // Verrouillage UI selon ouverture
+    setAgentPeriodLocked(!STATE.agentWork.is_period_open);
+
     $("boxAgentsAfterLoad").style.display = "";
 
-    setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
-
+    setPill(
+      "pillAgentsPeriod",
+      "Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id),
+      "ok"
+    );
 
     renderAgentMissions(res.missions || []);
     renderAgentTeam(res.group || [], res.responsable || null);
-    setAgentPeriodLocked(!STATE.agentWork.is_period_open);
-    console.log("TEAM GROUP =", res.group);
-console.log("RESPONSABLE =", res.responsable);
-    $("boxAgentsAfterLoad").style.display = "";
 
     showToast("toastAgentsLoad","Chargé ✅",true);
+
   }catch(_){
     showToast("toastAgentsLoad","Erreur réseau.",false);
   }finally{
