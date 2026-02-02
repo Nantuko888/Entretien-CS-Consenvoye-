@@ -2870,23 +2870,30 @@ async function agentsValidate(ev){
   const btn = ev?.target || $("btnAgentsValidate");
   const period_id = STATE.agentWork.period_id;
   if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
-
-  // 1) Vérif locale : toutes les missions doivent être remplies
-  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
-    const mid = sel.getAttribute("data-mid");
-    const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
-    return {
-      mission_id: mid,
-      declaration: sel.value,
-      justificatif: just ? just.value.trim() : ""
-    };
-  });
-
-  if(!decs.length){
-    showToast("toastAgentsSave","Aucune mission à valider.",false);
-    return;
+// 1) Vérif locale : missions
+if (STATE.agentWork?.is_responsable) {
+  // RESPONSABLE → toutes les missions doivent être remplies
+  for (const d of decs) {
+    if (!d.declaration) {
+      showToast("toastAgentsSave", "Toutes les missions doivent être renseignées pour valider.", false);
+      return;
+    }
+    if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
+      showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
+      return;
+    }
   }
+} else {
+  // AGENT → validation partielle autorisée
+  for (const d of decs) {
+    if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
+      showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
+      return;
+    }
+  }
+}
 
+  
   // Si l’agent est responsable → toutes les missions doivent être remplies
 if (STATE.agentWork?.is_responsable) {
   for (const d of decs) {
