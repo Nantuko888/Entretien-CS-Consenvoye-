@@ -2887,11 +2887,17 @@ async function agentsValidate(ev){
     return;
   }
 
-  for(const d of decs){
-    if(!d.declaration){
-      showToast("toastAgentsSave","Tu dois renseigner toutes les missions avant de valider.",false);
+  // Si l’agent est responsable → toutes les missions doivent être remplies
+if (STATE.agentWork?.is_responsable) {
+  for (const d of decs) {
+    if (!d.declaration) {
+      showToast("toastAgentsSave", "Toutes les missions doivent être renseignées pour valider.", false);
       return;
     }
+  }
+}
+// Si l’agent n’est PAS responsable → validation partielle autorisée
+
     if((d.declaration==="Partiel" || d.declaration==="Non fait") && !d.justificatif){
       showToast("toastAgentsSave","Justificatif obligatoire si Partiel / Non fait.",false);
       return;
