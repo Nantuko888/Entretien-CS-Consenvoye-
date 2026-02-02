@@ -2585,6 +2585,7 @@ function toPeriodYM(period_id, label){
 
   
 async function agentsLoadPeriod(ev){
+  console.log("LOAD PERIOD FUNCTION EXECUTED");
   hideToast("toastAgentsLoad");
   if(!STATE.agents.ok){
     showToast("toastAgentsLoad","Non connecté.",false);
