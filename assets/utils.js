@@ -137,14 +137,15 @@ function softRefresh(ev) {
 ================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
-  bindEnter("agentCode", agentsLogin);
-  bindEnter("adminsCode", adminsLogin);
+
+  // 🔥 CORRECTIONS CRITIQUES 🔥
+  bindEnter("agentsCode", agentsLogin);  // OK
+  bindEnter("adminsCode", adminsLogin);  // OK
 
   bindEnter("adminsNewAgentName", adminsAddAgent);
   bindEnter("adminsNewAgentCode", adminsAddAgent);
   bindEnter("adminsNewMissionLib", adminsAddMission);
 
-  bindEnter("periodeSel", () => $("btnLoadPeriod")?.click());
-  bindEnter("btnSaveActiveMissions", () => $("btnSaveActiveMissions")?.click(), { ctrl: true });
+  // 🔥 Correction : IDs cohérents avec ton HTML
+  bindEnter("agentsPeriodsSel", () => $("btnAgentsLoad")?.click());
 });
-
