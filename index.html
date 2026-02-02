@@ -2586,31 +2586,31 @@ function toPeriodYM(period_id, label){
   
 async function agentsLoadPeriod(ev){
   hideToast("toastAgentsLoad");
-  if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.",false); return; }
+  if(!STATE.agents.ok){
+    showToast("toastAgentsLoad","Non connecté.",false);
+    return;
+  }
 
   const btn = ev?.target || $("btnAgentsLoad");
   const period_id = $("agentsPeriodsSel").value;
-  if(!period_id){ showToast("toastAgentsLoad","Choisis une période.",false); return; }
+  if(!period_id){
+    showToast("toastAgentsLoad","Choisis une période.",false);
+    return;
+  }
 
   setLoading(btn,true);
   try{
-    const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
+    const res = await apiCall("agentLoadPeriod", {
+      agent_id: STATE.agents.agent_id,
+      period_id
+    });
+
     if(!res || !res.ok){
-      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false);
+      showToast("toastAgentsLoad",(res && res.message) || "Erreur", false);
       return;
     }
 
-    // 🔥 INITIALISATION CORRECTE
-STATE.agentWork = {
-  period_id,
-  missions: res.missions || [],
-  is_responsable: !!res.is_responsable,
-  is_period_open: !!res.is_period_open
-};
-
-console.log("DEBUG agentWork =", STATE.agentWork);
-
-    // 🔥 INITIALISATION CORRECTE
+    // 🔥 INITIALISATION CORRECTE (une seule fois)
     STATE.agentWork = {
       period_id,
       missions: res.missions || [],
@@ -2618,7 +2618,10 @@ console.log("DEBUG agentWork =", STATE.agentWork);
       is_period_open: !!res.is_period_open
     };
 
-    // UI lock/unlock
+    // 🔥 DEBUG : doit apparaître dans la console
+    console.log("DEBUG agentWork =", STATE.agentWork);
+
+    // 🔒 UI lock/unlock selon ouverture
     setAgentPeriodLocked(!STATE.agentWork.is_period_open);
 
     $("boxAgentsAfterLoad").style.display = "";
