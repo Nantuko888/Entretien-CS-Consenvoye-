@@ -219,3 +219,27 @@ async function agentsValidate(ev) {
   setLoading(btn, false);
 }
 
+// ===============================
+// AGENT – SAUVEGARDE PARTIELLE
+// ===============================
+
+$("#btnAgentsSave").addEventListener("click", async () => {
+    try {
+        // Récupération des missions actuelles
+        const missions = STATE.agents.missions || [];
+        const remark = $("#agentsRemark")?.value || "";
+
+        // Construction du payload
+        const payload = {
+            missions,
+            remark
+        };
+
+        // Envoi au serveur (ou localStorage si hors-ligne)
+        await adapter.saveAgentWork(payload);
+
+        showToast("toastAgentsSave", "Enregistrement effectué", true);
+    } catch (e) {
+        showToast("toastAgentsSave", "Erreur lors de l'enregistrement", false);
+    }
+});
