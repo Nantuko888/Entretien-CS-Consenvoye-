@@ -2880,108 +2880,91 @@ if (decs.some(d => !d.declaration)) {
     setLoading(btn,false);
   }
 }
-async function agentsValidate(ev){
-  hideToast("toastAgentsSave"); // on réutilise le toast du bloc missions
-  if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
+async function agentsValidate(ev) {
+  hideToast("toastAgentsSave");
+  if (!STATE.agents.ok) {
+    showToast("toastAgentsSave", "Non connecté.", false);
+    return;
+  }
 
-  if(!confirm("Confirmer la validation ?\n\n⚠️ Après validation, la saisie sera verrouillée et ne pourra plus être modifiée.")){
-  return;
-}
+  if (!confirm("Confirmer la validation ?\n\n⚠️ Après validation, la saisie sera verrouillée et ne pourra plus être modifiée.")) {
+    return;
+  }
+
   const btn = ev?.target || $("btnAgentsValidate");
   const period_id = STATE.agentWork.period_id;
-  if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
-// 1) Vérif locale : missions
-if (STATE.agentWork?.is_responsable) {
-  // RESPONSABLE → toutes les missions doivent être remplies
+  if (!period_id) {
+    showToast("toastAgentsSave", "Charge une période.", false);
+    return;
+  }
+
+  // --- 1) Vérification locale des missions ---
+  const isResp = STATE.agentWork?.is_responsable;
+
   for (const d of decs) {
-    if (!d.declaration) {
+    const decl = d.declaration || "";
+
+    // RESPONSABLE → toutes les missions doivent être remplies
+    if (isResp && !decl) {
       showToast("toastAgentsSave", "Toutes les missions doivent être renseignées pour valider.", false);
       return;
     }
-    if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
+
+    // Dans tous les cas → justificatif obligatoire si Partiel / Non fait
+    if ((decl === "Partiel" || decl === "Non fait") && !d.justificatif) {
       showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
       return;
     }
   }
-} else {
-  // AGENT → validation partielle autorisée
-  for (const d of decs) {
-    if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
-      showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
-      return;
-    }
-  }
-}
 
-  
-  // Si l’agent est responsable → toutes les missions doivent être remplies
-if (STATE.agentWork?.is_responsable) {
-  for (const d of decs) {
-    if (!d.declaration) {
-      showToast("toastAgentsSave", "Toutes les missions doivent être renseignées pour valider.", false);
-      return;
-    }
-  }
-}
-// Si l’agent n’est PAS responsable → validation partielle autorisée
-
-    if((d.declaration==="Partiel" || d.declaration==="Non fait") && !d.justificatif){
-      showToast("toastAgentsSave","Justificatif obligatoire si Partiel / Non fait.",false);
-      return;
-    }
-  }
-
-  // 2) On enregistre d’abord (pour être sûr que tout est bien stocké)
-  // -> on appelle ta fonction existante agentsSave(ev)
+  // --- 2) Sauvegarde avant validation ---
   await agentsSave({ target: $("btnAgentsSave") });
 
-  // 3) Puis on demande le verrouillage au serveur
-  setLoading(btn,true);
-  try{
+  // --- 3) Validation serveur ---
+  setLoading(btn, true);
+  try {
     const res = await apiCall("agentValidatePeriod", {
       agent_id: STATE.agents.agent_id,
       period_id
     });
 
-    if(!res || !res.ok){
-      showToast("toastAgentsSave",(res&&res.message)||"Erreur validation",false);
+    if (!res || !res.ok) {
+      showToast("toastAgentsSave", (res && res.message) || "Erreur validation", false);
       return;
     }
 
-    showToast("toastAgentsSave","✅ Validé — saisie verrouillée",true);
-    // 🎉 Overlay uniquement à la validation si tout est "Fait"
-const allDone =
-  decs.length > 0 &&
-  decs.every(d => String(d.declaration || "").trim() === "Fait");
+    showToast("toastAgentsSave", "✅ Validé — saisie verrouillée", true);
 
-if (allDone) {
-  $("doneOverlay").classList.add("show");
-}
+    // Overlay si tout est "Fait"
+    const allDone = decs.length > 0 && decs.every(d => String(d.declaration || "").trim() === "Fait");
+    if (allDone) {
+      $("doneOverlay").classList.add("show");
+    }
 
-    // 4) UI en lecture seule
-    // désactive tous les selects + champs justificatif + remarque + boutons
-    $("boxAgentsMissions").querySelectorAll("select, input").forEach(el=> el.disabled = true);
+    // --- 4) Passage en lecture seule ---
+    $("boxAgentsMissions").querySelectorAll("select, input").forEach(el => el.disabled = true);
     $("agentsRemark").disabled = true;
     $("btnAgentsSave").disabled = true;
     $("btnAgentsValidate").disabled = true;
 
-  }catch(e){
-    showToast("toastAgentsSave","Erreur réseau.",false);
-  }finally{
-    setLoading(btn,false);
+  } catch (e) {
+    showToast("toastAgentsSave", "Erreur réseau.", false);
+  } finally {
+    setLoading(btn, false);
   }
 }
 
-/* double click / double tap pour fermer l’image */
-$("doneImg").addEventListener("dblclick", ()=> $("doneOverlay").classList.remove("show"));
-$("doneImg").addEventListener("touchend", (e)=>{
+// Fermeture overlay image
+$("doneImg").addEventListener("dblclick", () => $("doneOverlay").classList.remove("show"));
+$("doneImg").addEventListener("touchend", (e) => {
   const now = Date.now();
-  if(!window.__lastTap){ window.__lastTap = now; return; }
-  if(now - window.__lastTap < 350){
+  if (!window.__lastTap) { window.__lastTap = now; return; }
+  if (now - window.__lastTap < 350) {
     $("doneOverlay").classList.remove("show");
   }
   window.__lastTap = now;
 });
+
 
 /* ===============================
    EVENTS INIT
