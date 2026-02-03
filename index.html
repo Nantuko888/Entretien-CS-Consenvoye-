@@ -2848,9 +2848,6 @@ async function agentsSave(ev){
     justificatif: just ? just.value.trim() : ""
   };
 })
-.filter(d => (d.declaration ||"").trim()) ; // 🔥 LIGNE CLÉ
-
- 
 
   for (const d of decs) {
   if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
