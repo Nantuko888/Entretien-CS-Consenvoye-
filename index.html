@@ -2872,6 +2872,7 @@ async function agentsSave(ev){
       items: JSON.stringify(decs)
     });
     if(!res || !res.ok){
+      console.log("AGENTS_SAVE res =", res);
       showToast("toastAgentsSave",(res&&res.message)||"Erreur",false);
       return;
     }
