@@ -173,11 +173,13 @@ async function agentsSave(ev) {
   const btn = ev?.target;
   setLoading(btn, true);
 
-  const items = STATE.agents.missions.map(m => ({
-    mission_id: m.id,
-    declaration: $("dec_" + m.id).value,
-    justificatif: $("just_" + m.id).value.trim()
-  }));
+  const items = STATE.agents.missions
+    .map(m => ({
+      mission_id: m.id,
+      declaration: $("dec_" + m.id).value,
+      justificatif: $("just_" + m.id).value.trim()
+    }))
+    .filter(item => item.declaration); // ignore les missions vides
 
   const res = await apiCall("agentSaveDeclarations", {
     agent_id: STATE.agents.id,
