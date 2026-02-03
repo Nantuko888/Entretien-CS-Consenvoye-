@@ -2919,11 +2919,11 @@ async function agentsValidate(ev) {
     const decl = d.declaration || "";
 
     // RESPONSABLE → toutes les missions doivent être remplies
-    if (isResp && !decl) {
+    /*if (isResp && !decl) {
       showToast("toastAgentsSave", "Toutes les missions doivent être renseignées pour valider.", false);
       return;
     }
-
+  */
     // Justificatif obligatoire si Partiel / Non fait
     if ((decl === "Partiel" || decl === "Non fait") && !d.justificatif) {
       showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
