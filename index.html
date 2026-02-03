@@ -2834,15 +2834,22 @@ async function agentsSave(ev){
   if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
 
   // collecte déclarations
-  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
-    const mid = sel.getAttribute("data-mid");
-    const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
-    return {
-      mission_id: mid,
-      declaration: sel.value,
-      justificatif: just ? just.value.trim() : ""
-    };
-  });
+  const decs = Array.from(
+  $("boxAgentsMissions").querySelectorAll(".decSel")
+)
+.map(sel => {
+  const mid = sel.getAttribute("data-mid");
+  const just = $("boxAgentsMissions")
+    .querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
+
+  return {
+    mission_id: mid,
+    declaration: sel.value,
+    justificatif: just ? just.value.trim() : ""
+  };
+})
+.filter(d => d.declaration); // 🔥 LIGNE CLÉ
+
  
 
   for (const d of decs) {
