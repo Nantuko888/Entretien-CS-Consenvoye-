@@ -2898,9 +2898,20 @@ async function agentsValidate(ev) {
     return;
   }
 
-  // --- 1) Vérification locale des missions ---
+  // --- 1) Collecte des déclarations (même logique que agentsSave) ---
+  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel => {
+    const mid = sel.getAttribute("data-mid");
+    const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
+    return {
+      mission_id: mid,
+      declaration: sel.value,
+      justificatif: just ? just.value.trim() : ""
+    };
+  });
+
   const isResp = STATE.agentWork?.is_responsable;
 
+  // --- 2) Vérifications locales ---
   for (const d of decs) {
     const decl = d.declaration || "";
 
@@ -2910,17 +2921,17 @@ async function agentsValidate(ev) {
       return;
     }
 
-    // Dans tous les cas → justificatif obligatoire si Partiel / Non fait
+    // Justificatif obligatoire si Partiel / Non fait
     if ((decl === "Partiel" || decl === "Non fait") && !d.justificatif) {
       showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
       return;
     }
   }
 
-  // --- 2) Sauvegarde avant validation ---
+  // --- 3) Sauvegarde avant validation ---
   await agentsSave({ target: $("btnAgentsSave") });
 
-  // --- 3) Validation serveur ---
+  // --- 4) Validation serveur ---
   setLoading(btn, true);
   try {
     const res = await apiCall("agentValidatePeriod", {
@@ -2941,7 +2952,7 @@ async function agentsValidate(ev) {
       $("doneOverlay").classList.add("show");
     }
 
-    // --- 4) Passage en lecture seule ---
+    // --- 5) Passage en lecture seule ---
     $("boxAgentsMissions").querySelectorAll("select, input").forEach(el => el.disabled = true);
     $("agentsRemark").disabled = true;
     $("btnAgentsSave").disabled = true;
@@ -2964,7 +2975,6 @@ $("doneImg").addEventListener("touchend", (e) => {
   }
   window.__lastTap = now;
 });
-
 
 /* ===============================
    EVENTS INIT
