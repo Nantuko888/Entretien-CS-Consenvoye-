@@ -2831,32 +2831,35 @@ async function softRefresh(ev){
 
   
 async function agentsSave(ev) {
-  const btn = ev?.target;
-  setLoading(btn, true);
+  hideToast("toastAgentsSave");
 
-  const items = STATE.agents.missions
-    .map(m => ({
-      mission_id: m.id,
-      declaration: $("dec_" + m.id).value,
-      justificatif: $("just_" + m.id).value.trim()
-    }))
-    .filter(item => item.declaration); // 🔥 ignore les missions vides
-
-  // ✅ SEULE condition restante
-  if (items.length === 0) {
-    showToast(
-      "toastAgentsSave",
-      "Tu dois renseigner au moins une mission",
-      false
-    );
-    setLoading(btn, false);
+  if (!STATE.agents.ok) {
+    showToast("toastAgentsSave", "Agent non connecté", false);
     return;
   }
+
+  const btn = ev?.target || $("btnAgentsSave");
+  setLoading(btn, true);
+
+  // ⬇️ On ne garde QUE les missions renseignées
+  const items = STATE.agents.missions
+    .map(m => {
+      const dec = $("dec_" + m.id)?.value || "";
+      const just = $("just_" + m.id)?.value || "";
+      return {
+        mission_id: m.id,
+        declaration: dec.trim(),
+        justificatif: just.trim()
+      };
+    })
+    .filter(it => it.declaration !== ""); // 👈 missions vides autorisées
+
+  // ⛔ PLUS AUCUNE OBLIGATION DE TOUT REMPLIR
 
   const res = await apiCall("agentSaveDeclarations", {
     agent_id: STATE.agents.id,
     period_id: STATE.agents.activePeriod.id,
-    remark: $("agentsRemark").value.trim(),
+    remark: $("agentsRemark")?.value?.trim() || "",
     items
   });
 
@@ -2866,7 +2869,7 @@ async function agentsSave(ev) {
     return;
   }
 
-  showToast("toastAgentsSave", "Enregistré", true);
+  showToast("toastAgentsSave", "Enregistré ✅", true);
   setLoading(btn, false);
 }
 
