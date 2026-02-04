@@ -232,3 +232,4 @@ async function agentsValidate(ev) {
 
 $("#btnAgentsSave").addEventListener("click", agentsSave);
 $("#btnAgentsValidate").addEventListener("click", agentsValidate);
+$("btnAgentsLoad").addEventListener("click", agentsLoadPeriod);
