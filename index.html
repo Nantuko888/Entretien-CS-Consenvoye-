@@ -2830,61 +2830,46 @@ async function softRefresh(ev){
 }
 
   
-async function agentsSave(ev){
-  hideToast("toastAgentsSave");
-  if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
-  const btn = ev?.target || $("btnAgentsSave");
-  const period_id = STATE.agentWork.period_id;
-  if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
+async function agentsSave(ev) {
+  const btn = ev?.target;
+  setLoading(btn, true);
 
-  // collecte déclarations
-  const decs = Array.from(
-  $("boxAgentsMissions").querySelectorAll(".decSel")
-)
-.map(sel => {
-  const mid = sel.getAttribute("data-mid");
-  const just = $("boxAgentsMissions")
-    .querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
+  const items = STATE.agents.missions
+    .map(m => ({
+      mission_id: m.id,
+      declaration: $("dec_" + m.id).value,
+      justificatif: $("just_" + m.id).value.trim()
+    }))
+    .filter(item => item.declaration); // 🔥 ignore les missions vides
 
-  return {
-    mission_id: mid,
-    declaration: sel.value,
-    justificatif: just ? just.value.trim() : ""
-  };
-})
-
-  for (const d of decs) {
-  if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
-    showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
+  // ✅ SEULE condition restante
+  if (items.length === 0) {
+    showToast(
+      "toastAgentsSave",
+      "Tu dois renseigner au moins une mission",
+      false
+    );
+    setLoading(btn, false);
     return;
   }
-}
 
-  const remark = $("agentsRemark").value.trim();
+  const res = await apiCall("agentSaveDeclarations", {
+    agent_id: STATE.agents.id,
+    period_id: STATE.agents.activePeriod.id,
+    remark: $("agentsRemark").value.trim(),
+    items
+  });
 
-  // (on l’affiche après succès seulement)
-
-  setLoading(btn,true);
-  try{
-    const res = await apiCall("agentSaveDeclarations", {
-      agent_id: STATE.agents.agent_id,
-      period_id,
-      remark,
-      items: JSON.stringify(decs)
-    });
-    if(!res || !res.ok){
-      console.log("AGENTS_SAVE res =", res);
-      showToast("toastAgentsSave",(res&&res.message)||"Erreur",false);
-      return;
-    }
-    showToast("toastAgentsSave","Enregistré ✅",true);
-  
-  }catch(_){
-    showToast("toastAgentsSave","Erreur réseau.",false);
-  }finally{
-    setLoading(btn,false);
+  if (!res.ok) {
+    showToast("toastAgentsSave", res.message || "Erreur", false);
+    setLoading(btn, false);
+    return;
   }
+
+  showToast("toastAgentsSave", "Enregistré", true);
+  setLoading(btn, false);
 }
+
 async function agentsValidate(ev) {
   hideToast("toastAgentsSave");
   if (!STATE.agents.ok) {
