@@ -2430,7 +2430,7 @@ async function agentsLogin(ev){
 
   setLoading(btn,true);
   try{
-    const res = await apiCall("agentsLogin", { agent_id, code });
+    const res = await apiCall("agentsLogin", { agent: agent_id, code });
     if(!res || !res.ok){
       setPill("pillAgentsStatus","Agent : non connecté","bad");
       showToast("toastAgentsLogin","Code incorrect.",false);
