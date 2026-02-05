@@ -3086,34 +3086,29 @@ function hideToast(id) {
 // ===============================
 // API CALL (Apps Script / JSONP)
 // ===============================
-function apiCall(action, data = {}) {
-  return new Promise((resolve) => {
-    const cbName = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+async function apiCall(action, data = {}) {
+  const cb = "cb_" + Math.random().toString(16).slice(2);
+  const url =
+    API_URL +
+    "?action=" + encodeURIComponent(action) +
+    "&callback=" + encodeURIComponent(cb) +
+    "&payload=" + encodeURIComponent(JSON.stringify(data));
 
-    window[cbName] = (res) => {
-      delete window[cbName];
+  return await new Promise((resolve, reject) => {
+    window[cb] = (payload) => {
+      try { delete window[cb]; } catch(e){}
       script.remove();
-      resolve(res);
+      resolve(payload);
     };
-
-    const params = new URLSearchParams({
-      action,
-      callback: cbName,
-      ...data
-    });
 
     const script = document.createElement("script");
-    script.src =
-      "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec?"
-      + params.toString();
-
+    script.src = url;
     script.onerror = () => {
-      delete window[cbName];
+      try { delete window[cb]; } catch(e){}
       script.remove();
-      resolve({ ok: false, message: "Erreur réseau Apps Script" });
+      reject(new Error("API error"));
     };
-
-    document.body.appendChild(script);
+    document.head.appendChild(script);
   });
 }
 
@@ -3511,7 +3506,7 @@ async function agentsLogin(ev) {
     return;
   }
 
-  const res = await apiCall("agentsLogin", { id, code });
+  const res = await apiCall("agentsLogin", { agent: id, code });
 
   if (!res.ok) {
     showToast("toastAgentsLogin", res.message || "Code incorrect", false);
