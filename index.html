@@ -1230,7 +1230,7 @@ function showView(which){
 // API CALL (Apps Script JSONP)
 // ===================
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // https://script.google.com/macros/s/XXXX/exec
-
+const API_URL = GAS_URL;
 function apiCall(action, data = {}) {
   return new Promise((resolve, reject) => {
     const cb = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
