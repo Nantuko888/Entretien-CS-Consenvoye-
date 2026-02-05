@@ -3083,24 +3083,40 @@ function hideToast(id) {
   if (el) el.classList.remove("show");
 }
 
-/* ===============================
-   API CALL
-================================ */
+// ===============================
+// API CALL (Apps Script / JSONP)
+// ===============================
+function apiCall(action, data = {}) {
+  return new Promise((resolve) => {
+    const cbName = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(36).slice(2);
 
-async function apiCall(action, data = {}) {
-  try {
-    const res = await fetch("api.php?action=" + encodeURIComponent(action), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+    window[cbName] = (res) => {
+      delete window[cbName];
+      script.remove();
+      resolve(res);
+    };
+
+    const params = new URLSearchParams({
+      action,
+      callback: cbName,
+      ...data
     });
 
-    return await res.json();
-  } catch (e) {
-    console.error("API error:", e);
-    return { ok: false, message: "Erreur réseau" };
-  }
+    const script = document.createElement("script");
+    script.src =
+      "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec?"
+      + params.toString();
+
+    script.onerror = () => {
+      delete window[cbName];
+      script.remove();
+      resolve({ ok: false, message: "Erreur réseau Apps Script" });
+    };
+
+    document.body.appendChild(script);
+  });
 }
+
 
 /* ===============================
    BIND ENTER
