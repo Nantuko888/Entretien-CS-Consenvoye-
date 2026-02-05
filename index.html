@@ -1380,7 +1380,7 @@ function renderAdminsAddToGroupSelect(){
    ADMIN
    =============================== */
 async function adminsLogin(ev){
-  ev?.preventDefault();
+  ev?.preventDefault?.();
   hideToast("toastAdminsLogin");
 
   const btn = ev?.target || $("btnAdminsLogin");
@@ -1394,7 +1394,7 @@ async function adminsLogin(ev){
   setLoading(btn,true);
 
   try{
-    const res = await apiCall("adminLogin", { code, admin_code: });
+    const res = await apiCall("adminLogin", { code });
 
     if(!res || !res.ok){
       setPill("pillAdminsStatus","Admin : non connecté","bad");
@@ -1402,30 +1402,24 @@ async function adminsLogin(ev){
       return;
     }
 
-    // ✅ état admin
     STATE.admins.ok = true;
     STATE.admins.code = code;
 
-    // ✅ UI admin connectée
     setPill("pillAdminsStatus","Admin : connecté ✅","ok");
     $("btnAdminsKey").style.display = "";
     $("btnAdminsLogout").style.display = "";
     $("boxAdminsWork").style.display = "";
 
-    // ✅ charge tout ce qui dépend du login (agents, missions, périodes, etc.)
     await adminsRefreshAll();
 
-   const r = await apiCall("adminListRetoursPeriods", { admin_code: STATE.admins.code }).catch(()=>null);
-if(r && r.ok){
-  populateRetoursPeriodes(r.periods || []);
-}
-    
+    const r = await apiCall("adminListRetoursPeriods", { admin_code: STATE.admins.code }).catch(()=>null);
+    if(r && r.ok) populateRetoursPeriodes(r.periods || []);
+
     showToast("toastAdminsLogin","Admin connecté ✅",true);
 
-  } catch(e){
+  }catch(e){
     showToast("toastAdminsLogin","Erreur réseau.",false);
-
-  } finally{
+  }finally{
     setLoading(btn,false);
   }
 }
