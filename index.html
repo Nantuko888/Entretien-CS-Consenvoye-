@@ -1380,6 +1380,7 @@ function renderAdminsAddToGroupSelect(){
    ADMIN
    =============================== */
 async function adminsLogin(ev){
+  ev?.preventDefault();
   hideToast("toastAdminsLogin");
 
   const btn = ev?.target || $("btnAdminsLogin");
@@ -1393,7 +1394,7 @@ async function adminsLogin(ev){
   setLoading(btn,true);
 
   try{
-    const res = await apiCall("adminLogin", { code });
+    const res = await apiCall("adminLogin", { code, admin_code: });
 
     if(!res || !res.ok){
       setPill("pillAdminsStatus","Admin : non connecté","bad");
