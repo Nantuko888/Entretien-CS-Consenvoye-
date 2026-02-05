@@ -2581,7 +2581,7 @@ async function agentsLoadPeriod(ev){
 
   setLoading(btn,true);
   try{
-    const res = await apiCall("agentLoadPeriod", {
+    const res = await apiCall("agentsLoadPeriod", {
       agent_id: STATE.agents.agent_id,
       period_id
     });
