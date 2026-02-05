@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Entretien du CS Consenvoye</title>
+  <title>Entretien CS Consenvoye</title>
   <style>
     :root{
       --bg:#0b0f14; --panel:#0f1724; --panel2:#111b2b;
@@ -696,8 +696,6 @@ button#btnAdminsLoadRetoursS,
 </head>
 
 <body>
- <!-- BUILD_TEST_0204_1945 -->
-  
   <div class="wrap">
     <div class="titleWrap">
   <img src="assets/titre-feu.png" alt="Entretien du centre de secours de Consenvoye" class="titleImg">
@@ -785,7 +783,7 @@ button#btnAdminsLoadRetoursS,
                         <select id="agentsPeriodsSel"></select>
           </div>
           <div class="right">
-            <button class="btn primary" id="btnAgentsLoad">Charger</button>
+            <button class="btn primary" id="btnAgentsLoad" onclick="agentsLoadPeriod(event)">Charger</button>
           </div>
         </div>
         <div id="toastAgentsLoad" class="toast"></div>
@@ -847,9 +845,7 @@ button#btnAdminsLoadRetoursS,
 </div>
         </div>
         <div class="right">
-          <button class="btn primary" id="btnAdminsLogin" onclick="adminsLogin(event)">
-  Se connecter
-</button>
+          <button class="btn primary" id="btn" onclick="(event)">Se connecter</button>
         </div>
       </div>
       <div id="toast" class="toast"></div>
@@ -1118,14 +1114,14 @@ button#btnAdminsLoadRetoursS,
 
           <div class="scrollBox">
             <table class="table">
-             <thead>
+              <thead>
   <tr>
-    <th>Missions du mois</th>
-    <th>Fait par</th>
-    <th style="width:80px; text-align:center;">Nombre</th>
-    <th>Justificatifs</th>
-    <th style="width:120px;">Date</th>
-    <th style="width:140px; text-align:center;">Validation responsable</th>
+    <th>Période</th>
+    <th>Agent</th>
+    <th>Mission</th>
+    <th>Déclaration</th>
+    <th>Justificatif</th>
+      <th style="width:80px;text-align:center;">Validation</th>
   </tr>
 </thead>
 <tbody id="adminsRetoursTable">
@@ -1226,37 +1222,59 @@ function showView(which){
   }
 }
 
-// ===================
-// API CALL (Apps Script JSONP)
-// ===================
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // https://script.google.com/macros/s/XXXX/exec
-const API_URL = GAS_URL;
-function apiCall(action, data = {}) {
+/* ===============================
+   JSONP (évite CORS GitHub -> Apps Script)
+   =============================== */
+function apiCall(action, params){
   return new Promise((resolve, reject) => {
     const cb = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+    const q = new URLSearchParams();
+    q.set("action", action);
+    q.set("callback", cb);
 
-    const params = new URLSearchParams();
-    params.set("action", action);
-    params.set("data", JSON.stringify(data));
-    params.set("callback", cb);
+    // params -> querystring
+    const p = params || {};
+    for (const k of Object.keys(p)) {
+      const v = p[k];
+      if (v === undefined || v === null) continue;
+      q.set(k, String(v));
+    }
 
-    const url = GAS_URL + (GAS_URL.includes("?") ? "&" : "?") + params.toString();
+    let done = false;
+    let script = null;
 
-    window[cb] = (resp) => {
-      try { resolve(resp); }
-      finally {
-        try { delete window[cb]; } catch(e) {}
-        script.remove();
-      }
+    const cleanup = () => {
+      try { if (script && script.parentNode) script.parentNode.removeChild(script); } catch(e){}
+      try { delete window[cb]; } catch(e){ window[cb] = undefined; }
     };
 
-    const script = document.createElement("script");
-    script.src = url;
-    script.onerror = () => {
-      try { delete window[cb]; } catch(e) {}
-      script.remove();
-      reject(new Error("JSONP error: " + action));
+    const finishOk = (data) => {
+      if (done) return;
+      done = true;
+      clearTimeout(t);
+      cleanup();
+      resolve(data);
     };
+
+    const finishKo = (err) => {
+      if (done) return;
+      done = true;
+      clearTimeout(t);
+      cleanup();
+      reject(err instanceof Error ? err : new Error(String(err || "network")));
+    };
+
+    // callback JSONP
+    window[cb] = (data) => finishOk(data);
+
+    // timeout "dur" (sinon ça fige comme chez toi)
+    const t = setTimeout(() => finishKo(new Error("timeout")), 15000);
+
+    // inject script
+    script = document.createElement("script");
+    script.async = true;
+    script.src = API_EXEC + "?" + q.toString();
+    script.onerror = () => finishKo(new Error("network"));
     document.head.appendChild(script);
   });
 }
@@ -2177,18 +2195,24 @@ async function adminsLoadRetoursValidations(){
   }
 }
 
-function formatTsFR(ts){
-  if(!ts) return "—";
-  // ts peut être une Date, un ISO, ou un texte
-  const d = (ts instanceof Date) ? ts : new Date(ts);
-  if(isNaN(d)) return String(ts); // si pas parsable, on affiche brut
+  function renderRetoursAgents_(items){
+  const wrap = $("retoursAgentsWrap");
+  const tb = $("retoursAgentsTable");
+  if(!wrap || !tb) return;
 
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "2-digit", month: "2-digit", year: "numeric",
-    hour: "2-digit", minute: "2-digit"
-  }).format(d);
+  const names = [...new Set(
+    (items || [])
+      .map(it => String(it.agent || "").trim())
+      .filter(Boolean)
+  )].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
+
+  // Affiche le bloc uniquement si on a des lignes
+  wrap.style.display = names.length ? "grid" : "none";
+
+  tb.innerHTML = names.length
+    ? names.map(n=>`<tr><td>${esc(n)}</td></tr>`).join("")
+    : `<tr><td class="ghost">—</td></tr>`;
 }
-
   
 async function adminsLoadRetours(ev){
   
@@ -2218,104 +2242,22 @@ if(!period_id){
     }
     const tb = $("adminsRetoursTable");
     const items = res.items || [];
-    console.log("items[0] =", items[0]);
-
-    const month = await apiCall("adminGetMonthMissions", { admin_code: STATE.admins.code, period_id });
-const missions = (month && month.missionsOn) ? month.missionsOn : [];
-console.log("missions du mois:", missions);
-console.log("retours:", items.length);
+    renderRetoursAgents_(items);
     
     if(!items.length){
       tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-    } else {
-
- // 1) récupère les missions actives du mois (source officielle)
-const month = await apiCall("adminGetMonthMissions", {
-  admin_code: STATE.admins.code,
-  period_id
-});
-const missions = (month && month.missionsOn) ? month.missionsOn : [];
-
-// 2) regroupe les retours par mission_id + agent
-const byMissionAgent = new Map(); // key = mid||agent -> {mid, agent, count, justificatif}
-for (const it of items) {
-  const mid = String(it.mission_id || "").trim();
-  const agent = String(it.agent || "").trim();
-  if(!mid || !agent) continue;
-
-  const key = `${mid}||${agent}`;
-  let r = byMissionAgent.get(key);
-  if(!r){
-    r = { mid, agent, count:0, justificatif:"", ts:0 };
-    byMissionAgent.set(key, r);
-  }
-  r.count += 1;
-  r.ts = Math.max(r.ts || 0, Number(it.ts || 0));
-  if (it.justificatif && String(it.justificatif).trim()) {
-    r.justificatif = String(it.justificatif).trim(); // dernier justificatif non vide
-  }
-}
-
-// 3) rend : 1 mission = 1 bloc ; mission écrite 1 fois, puis vide dessous
-const out = [];
-
-for (const m of missions) {
-  const mid = String(m.mission_id || "").trim();
-  const lib = String(m.libelle || mid).trim();
-
-  // récupère les agents pour cette mission
-  const rows = [];
-  for (const r of byMissionAgent.values()) {
-    if (String(r.mid) === mid) rows.push(r);
-  }
-  rows.sort((a,b)=> a.agent.localeCompare(b.agent, "fr", {sensitivity:"base"}));
-
-  if (!rows.length) {
-    // mission du mois sans retour => une ligne avec tirets
-    out.push(`
-      <tr>
-        <td>${esc(lib)}</td>
-        <td class="ghost">—</td>
-        <td class="center ghost">—</td>
-        <td class="ghost">—</td>
-        <td class="ghost">${esc(period_id)}</td>
-        <td class="center ghost">—</td>
-      </tr>
-    `);
-    continue;
-  }
-
-  const fmtDT = (ts) => {
-  if (!ts) return "";
-  const d = new Date(ts);
-  if (isNaN(d)) return String(ts);
-  // jj/mm/aaaa hh:mm
-  return d.toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  }).replace(",", "");
-};
-    rows.forEach((r, i) => {
-    out.push(`
-      <tr>
-        <td>${i === 0 ? esc(lib) : ""}</td>
-        <td>${esc(r.agent)}</td>
-        <td class="center">${r.count}</td>
-        <td>${esc(r.justificatif || "—")}</td>
-        <td class="ghost">${fmtDT(r.ts) || "--"}</td>
-        <td class="center">—</td>
-      </tr>
-    `);
-  });
-}
-
-tb.innerHTML = out.join("");
-
-}
-
+    }else{
+      tb.innerHTML = items.map(it=>`
+        <tr>
+          <td>${esc(it.period_id)}</td>
+          <td>${esc(it.agent)}</td>
+          <td>${esc(it.mission)}</td>
+          <td>${esc(it.declaration)}</td>
+          <td>${esc(it.justificatif)}</td>
+          <td>${esc(it.remark||"")}</td>
+        </tr>
+      `).join("");
+    }
     showToast("toastAdminsRetours","Chargé ✅",true);
   }catch(_){
     showToast("toastAdminsRetours","Erreur réseau.",false);
@@ -2430,7 +2372,7 @@ async function agentsLogin(ev){
 
   setLoading(btn,true);
   try{
-    const res = await apiCall("agentsLogin", { agent: agent_id, code });
+    const res = await apiCall("agentLogin", { agent_id, code });
     if(!res || !res.ok){
       setPill("pillAgentsStatus","Agent : non connecté","bad");
       showToast("toastAgentsLogin","Code incorrect.",false);
@@ -2565,59 +2507,39 @@ function toPeriodYM(period_id, label){
 
   
 async function agentsLoadPeriod(ev){
-  console.log("LOAD PERIOD FUNCTION EXECUTED");
   hideToast("toastAgentsLoad");
-  if(!STATE.agents.ok){
-    showToast("toastAgentsLoad","Non connecté.",false);
-    return;
-  }
-
+  if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.",false); return; }
   const btn = ev?.target || $("btnAgentsLoad");
   const period_id = $("agentsPeriodsSel").value;
-  if(!period_id){
-    showToast("toastAgentsLoad","Choisis une période.",false);
-    return;
-  }
+  if(!period_id){ showToast("toastAgentsLoad","Choisis une période.",false); return; }
 
   setLoading(btn,true);
   try{
-    const res = await apiCall("agentsLoadPeriod", {
-      agent_id: STATE.agents.agent_id,
-      period_id
-    });
-
+    const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
     if(!res || !res.ok){
-      showToast("toastAgentsLoad",(res && res.message) || "Erreur", false);
-      return;
+      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
     }
+    // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
+STATE.agentWork.is_period_open = !!res.is_period_open;
+STATE.agentWork.is_responsable = !!res.is_responsable;
 
-    // 🔥 INITIALISATION CORRECTE (une seule fois)
-    STATE.agentWork = {
-      period_id,
-      missions: res.missions || [],
-      is_responsable: !!res.is_responsable,
-      is_period_open: !!res.is_period_open
-    };
-
-    // 🔥 DEBUG : doit apparaître dans la console
-    console.log("DEBUG agentWork =", STATE.agentWork);
-
-    // 🔒 UI lock/unlock selon ouverture
-    setAgentPeriodLocked(!STATE.agentWork.is_period_open);
-
+setAgentPeriodLocked(!STATE.agentWork.is_period_open);
+    STATE.agentWork.period_id = period_id;
+    STATE.agentWork.missions = res.missions || [];
+    STATE.agentWork.is_responsable = !!res.is_responsable;
     $("boxAgentsAfterLoad").style.display = "";
 
-    setPill(
-      "pillAgentsPeriod",
-      "Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id),
-      "ok"
-    );
+    setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
+
 
     renderAgentMissions(res.missions || []);
     renderAgentTeam(res.group || [], res.responsable || null);
+    setAgentPeriodLocked(!STATE.agentWork.is_period_open);
+    console.log("TEAM GROUP =", res.group);
+console.log("RESPONSABLE =", res.responsable);
+    $("boxAgentsAfterLoad").style.display = "";
 
     showToast("toastAgentsLoad","Chargé ✅",true);
-
   }catch(_){
     showToast("toastAgentsLoad","Erreur réseau.",false);
   }finally{
@@ -2806,69 +2728,73 @@ async function softRefresh(ev){
 }
 
   
-async function agentsSave(ev) {
+async function agentsSave(ev){
   hideToast("toastAgentsSave");
-
-  if (!STATE.agents.ok) {
-    showToast("toastAgentsSave", "Agent non connecté", false);
-    return;
-  }
-
+  if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
   const btn = ev?.target || $("btnAgentsSave");
-  setLoading(btn, true);
+  const period_id = STATE.agentWork.period_id;
+  if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
 
-  // ⬇️ On ne garde QUE les missions renseignées
-  const items = STATE.agents.missions
-    .map(m => {
-      const dec = $("dec_" + m.id)?.value || "";
-      const just = $("just_" + m.id)?.value || "";
-      return {
-        mission_id: m.id,
-        declaration: dec.trim(),
-        justificatif: just.trim()
-      };
-    })
-    .filter(it => it.declaration !== ""); // 👈 missions vides autorisées
-
-  // ⛔ PLUS AUCUNE OBLIGATION DE TOUT REMPLIR
-
-  const res = await apiCall("agentSaveDeclarations", {
-    agent_id: STATE.agents.id,
-    period_id: STATE.agents.activePeriod.id,
-    remark: $("agentsRemark")?.value?.trim() || "",
-    items
+  // collecte déclarations
+  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
+    const mid = sel.getAttribute("data-mid");
+    const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
+    return {
+      mission_id: mid,
+      declaration: sel.value,
+      justificatif: just ? just.value.trim() : ""
+    };
   });
-
-  if (!res.ok) {
-    showToast("toastAgentsSave", res.message || "Erreur", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  showToast("toastAgentsSave", "Enregistré ✅", true);
-  setLoading(btn, false);
+   // ⛔ Interdire l'enregistrement si toutes les missions ne sont pas renseignées
+if (decs.some(d => !d.declaration)) {
+  showToast("toastAgentsSave", "Tu dois renseigner toutes les missions avant d’enregistrer.", false);
+  return;
 }
 
-async function agentsValidate(ev) {
-  hideToast("toastAgentsSave");
-  if (!STATE.agents.ok) {
-    showToast("toastAgentsSave", "Non connecté.", false);
+  for (const d of decs) {
+  if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
+    showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
     return;
   }
+}
 
-  if (!confirm("Confirmer la validation ?\n\n⚠️ Après validation, la saisie sera verrouillée et ne pourra plus être modifiée.")) {
-    return;
+  const remark = $("agentsRemark").value.trim();
+
+  // (on l’affiche après succès seulement)
+
+  setLoading(btn,true);
+  try{
+    const res = await apiCall("agentSaveDeclarations", {
+      agent_id: STATE.agents.agent_id,
+      period_id,
+      remark,
+      items: JSON.stringify(decs)
+    });
+    if(!res || !res.ok){
+      showToast("toastAgentsSave",(res&&res.message)||"Erreur",false);
+      return;
+    }
+    showToast("toastAgentsSave","Enregistré ✅",true);
+  
+  }catch(_){
+    showToast("toastAgentsSave","Erreur réseau.",false);
+  }finally{
+    setLoading(btn,false);
   }
+}
+async function agentsValidate(ev){
+  hideToast("toastAgentsSave"); // on réutilise le toast du bloc missions
+  if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
 
+  if(!confirm("Confirmer la validation ?\n\n⚠️ Après validation, la saisie sera verrouillée et ne pourra plus être modifiée.")){
+  return;
+}
   const btn = ev?.target || $("btnAgentsValidate");
   const period_id = STATE.agentWork.period_id;
-  if (!period_id) {
-    showToast("toastAgentsSave", "Charge une période.", false);
-    return;
-  }
+  if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
 
-  // --- 1) Collecte des déclarations (même logique que agentsSave) ---
-  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel => {
+  // 1) Vérif locale : toutes les missions doivent être remplies
+  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
     const mid = sel.getAttribute("data-mid");
     const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
     return {
@@ -2878,68 +2804,69 @@ async function agentsValidate(ev) {
     };
   });
 
-  const isResp = STATE.agentWork?.is_responsable;
+  if(!decs.length){
+    showToast("toastAgentsSave","Aucune mission à valider.",false);
+    return;
+  }
 
-  // --- 2) Vérifications locales ---
-  for (const d of decs) {
-    const decl = d.declaration || "";
-
-    // RESPONSABLE → toutes les missions doivent être remplies
-    if (isResp && !decl) {
-      showToast("toastAgentsSave", "Toutes les missions doivent être renseignées pour valider.", false);
+  for(const d of decs){
+    if(!d.declaration){
+      showToast("toastAgentsSave","Tu dois renseigner toutes les missions avant de valider.",false);
       return;
     }
-  
-    // Justificatif obligatoire si Partiel / Non fait
-    if ((decl === "Partiel" || decl === "Non fait") && !d.justificatif) {
-      showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
+    if((d.declaration==="Partiel" || d.declaration==="Non fait") && !d.justificatif){
+      showToast("toastAgentsSave","Justificatif obligatoire si Partiel / Non fait.",false);
       return;
     }
   }
 
-  // --- 3) Sauvegarde avant validation ---
+  // 2) On enregistre d’abord (pour être sûr que tout est bien stocké)
+  // -> on appelle ta fonction existante agentsSave(ev)
   await agentsSave({ target: $("btnAgentsSave") });
 
-  // --- 4) Validation serveur ---
-  setLoading(btn, true);
-  try {
+  // 3) Puis on demande le verrouillage au serveur
+  setLoading(btn,true);
+  try{
     const res = await apiCall("agentValidatePeriod", {
       agent_id: STATE.agents.agent_id,
       period_id
     });
 
-    if (!res || !res.ok) {
-      showToast("toastAgentsSave", (res && res.message) || "Erreur validation", false);
+    if(!res || !res.ok){
+      showToast("toastAgentsSave",(res&&res.message)||"Erreur validation",false);
       return;
     }
 
-    showToast("toastAgentsSave", "✅ Validé — saisie verrouillée", true);
+    showToast("toastAgentsSave","✅ Validé — saisie verrouillée",true);
+    // 🎉 Overlay uniquement à la validation si tout est "Fait"
+const allDone =
+  decs.length > 0 &&
+  decs.every(d => String(d.declaration || "").trim() === "Fait");
 
-    // Overlay si tout est "Fait"
-    const allDone = decs.length > 0 && decs.every(d => String(d.declaration || "").trim() === "Fait");
-    if (allDone) {
-      $("doneOverlay").classList.add("show");
-    }
+if (allDone) {
+  $("doneOverlay").classList.add("show");
+}
 
-    // --- 5) Passage en lecture seule ---
-    $("boxAgentsMissions").querySelectorAll("select, input").forEach(el => el.disabled = true);
+    // 4) UI en lecture seule
+    // désactive tous les selects + champs justificatif + remarque + boutons
+    $("boxAgentsMissions").querySelectorAll("select, input").forEach(el=> el.disabled = true);
     $("agentsRemark").disabled = true;
     $("btnAgentsSave").disabled = true;
     $("btnAgentsValidate").disabled = true;
 
-  } catch (e) {
-    showToast("toastAgentsSave", "Erreur réseau.", false);
-  } finally {
-    setLoading(btn, false);
+  }catch(e){
+    showToast("toastAgentsSave","Erreur réseau.",false);
+  }finally{
+    setLoading(btn,false);
   }
 }
 
-// Fermeture overlay image
-$("doneImg").addEventListener("dblclick", () => $("doneOverlay").classList.remove("show"));
-$("doneImg").addEventListener("touchend", (e) => {
+/* double click / double tap pour fermer l’image */
+$("doneImg").addEventListener("dblclick", ()=> $("doneOverlay").classList.remove("show"));
+$("doneImg").addEventListener("touchend", (e)=>{
   const now = Date.now();
-  if (!window.__lastTap) { window.__lastTap = now; return; }
-  if (now - window.__lastTap < 350) {
+  if(!window.__lastTap){ window.__lastTap = now; return; }
+  if(now - window.__lastTap < 350){
     $("doneOverlay").classList.remove("show");
   }
   window.__lastTap = now;
@@ -3009,710 +2936,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (elActive) elActive.textContent = active;
   if (elInactive) elInactive.textContent = inactive;
 }
-
-/* ===== utils.js (COLLE ICI TOUT LE CONTENU DE assets/js/utils.js) ===== */
-/* ===============================
-   UTILITAIRES GÉNÉRAUX
-================================ */
-
-/** Sélecteur rapide */
-function $(id) {
-  return document.getElementById(id);
-}
-
-/** Échappe du texte (sécurité) */
-function esc(str) {
-  return String(str || "").replace(/[&<>"']/g, s => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[s]));
-}
-
-/** Affiche une vue (agents / admins) */
-function showView(name) {
-  $("viewAgents").style.display = name === "agents" ? "block" : "none";
-  $("viewAdmins").style.display = name === "admins" ? "block" : "none";
-}
-
-/** Change l’état d’un bouton (chargement) */
-function setLoading(btn, state) {
-  if (!btn) return;
-  if (state) {
-    btn.dataset.oldText = btn.textContent;
-    btn.textContent = "⏳";
-    btn.disabled = true;
-  } else {
-    btn.textContent = btn.dataset.oldText || btn.textContent;
-    btn.disabled = false;
-  }
-}
-
-/** Met à jour une pastille (pill) */
-function setPill(id, text, type) {
-  const el = $(id);
-  if (!el) return;
-  el.textContent = text;
-  el.classList.remove("ok", "bad");
-  if (type === "ok") el.classList.add("ok");
-  if (type === "bad") el.classList.add("bad");
-}
-
-/* ===============================
-   TOASTS
-================================ */
-
-function showToast(id, msg, ok = true) {
-  const el = $(id);
-  if (!el) return;
-
-  el.textContent = msg;
-  el.classList.add("show");
-  el.style.borderColor = ok ? "#1fd36b" : "#ff3b30";
-
-  clearTimeout(el._timer);
-  el._timer = setTimeout(() => {
-    el.classList.remove("show");
-  }, 2500);
-}
-
-function hideToast(id) {
-  const el = $(id);
-  if (el) el.classList.remove("show");
-}
-
-// ===============================
-// API CALL (Apps Script / JSONP)
-// ===============================
-async function apiCall(action, data = {}) {
-  const cb = "cb_" + Math.random().toString(16).slice(2);
-  const url =
-    API_URL +
-    "?action=" + encodeURIComponent(action) +
-    "&callback=" + encodeURIComponent(cb) +
-    "&payload=" + encodeURIComponent(JSON.stringify(data));
-
-  return await new Promise((resolve, reject) => {
-    window[cb] = (payload) => {
-      try { delete window[cb]; } catch(e){}
-      script.remove();
-      resolve(payload);
-    };
-
-    const script = document.createElement("script");
-    script.src = url;
-    script.onerror = () => {
-      try { delete window[cb]; } catch(e){}
-      script.remove();
-      reject(new Error("API error"));
-    };
-    document.head.appendChild(script);
-  });
-}
-
-
-/* ===============================
-   BIND ENTER
-================================ */
-
-function bindEnter(inputId, fn, opts = {}) {
-  const el = $(inputId);
-  if (!el) return;
-
-  el.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-    if (opts.ctrl && !e.ctrlKey) return;
-    if (opts.shift && !e.shiftKey) return;
-
-    e.preventDefault();
-    fn(e);
-  });
-}
-
-/* ===============================
-   REFRESH DOUX
-================================ */
-
-function softRefresh(ev) {
-  const btn = ev?.target;
-  if (btn) setLoading(btn, true);
-
-  try {
-    const isAdminsView = $("viewAdmins").style.display === "block";
-
-    if (isAdminsView) showView("admins");
-    else showView("agents");
-
-    if (STATE?.admins?.ok) showToast("toastAdminsLogin", "Rafraîchi", true);
-    if (STATE?.agents?.ok) showToast("toastAgentsLogin", "Rafraîchi", true);
-
-  } catch (e) {
-    if (STATE?.admins?.ok) showToast("toastAdminsLogin", "Erreur refresh", false);
-    if (STATE?.agents?.ok) showToast("toastAgentsLogin", "Erreur refresh", false);
-  } finally {
-    if (btn) setLoading(btn, false);
-  }
-}
-
-/* ===============================
-   INIT
-================================ */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  // 🔥 CORRECTIONS CRITIQUES 🔥
-  bindEnter("agentsCode", agentsLogin);  // OK
-  bindEnter("adminsCode", adminsLogin);  // OK
-
-  bindEnter("adminsNewAgentName", adminsAddAgent);
-  bindEnter("adminsNewAgentCode", adminsAddAgent);
-  bindEnter("adminsNewMissionLib", adminsAddMission);
-
-  // 🔥 Correction : IDs cohérents avec ton HTML
-  bindEnter("agentsPeriodsSel", () => $("btnAgentsLoad")?.click());
-});
-
-
-/* ===== admin.js (COLLE ICI TOUT LE CONTENU DE assets/js/admin.js) ===== */
-  /* ===============================
-   ADMIN — ÉTAT GLOBAL
-================================ */
-
- STATE.admins = {
-    ok: false,
-    code: "",
-    agents: [],
-    missions: [],
-    periods: [],
-    activePeriod: null
-  };
-
-/* ===============================
-   ADMIN — LOGIN
-================================ */
-
-async function adminsLogin(ev) {
-  const btn = ev?.target;
-  setLoading(btn, true);
-
-  const code = $("adminsCode").value.trim();
-  if (!code) {
-    showToast("toastAdminsLogin", "Code requis", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  const res = await apiCall("adminLogin", { code });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Code incorrect", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  STATE.admin.ok = true;
-  STATE.admin.code = code;
-
-  showView("admins");
-  await adminsLoadAll();
-
-  showToast("toastAdminsLogin", "Connecté", true);
-  setLoading(btn, false);
-}
-
-/* ===============================
-   ADMIN — CHARGEMENT GLOBAL
-================================ */
-
-async function adminsLoadAll() {
-  await adminsLoadAgents();
-  await adminsLoadMissions();
-  await adminsLoadPeriods();
-}
-
-/* ===============================
-   ADMIN — AGENTS
-================================ */
-
-async function adminsLoadAgents() {
-  const res = await apiCall("adminListAgents", { admin_code: STATE.admin.code });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur chargement agents", false);
-    return;
-  }
-
-  STATE.admin.agents = res.agents;
-  adminsRenderAgents();
-}
-
-function adminsRenderAgents() {
-  const box = $("adminsAgentsList");
-  box.innerHTML = "";
-
-  STATE.admin.agents.forEach(a => {
-    const row = document.createElement("div");
-    row.className = "checkRow";
-
-    row.innerHTML = `
-      <div class="title">${esc(a.nom)}</div>
-      <button onclick="adminsToggleAgent('${a.agent_id}')">
-        ${a.actif ? "Désactiver" : "Activer"}
-      </button>
-    `;
-
-    box.appendChild(row);
-  });
-}
-
-async function adminsToggleAgent(agent_id) {
-  const res = await apiCall("adminToggleAgent", {
-    admin_code: STATE.admin.code,
-    agent_id
-  });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur", false);
-    return;
-  }
-
-  await adminsLoadAgents();
-}
-
-async function adminsAddAgent() {
-  const name = $("adminsNewAgentName").value.trim();
-  const code = $("adminsNewAgentCode").value.trim();
-
-  if (!name) {
-    showToast("toastAdminsLogin", "Nom requis", false);
-    return;
-  }
-
-  const res = await apiCall("adminAddAgent", {
-    admin_code: STATE.admin.code,
-    name,
-    code
-  });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur ajout", false);
-    return;
-  }
-
-  $("adminsNewAgentName").value = "";
-  $("adminsNewAgentCode").value = "";
-
-  await adminsLoadAgents();
-  showToast("toastAdminsLogin", "Agent ajouté", true);
-}
-
-/* ===============================
-   ADMIN — MISSIONS
-================================ */
-
-async function adminsLoadMissions() {
-  const res = await apiCall("adminListCatalog", { admin_code: STATE.admin.code });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur chargement missions", false);
-    return;
-  }
-
-  STATE.admin.missions = res.catalog;
-  adminsRenderMissions();
-}
-
-function adminsRenderMissions() {
-  const box = $("adminsMissionsList");
-  box.innerHTML = "";
-
-  STATE.admin.missions.forEach(m => {
-    const row = document.createElement("div");
-    row.className = "checkRow";
-
-    row.innerHTML = `
-      <div class="title">${esc(m.libelle)}</div>
-      <button onclick="adminsToggleMission('${m.mission_id}')">
-        ${m.actif ? "Désactiver" : "Activer"}
-      </button>
-    `;
-
-    box.appendChild(row);
-  });
-}
-
-async function adminsToggleMission(mission_id) {
-  const res = await apiCall("adminToggleMission", {
-    admin_code: STATE.admin.code,
-    mission_id
-  });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur", false);
-    return;
-  }
-
-  await adminsLoadMissions();
-}
-
-async function adminsAddMission() {
-  const libelle = $("adminsNewMissionLib").value.trim();
-
-  if (!libelle) {
-    showToast("toastAdminsLogin", "Libellé requis", false);
-    return;
-  }
-
-  const res = await apiCall("adminAddMission", {
-    admin_code: STATE.admin.code,
-    libelle
-  });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur ajout", false);
-    return;
-  }
-
-  $("adminsNewMissionLib").value = "";
-  await adminsLoadMissions();
-  showToast("toastAdminsLogin", "Mission ajoutée", true);
-}
-
-/* ===============================
-   ADMIN — PÉRIODES
-================================ */
-
-async function adminsLoadPeriods() {
-  const res = await apiCall("adminListPeriodes", { admin_code: STATE.admin.code });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur chargement périodes", false);
-    return;
-  }
-
-  STATE.admin.periods = res.periodes;
-  adminsRenderPeriods();
-}
-
-function adminsRenderPeriods() {
-  const sel = $("adminsPeriodsSel");
-  sel.innerHTML = "";
-
-  STATE.admin.periods.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p.period_id;
-    opt.textContent = p.libelle;
-    sel.appendChild(opt);
-  });
-}
-
-async function adminsLoadPeriod() {
-  const period_id = $("adminsPeriodsSel").value;
-
-  const res = await apiCall("adminLoadPeriod", {
-    admin_code: STATE.admin.code,
-    period_id
-  });
-
-  if (!res.ok) {
-    showToast("toastAdminsPeriod", "Erreur", false);
-    return;
-  }
-
-  STATE.admin.activePeriod = res;
-  adminsRenderPeriodContent();
-}
-
-function adminsRenderPeriodContent() {
-  const box = $("adminsPeriodContent");
-  const p = STATE.admin.activePeriod;
-
-  if (!p) {
-    box.innerHTML = "<div>Aucune période chargée</div>";
-    return;
-  }
-
-  box.innerHTML = `
-    <h4>Responsable</h4>
-    <div>${p.responsable ? esc(p.responsable.nom) : "Aucun"}</div>
-
-    <h4>Équipe</h4>
-    <div>${p.group.map(a => `<div>- ${esc(a.nom)}</div>`).join("")}</div>
-  `;
-}
-
-/* ===============================
-   ADMIN — RETOURS
-================================ */
-
-async function adminsLoadRetours() {
-  const period_id = $("adminsPeriodsSel").value;
-
-  const res = await apiCall("adminGetRetours", {
-    admin_code: STATE.admin.code,
-    period_id
-  });
-
-  if (!res.ok) {
-    showToast("toastAdminsLogin", "Erreur retours", false);
-    return;
-  }
-
-  const box = $("adminsRetoursList");
-  box.innerHTML = res.items.map(r => `
-    <div class="panel">
-      <h4>${esc(r.agent)}</h4>
-      <div>${esc(r.mission)} : ${esc(r.declaration)}</div>
-      <div>${esc(r.justificatif)}</div>
-      <div>${esc(r.remark)}</div>
-    </div>
-  `).join("");
-}
-
-/* ===== agent.js (COLLE ICI TOUT LE CONTENU DE assets/js/agent.js) ===== */
-  /* ===============================
-   AGENT — ÉTAT GLOBAL
-================================ */
-
-STATE.agents = {
-  ok: false,
-  id: null,
-  code: "",
-  name: "",
-  periods: [],
-  activePeriod: null,
-  missions: [],
-  team: [],
-  remark: ""
-};
-
-
-/* ===============================
-   AGENT — LOGIN
-================================ */
-
-async function agentsLogin(ev) {
-  const btn = ev?.target;
-  setLoading(btn, true);
-
-  const id = $("agentsSel").value;
-  const code = $("agentsCode").value.trim();
-
-  if (!id || !code) {
-    showToast("toastAgentsLogin", "Sélection + code requis", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  const res = await apiCall("agentsLogin", { agent: id, code });
-
-  if (!res.ok) {
-    showToast("toastAgentsLogin", res.message || "Code incorrect", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  STATE.agents.ok = true;
-  STATE.agents.id = id;
-  STATE.agents.code = code;
-  STATE.agents.name = res.name;
-
-  $("agentsAgentBadge").textContent = res.name;
-  $("agentsAgentBadge").style.display = "block";
-
-  showToast("toastAgentsLogin", "Connecté", true);
-
-  await agentsLoadPeriods();
-   console.log("LOAD PERIOD FUNCTION EXECUTED");
-
-
-  setLoading(btn, false);
-}
-
-
-/* ===============================
-   AGENT — PÉRIODES
-================================ */
-
-async function agentsLoadPeriods() {
-  const res = await apiCall("agentsListPeriods", { id: STATE.agents.id });
-
-  if (!res.ok) {
-    showToast("toastAgentsLogin", "Erreur périodes", false);
-    return;
-  }
-
-  STATE.agents.periods = res.periods || [];
-  agentsRenderPeriods();
-}
-
-function agentsRenderPeriods() {
-  const sel = $("agentsPeriodsSel");
-  sel.innerHTML = "";
-
-  STATE.agents.periods.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p.id;
-    opt.textContent = p.label;
-    sel.appendChild(opt);
-  });
-}
-
-async function agentsLoadPeriod(ev) {
-  const btn = ev?.target;
-  setLoading(btn, true);
-
-  const id = $("agentsPeriodsSel").value;
-  const res = await apiCall("agentsLoadPeriod", {
-    agent: STATE.agents.id,
-    period: id
-  });
-
-  if (!res.ok) {
-    showToast("toastAgentsLoad", res.message || "Erreur", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  STATE.agents.activePeriod = res.period;
-  STATE.agents.missions = res.missions || [];
-  STATE.agents.team = res.team || [];
-  STATE.agents.remark = res.remark || "";
-
-  agentsRenderWork();
-
-  showToast("toastAgentsLoad", "Période chargée", true);
-  setLoading(btn, false);
-}
-
-
-/* ===============================
-   AGENT — AFFICHAGE DU TRAVAIL
-================================ */
-
-function agentsRenderWork() {
-  $("boxAgentsAfterLoad").style.display = "block";
-
-  // Remarque
-  $("agentsRemark").value = STATE.agents.remark || "";
-
-  // Missions
-  const box = $("boxAgentsMissions");
-  box.innerHTML = "";
-
-  STATE.agents.missions.forEach(m => {
-    const row = document.createElement("div");
-    row.className = "panel";
-
-    row.innerHTML = `
-      <div class="checkRow">
-        <div class="title">${esc(m.lib)}</div>
-        <select class="decSel" id="dec_${m.id}">
-          <option value="0">Non fait</option>
-          <option value="1">Fait</option>
-          <option value="2">Partiel</option>
-        </select>
-      </div>
-
-      <div class="justifRow">
-        <input class="justifInp" id="just_${m.id}" placeholder="Justification (si nécessaire)">
-      </div>
-    `;
-
-    box.appendChild(row);
-
-    // Valeurs existantes
-    $("dec_" + m.id).value = m.dec;
-    $("just_" + m.id).value = m.justif || "";
-  });
-
-  // Équipe
-  const teamBox = $("agentsTeamList");
-  teamBox.innerHTML = STATE.agents.team.map(t =>
-    `<div>- ${esc(t.name)} (${t.resp ? "Responsable" : "Membre"})</div>`
-  ).join("");
-
-  const resp = STATE.agents.team.find(t => t.resp);
-  $("agentsResponsable").textContent = resp ? `Responsable : ${resp.name}` : "Aucun responsable";
-}
-
-
-/* ===============================
-   AGENT — SAUVEGARDE
-================================ */
-
-async function agentsSave(ev) {
-  const btn = ev?.target;
-  setLoading(btn, true);
-
-  const items = STATE.agents.missions
-    .map(m => ({
-      mission_id: m.id,
-      declaration: $("dec_" + m.id).value,
-      justificatif: $("just_" + m.id).value.trim()
-    }))
-    .filter(item => item.declaration); // ignore les missions vides
-
-  const res = await apiCall("agentSaveDeclarations", {
-    agent_id: STATE.agents.id,
-    period_id: STATE.agents.activePeriod.id,
-    remark: $("agentsRemark").value.trim(),
-    items
-  });
-
-  if (!res.ok) {
-    showToast("toastAgentsSave", res.message || "Erreur", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  showToast("toastAgentsSave", "Enregistré", true);
-  setLoading(btn, false);
-}
-
-/* ===============================
-   AGENT — VALIDATION
-================================ */
-
-async function agentsValidate(ev) {
-  const btn = ev?.target;
-  setLoading(btn, true);
-
-  const res = await apiCall("agentsValidate", {
-    agent: STATE.agents.id,
-    period: STATE.agents.activePeriod.id
-  });
-
-  if (!res.ok) {
-    showToast("toastAgentsSave", res.message || "Erreur validation", false);
-    setLoading(btn, false);
-    return;
-  }
-
-  showToast("toastAgentsSave", "Validé ✔️", true);
-
-  $("doneOverlay").classList.add("show");
-  setTimeout(() => $("doneOverlay").classList.remove("show"), 2000);
-
-  setLoading(btn, false);
-}
-
-
-/* ===============================
-   AGENT — LIENS BOUTONS
-================================ */
-
-const bSave = document.getElementById("btnAgentsSave");
-if (bSave) bSave.addEventListener("click", agentsSave);
-
-const bValidate = document.getElementById("btnAgentsValidate");
-if (bValidate) bValidate.addEventListener("click", agentsValidate);
-
-const bLoad = document.getElementById("btnAgentsLoad");
-if (bLoad) bLoad.addEventListener("click", agentsLoadPeriod);
-
 
 </script>
 </body>
