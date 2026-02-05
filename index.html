@@ -1387,6 +1387,7 @@ async function adminsLogin(ev){
   const code = $("adminsCode").value.trim();
 
   if(!code){
+    setPill("pillAdminsStatus","Admin : non connecté","bad");
     showToast("toastAdminsLogin","Code requis.",false);
     return;
   }
@@ -1412,17 +1413,15 @@ async function adminsLogin(ev){
 
     await adminsRefreshAll();
 
-    const r = await apiCall("adminListRetoursPeriods", { admin_code: STATE.admins.code }).catch(()=>null);
-    if(r && r.ok) populateRetoursPeriodes(r.periods || []);
-
     showToast("toastAdminsLogin","Admin connecté ✅",true);
 
-  }catch(e){
+  } catch(e){
     showToast("toastAdminsLogin","Erreur réseau.",false);
-  }finally{
+  } finally{
     setLoading(btn,false);
   }
 }
+
 
 function adminsLogout(){
   STATE.admins = { ok:false, code:"" };
