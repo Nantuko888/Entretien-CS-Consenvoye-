@@ -2745,12 +2745,7 @@ async function agentsSave(ev){
       justificatif: just ? just.value.trim() : ""
     };
   });
-   // ⛔ Interdire l'enregistrement si toutes les missions ne sont pas renseignées
-if (decs.some(d => !d.declaration || !String(d.declaration).trim())) {
-
-  showToast("toastAgentsSave", "Tu dois renseigner toutes les missions avant d’enregistrer.", false);
-  return;
-}
+   
 
   for (const d of decs) {
   if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
@@ -2794,16 +2789,21 @@ async function agentsValidate(ev){
   const period_id = STATE.agentWork.period_id;
   if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
 
-  // 1) Vérif locale : toutes les missions doivent être remplies
-  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
-    const mid = sel.getAttribute("data-mid");
-    const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
-    return {
-      mission_id: mid,
-      declaration: sel.value,
-      justificatif: just ? just.value.trim() : ""
-    };
-  });
+ const decs = Array.from(
+  $("boxAgentsMissions").querySelectorAll(".decSel")
+)
+.filter(sel => sel.value && sel.value.trim() !== "")
+.map(sel => {
+  const mid = sel.getAttribute("data-mid");
+  const just = $("boxAgentsMissions")
+    .querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
+
+  return {
+    mission_id: mid,
+    declaration: sel.value.trim(),
+    justificatif: just ? just.value.trim() : ""
+  };
+});
 
   if(!decs.length){
     showToast("toastAgentsSave","Aucune mission à valider.",false);
@@ -2811,10 +2811,7 @@ async function agentsValidate(ev){
   }
 
   for(const d of decs){
-    if(!d.declaration){
-      showToast("toastAgentsSave","Tu dois renseigner toutes les missions avant de valider.",false);
-      return;
-    }
+    
     if((d.declaration==="Partiel" || d.declaration==="Non fait") && !d.justificatif){
       showToast("toastAgentsSave","Justificatif obligatoire si Partiel / Non fait.",false);
       return;
