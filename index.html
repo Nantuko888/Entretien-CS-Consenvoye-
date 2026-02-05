@@ -845,7 +845,7 @@ button#btnAdminsLoadRetoursS,
 </div>
         </div>
         <div class="right">
-          <button class="btn primary" id="btn" onclick="(event)">Se connecter</button>
+          <button class="btn primary" id="btnAdminsLogin" onclick="adminsLogin(event)">Se connecter</button>
         </div>
       </div>
       <div id="toast" class="toast"></div>
@@ -1381,14 +1381,14 @@ function renderAdminsAddToGroupSelect(){
    =============================== */
 async function adminsLogin(ev){
   ev?.preventDefault?.();
-  hideToast("toastAdminsLogin");
+  hideToast("toast");
 
   const btn = ev?.target || $("btnAdminsLogin");
   const code = $("adminsCode").value.trim();
 
   if(!code){
     setPill("pillAdminsStatus","Admin : non connecté","bad");
-    showToast("toastAdminsLogin","Code requis.",false);
+    showToast("toast","Code requis.",false);
     return;
   }
 
