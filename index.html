@@ -3709,9 +3709,15 @@ async function agentsValidate(ev) {
    AGENT — LIENS BOUTONS
 ================================ */
 
-$("#btnAgentsSave").addEventListener("click", agentsSave);
-$("#btnAgentsValidate").addEventListener("click", agentsValidate);
-$("btnAgentsLoad").addEventListener("click", agentsLoadPeriod);
+const bSave = document.getElementById("btnAgentsSave");
+if (bSave) bSave.addEventListener("click", agentsSave);
+
+const bValidate = document.getElementById("btnAgentsValidate");
+if (bValidate) bValidate.addEventListener("click", agentsValidate);
+
+const bLoad = document.getElementById("btnAgentsLoad");
+if (bLoad) bLoad.addEventListener("click", agentsLoadPeriod);
+
 
 </script>
 </body>
