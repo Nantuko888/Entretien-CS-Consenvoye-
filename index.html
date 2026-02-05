@@ -2746,7 +2746,8 @@ async function agentsSave(ev){
     };
   });
    // ⛔ Interdire l'enregistrement si toutes les missions ne sont pas renseignées
-if (decs.some(d => !d.declaration)) {
+if (decs.some(d => !d.declaration || !String(d.declaration).trim())) {
+
   showToast("toastAgentsSave", "Tu dois renseigner toutes les missions avant d’enregistrer.", false);
   return;
 }
