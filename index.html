@@ -1226,59 +1226,37 @@ function showView(which){
   }
 }
 
-/* ===============================
-   JSONP (évite CORS GitHub -> Apps Script)
-   =============================== */
-function apiCall(action, params){
+// ===================
+// API CALL (Apps Script JSONP)
+// ===================
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // https://script.google.com/macros/s/XXXX/exec
+
+function apiCall(action, data = {}) {
   return new Promise((resolve, reject) => {
     const cb = "cb_" + action + "_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-    const q = new URLSearchParams();
-    q.set("action", action);
-    q.set("callback", cb);
 
-    // params -> querystring
-    const p = params || {};
-    for (const k of Object.keys(p)) {
-      const v = p[k];
-      if (v === undefined || v === null) continue;
-      q.set(k, String(v));
-    }
+    const params = new URLSearchParams();
+    params.set("action", action);
+    params.set("data", JSON.stringify(data));
+    params.set("callback", cb);
 
-    let done = false;
-    let script = null;
+    const url = GAS_URL + (GAS_URL.includes("?") ? "&" : "?") + params.toString();
 
-    const cleanup = () => {
-      try { if (script && script.parentNode) script.parentNode.removeChild(script); } catch(e){}
-      try { delete window[cb]; } catch(e){ window[cb] = undefined; }
+    window[cb] = (resp) => {
+      try { resolve(resp); }
+      finally {
+        try { delete window[cb]; } catch(e) {}
+        script.remove();
+      }
     };
 
-    const finishOk = (data) => {
-      if (done) return;
-      done = true;
-      clearTimeout(t);
-      cleanup();
-      resolve(data);
+    const script = document.createElement("script");
+    script.src = url;
+    script.onerror = () => {
+      try { delete window[cb]; } catch(e) {}
+      script.remove();
+      reject(new Error("JSONP error: " + action));
     };
-
-    const finishKo = (err) => {
-      if (done) return;
-      done = true;
-      clearTimeout(t);
-      cleanup();
-      reject(err instanceof Error ? err : new Error(String(err || "network")));
-    };
-
-    // callback JSONP
-    window[cb] = (data) => finishOk(data);
-
-    // timeout "dur" (sinon ça fige comme chez toi)
-    const t = setTimeout(() => finishKo(new Error("timeout")), 15000);
-
-    // inject script
-    script = document.createElement("script");
-    script.async = true;
-    script.src = API_EXEC + "?" + q.toString();
-    script.onerror = () => finishKo(new Error("network"));
     document.head.appendChild(script);
   });
 }
