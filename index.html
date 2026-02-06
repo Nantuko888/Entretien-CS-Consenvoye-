@@ -2241,12 +2241,12 @@ if(!items.length){
 }else{
   tb.innerHTML = items.map(it=>`
     <tr>
-      <td>${esc(it.period_id)}</td>
-      <td>${esc(it.agent)}</td>
       <td>${esc(it.mission)}</td>
+      <td>${esc(it.agent)}</td>
       <td>${esc(it.declaration)}</td>
       <td>${esc(it.justificatif)}</td>
-      <td>${esc(it.remark||"")}</td>
+      <td>${esc(it.period_id)}</td>
+      <td>${esc(it.remark||"")}</td>            
     </tr>
   `).join("");
 }
