@@ -2228,43 +2228,29 @@ if(!period_id){
 
   setLoading(btn,true);
   try{
-   // const res = await apiCall("adminGetRetours", { admin_code: STATE.admins.code, period_id });
+    const res = await apiCall("adminGetRetours", { admin_code: STATE.admins.code, period_id });
     if(!res || !res.ok){
       showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false); return;
     }
-    const tb = $("adminsRetoursTable");
-    // ✅ BASE DU TABLEAU = missions actives du mois (pas les retours)
-const period_id = $("adminsRetoursPeriodSel").value; // ou ta variable existante de période
-const resM = await apiCall("adminGetMonthMissions", { admin_code: STATE.admins.code, period_id });
-const missionsOn = (resM && resM.ok ? (resM.missionsOn || []) : []);
+   const tb = $("adminsRetoursTable");
+const items = res.items || [];
+renderRetoursAgents_(items);
 
-// normalise vers [{mission_id, libelle}]
-const baseMissions = missionsOn.map(x => {
-  const mid = (typeof x === "string") ? x : (x && x.mission_id);
-  const lib = (typeof x === "string")
-    ? (STATE.catalogById[String(mid)] || String(mid))
-    : (x.libelle || STATE.catalogById[String(mid)] || String(mid));
-  return { mission_id: String(mid), libelle: lib };
-}).filter(m => m.mission_id);
-    const items = res.items || [];
-    renderRetoursAgents_(items);
-    
-    if(!baseMissions.length){
-  tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucune mission active sur cette période.</td></tr>`;
-} else {
-  // Pour l’instant : on affiche toutes les missions, colonnes vides (on remplira à l’étape suivante)
-  tb.innerHTML = baseMissions.map(m => `
+if(!items.length){
+  tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
+}else{
+  tb.innerHTML = items.map(it=>`
     <tr>
-      <td>${esc(period_id)}</td>
-      <td></td>
-      <td>${esc(m.libelle)}</td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>${esc(it.period_id)}</td>
+      <td>${esc(it.agent)}</td>
+      <td>${esc(it.mission)}</td>
+      <td>${esc(it.declaration)}</td>
+      <td>${esc(it.justificatif)}</td>
+      <td>${esc(it.remark||"")}</td>
     </tr>
   `).join("");
 }
-    showToast("toastAdminsRetours","Chargé ✅",true);
+showToast("toastAdminsRetours","Chargé ✅",true);
   }catch(_){
     showToast("toastAdminsRetours","Erreur réseau.",false);
   }finally{
