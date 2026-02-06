@@ -2228,7 +2228,7 @@ if(!period_id){
 
   setLoading(btn,true);
   try{
-    const res = await apiCall("adminGetRetours", { admin_code: STATE.admins.code, period_id });
+   // const res = await apiCall("adminGetRetours", { admin_code: STATE.admins.code, period_id });
     if(!res || !res.ok){
       showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false); return;
     }
