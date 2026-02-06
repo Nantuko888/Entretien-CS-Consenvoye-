@@ -2206,59 +2206,7 @@ async function adminsLoadRetoursValidations(){
     : `<tr><td class="ghost">—</td></tr>`;
 }
   
-async function adminsLoadRetours(ev){
-  hideToast("toastAdminsRetours");
 
-  if(!STATE.admins.ok){
-    showToast("toastAdminsRetours","Non connecté.",false);
-    return;
-  }
-
-  const btn = ev?.target || $("btnAdminsLoadRetours");
-  const period_id = $("adminsRetoursPeriodSel")?.value?.trim();
-
-  if(!period_id){
-    showToast("toastAdminsRetours","Choisis une période.",false);
-    return;
-  }
-
-  const fmtDT = (v) => {
-    if(!v) return "";
-    // accepte Date, timestamp (ms), ou string ISO
-    const d = (v instanceof Date) ? v : new Date(v);
-    if(isNaN(d.getTime())) return String(v);
-    const dd = String(d.getDate()).padStart(2,"0");
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const yy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mi = String(d.getMinutes()).padStart(2,"0");
-    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
-  };
-
-  setLoading(btn,true);
-
-  try{
-    const res = await apiCall("adminGetRetours", {
-      admin_code: STATE.admins.code,
-      period_id
-    });
-
-    if(!res || !res.ok){
-      showToast("toastAdminsRetours",(res && res.message) || "Erreur",false);
-      return;
-    }
-
-    const tb = $("adminsRetoursTable");
-    const items = res.items || [];
-
-    // (si tu as une synthèse agents à droite)
-    try { renderRetoursAgents_(items); } catch(e) {}
-
-    if(!items.length){
-      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-      showToast("toastAdminsRetours","Chargé ✅",true);
-      return;
-    }
 
     async function adminsLoadRetours(ev){
   hideToast("toastAdminsRetours");
