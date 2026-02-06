@@ -2315,7 +2315,7 @@ async function adminsLoadRetoursValidations(){
             <td></td>
             <td></td>
             <td></td>
-            <td>${esc(String(period_id))}</td>
+            <td>${esc(formatPeriod(period_id))}</td>
             <td></td>
           </tr>
         `;
@@ -3003,6 +3003,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (elTotal) elTotal.textContent = `(${total})`;
   if (elActive) elActive.textContent = active;
   if (elInactive) elInactive.textContent = inactive;
+}
+  function formatPeriod(p){
+  if(!p) return "";
+  const [y,m] = String(p).split("-");
+  if(!y || !m) return p;
+  return `01/${m}/${y} 00:00`;
 }
 
 </script>
