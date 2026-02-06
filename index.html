@@ -2302,7 +2302,7 @@ async function adminsLoadRetoursValidations(){
               <td>${esc(it.agent)}</td>
               <td>${esc(it.declaration)}</td>
               <td>${esc(it.justificatif)}</td>
-              <td>${esc(it.period_id)}</td>
+              <td>${esc(formatPeriod(it.period_id))}</td>
               <td>${esc(it.remark || "")}</td>
             </tr>
           `;
