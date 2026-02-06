@@ -2239,24 +2239,34 @@ renderRetoursAgents_(items);
 if(!items.length){
   tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
 }else{
-  tb.innerHTML = items.map(it=>`
-    <tr>
-      <td>${esc(it.mission)}</td>
-      <td>${esc(it.agent)}</td>
-      <td>${esc(it.declaration)}</td>
-      <td>${esc(it.justificatif)}</td>
-      <td>${esc(it.period_id)}</td>
-      <td>${esc(it.remark||"")}</td>            
-    </tr>
-  `).join("");
-}
-showToast("toastAdminsRetours","Chargé ✅",true);
-  }catch(_){
-    showToast("toastAdminsRetours","Erreur réseau.",false);
-  }finally{
-    setLoading(btn,false);
-  }
-}
+  // 1) Regrouper par mission (libellé / champ mission)
+const byMission = {};
+(items || []).forEach(it => {
+  const key = String(it.mission || "—").trim();
+  (byMission[key] ||= []).push(it);
+});
+
+// 2) Construire le HTML : mission affichée seulement sur la 1ère ligne du bloc
+let html = "";
+Object.keys(byMission).forEach(mission => {
+  const rows = byMission[mission];
+
+  rows.forEach((it, idx) => {
+    html += `
+      <tr>
+        <td>${idx === 0 ? esc(mission) : ""}</td> <!-- Mission (1 seule fois) -->
+        <td>${esc(it.agent)}</td> <!-- Fait par -->
+        <td>${esc(it.declaration)}</td> <!-- Déclaration -->
+        <td>${esc(it.justificatif)}</td> <!-- Justificatif -->
+        <td>${esc(it.period_id)}</td> <!-- Période -->
+        <td>${esc(it.remark || "")}</td> <!-- Validation (temp) -->
+      </tr>
+    `;
+  });
+});
+
+tb.innerHTML = html || `<tr><td class="ghost" colspan="6">—</td></tr>`;
+
   function populateRetoursPeriodes(retours = []) {
   const select = document.getElementById("adminsRetoursPeriodSel");
   if (!select) return;
