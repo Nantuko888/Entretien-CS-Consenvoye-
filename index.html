@@ -2209,7 +2209,7 @@ async function adminsLoadRetoursValidations(){
 async function adminsLoadRetours(ev){
   hideToast("toastAdminsRetours");
 
-  if(!STATE.admins.ok){
+  if(!STATE.admins || !STATE.admins.ok){
     showToast("toastAdminsRetours","Non connecté.",false);
     return;
   }
@@ -2222,22 +2222,18 @@ async function adminsLoadRetours(ev){
     return;
   }
 
-  const fmtDT = (v) => {
-    if(!v) return "";
-    // accepte Date, timestamp (ms), ou string ISO
-    const d = (v instanceof Date) ? v : new Date(v);
-    if(isNaN(d.getTime())) return String(v);
-    const dd = String(d.getDate()).padStart(2,"0");
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const yy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mi = String(d.getMinutes()).padStart(2,"0");
-    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
-  };
+  // format période : JJ/MM/AAAA HH:mm à partir de YYYY-MM
+  function formatPeriod(p){
+    if(!p) return "";
+    const m = String(p).match(/^(\d{4})-(\d{2})/);
+    if(!m) return p;
+    return `01/${m[2]}/${m[1]} 00:00`;
+  }
 
   setLoading(btn,true);
 
   try{
+    // ⚠️ UN SEUL appel API (ce qui fonctionnait avant)
     const res = await apiCall("adminGetRetours", {
       admin_code: STATE.admins.code,
       period_id
@@ -2251,7 +2247,7 @@ async function adminsLoadRetours(ev){
     const tb = $("adminsRetoursTable");
     const items = res.items || [];
 
-    // (si tu as une synthèse agents à droite)
+    // panneau agents (si existant)
     try { renderRetoursAgents_(items); } catch(e) {}
 
     if(!items.length){
@@ -2260,99 +2256,35 @@ async function adminsLoadRetours(ev){
       return;
     }
 
-    async function adminsLoadRetours(ev){
-  hideToast("toastAdminsRetours");
-
-  if(!STATE.admins.ok){
-    showToast("toastAdminsRetours","Non connecté.",false);
-    return;
-  }
-
-  const btn = ev?.target || $("btnAdminsLoadRetours");
-  const period_id = $("adminsRetoursPeriodSel")?.value?.trim();
-
-  if(!period_id){
-    showToast("toastAdminsRetours","Choisis une période.",false);
-    return;
-  }
-
-  const fmtDT = (v) => {
-    if(!v) return "";
-    // accepte Date, timestamp (ms), ou string ISO
-    const d = (v instanceof Date) ? v : new Date(v);
-    if(isNaN(d.getTime())) return String(v);
-    const dd = String(d.getDate()).padStart(2,"0");
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const yy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mi = String(d.getMinutes()).padStart(2,"0");
-    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
-  };
-
-  setLoading(btn,true);
-
-  try{
-    const res = await apiCall("adminGetRetours", {
-      admin_code: STATE.admins.code,
-      period_id
-    });
-
-    if(!res || !res.ok){
-      showToast("toastAdminsRetours",(res && res.message) || "Erreur",false);
-      return;
-    }
-
-    const tb = $("adminsRetoursTable");
-    const items = res.items || [];
-
-    // (si tu as une synthèse agents à droite)
-    try { renderRetoursAgents_(items); } catch(e) {}
-
-    if(!items.length){
-      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-      showToast("toastAdminsRetours","Chargé ✅",true);
-      return;
-    }
-
-    // 1 mission affichée 1 seule fois, agents en dessous
+    // 1 mission affichée une seule fois, agents empilés dessous
     const byMission = {};
     items.forEach(it=>{
-      const mission =
-        String(it.mission_libelle || it.mission || it.libelle || "").trim() || "—";
-      (byMission[mission] ||= []).push(it);
+      const mission = String(it.mission || it.mission_libelle || it.libelle || "").trim() || "—";
+      if(!byMission[mission]) byMission[mission] = [];
+      byMission[mission].push(it);
     });
 
     let html = "";
-    Object.keys(byMission).sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"})).forEach(mission=>{
-      const rows = byMission[mission];
 
-      rows.forEach((it, idx)=>{
-        const dtRaw = it.periode_dt || it.periode || it.date || it.timestamp || it.period_dt || it.period_id || period_id;
+    Object.keys(byMission)
+      .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}))
+      .forEach(mission=>{
+        const rows = byMission[mission];
 
-        html += `
-          <tr>
-            <td>${idx===0 ? esc(mission) : ""}</td>
-            <td>${esc(it.agent || "")}</td>
-            <td>${esc(it.declaration || "")}</td>
-            <td>${esc(it.justificatif || "")}</td>
-            <td>${esc(fmtDT(dtRaw))}</td>
-            <td>${esc(it.remark || "")}</td>
-          </tr>
-        `;
+        rows.forEach((it, idx)=>{
+          html +=
+            "<tr>" +
+              "<td>" + (idx === 0 ? esc(mission) : "") + "</td>" +
+              "<td>" + esc(it.agent || "") + "</td>" +
+              "<td>" + esc(it.declaration || "") + "</td>" +
+              "<td>" + esc(it.justificatif || "") + "</td>" +
+              "<td>" + esc(formatPeriod(it.period_id || period_id)) + "</td>" +
+              "<td>" + esc(it.remark || "") + "</td>" +
+            "</tr>";
+        });
       });
-    });
 
-    tb.innerHTML = html || `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-    showToast("toastAdminsRetours","Chargé ✅",true);
-
-  }catch(e){
-    console.error("adminsLoadRetours ERROR", e);
-    showToast("toastAdminsRetours","Erreur réseau.",false);
-  }finally{
-    setLoading(btn,false);
-  }
-}
-
+    tb.innerHTML = html || `<tr><td class="ghost" colspan="6">—</td></tr>`;
     showToast("toastAdminsRetours","Chargé ✅",true);
 
   }catch(e){
