@@ -2368,34 +2368,31 @@ async function adminsLoadRetours(ev){
   const select = document.getElementById("adminsRetoursPeriodSel");
   if (!select) return;
 
-  // Toujours remplir le menu (même si retours vide)
-  select.innerHTML = "";
+  // garder la sélection actuelle si possible
+  const prev = select.value;
 
-  // Option placeholder
+  select.innerHTML = "";
   select.appendChild(new Option("— Choisir période —", ""));
 
-  // On génère 24 mois (12 avant + mois courant + 11 après)
-  const now = new Date();
-  now.setDate(1);
-  now.setHours(0,0,0,0);
+  const year = new Date().getFullYear(); // année en cours
 
-  for (let offset = -12; offset <= 11; offset++) {
-    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const pid = `${y}-${m}`;
+  for (let m = 1; m <= 12; m++) {
+    const mm = String(m).padStart(2, "0");
+    const pid = `${year}-${mm}`; // valeur interne (YYYY-MM)
+    const d = new Date(year, m - 1, 1);
+    const label = d.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
-    const opt = document.createElement("option");
-    opt.value = pid;
-    opt.textContent = d.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+    select.appendChild(new Option(label, pid));
+  }
 
-    select.appendChild(opt);
+  // restaurer la sélection si elle existe encore, sinon mettre le mois courant
+  if (prev && Array.from(select.options).some(o => o.value === prev)) {
+    select.value = prev;
+  } else {
+    const cur = String(new Date().getMonth() + 1).padStart(2, "0");
+    select.value = `${year}-${cur}`;
   }
 }
-
-
-
-
 
 function monthLabel(mm) {
   const names = [
