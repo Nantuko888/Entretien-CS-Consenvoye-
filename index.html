@@ -2187,24 +2187,55 @@ async function adminsLoadRetoursValidations(){
   }
 }
 
-  function renderRetoursAgents_(items){
+  async function renderRetoursAgents_(items){
   const wrap = $("retoursAgentsWrap");
   const tb = $("retoursAgentsTable");
   if(!wrap || !tb) return;
 
-  const names = [...new Set(
-    (items || [])
-      .map(it => String(it.agent || "").trim())
-      .filter(Boolean)
-  )].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
+  const period_id = ($("adminsRetoursPeriodSel")?.value || "").trim();
+  if(!period_id){
+    wrap.style.display = "none";
+    return;
+  }
 
-  // Affiche le bloc uniquement si on a des lignes
-  wrap.style.display = names.length ? "grid" : "none";
+  // Cache simple
+  STATE.cache ||= {};
+  STATE.cache.retoursAgents ||= {};
+
+  let names = STATE.cache.retoursAgents[period_id];
+
+  // Base = TOUS les agents affectés à la période (via adminLoadPeriod existant)
+  if(!Array.isArray(names)){
+    names = [];
+    try{
+      const res = await apiCall("adminLoadPeriod", { admin_code: STATE.admins.code, period_id });
+      if(res && res.ok){
+        const group = res.group || [];
+        names = group
+          .map(a => String(a.nom || a.name || a.agent || "").trim())
+          .filter(Boolean);
+      }
+    }catch(e){
+      names = [];
+    }
+    STATE.cache.retoursAgents[period_id] = names;
+  }
+
+  // Ceux qui ont fait au moins un retour (marquage)
+  const did = new Set(
+    (items || []).map(it => String(it.agent || "").trim()).filter(Boolean)
+  );
+
+  names = [...new Set(names)].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
+
+  // Affiche toujours le bloc (même si 0 retour)
+  wrap.style.display = "grid";
 
   tb.innerHTML = names.length
-    ? names.map(n=>`<tr><td>${esc(n)}</td></tr>`).join("")
-    : `<tr><td class="ghost">—</td></tr>`;
+    ? names.map(n => `<tr><td>${esc(n)}${did.has(n) ? " ✅" : ""}</td></tr>`).join("")
+    : `<tr><td class="ghost">Aucun agent affecté à cette période.</td></tr>`;
 }
+
   
 async function adminsLoadRetours(ev){
   hideToast("toastAdminsRetours");
@@ -2351,7 +2382,7 @@ async function adminsLoadRetours(ev){
     tb.innerHTML = html || `<tr><td class="ghost" colspan="6">—</td></tr>`;
 
     // panneau agents (si tu l’as)
-    try{ renderRetoursAgents_(items); }catch(_){}
+    try{ await renderRetoursAgents_(items); }catch(_){}
 
     showToast("toastAdminsRetours","Chargé ✅",true);
 
