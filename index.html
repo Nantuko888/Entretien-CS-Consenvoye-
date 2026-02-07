@@ -2368,51 +2368,31 @@ async function adminsLoadRetours(ev){
   const select = document.getElementById("adminsRetoursPeriodSel");
   if (!select) return;
 
+  // Toujours remplir le menu (même si retours vide)
+  select.innerHTML = "";
+
+  // Option placeholder
+  select.appendChild(new Option("— Choisir période —", ""));
+
+  // On génère 24 mois (12 avant + mois courant + 11 après)
   const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1; // 1..12
+  now.setDate(1);
+  now.setHours(0,0,0,0);
 
-  // mois qui ont au moins un retour (format attendu: period_id = "YYYY-MM")
-  const monthsWithRetour = new Set(
-    (retours || [])
-      .map(r => String(r.period_id || r.period || r.periode_id || "").trim())
-      .filter(Boolean)
-      .map(pid => pid.slice(0, 7)) // "YYYY-MM"
-      .filter(pid => /^\d{4}-\d{2}$/.test(pid))
-  );
-
-  // reset menu
-  select.innerHTML = `<option value="">— Choisir période —</option>`;
-
-  for (let m = 1; m <= 12; m++) {
-    const mm = String(m).padStart(2, "0");
-    const pid = `${currentYear}-${mm}`;
-
-    const isPast = m < currentMonth;
-    const isCurrent = m === currentMonth;
-    const hasRetour = monthsWithRetour.has(pid);
+  for (let offset = -12; offset <= 11; offset++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const pid = `${y}-${m}`;
 
     const opt = document.createElement("option");
     opt.value = pid;
-
-    // libellé FR: "janvier 2026"
-    opt.textContent = new Date(currentYear, m - 1, 1).toLocaleDateString("fr-FR", {
-      month: "long",
-      year: "numeric"
-    });
-
-    // ✅ Règle demandée :
-    // - mois passés : cliquables
-    // - mois courant : cliquable
-    // - mois futurs : grisés (sauf si tu veux les rendre cliquables quand hasRetour = true)
-    opt.disabled = !(isPast || isCurrent); // <- SIMPLE ET CLAIR
-
-    // (optionnel) si tu veux que futur devienne cliquable dès qu’il y a un retour :
-    // opt.disabled = !(isPast || isCurrent || hasRetour);
+    opt.textContent = d.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
     select.appendChild(opt);
   }
 }
+
 
 
 
