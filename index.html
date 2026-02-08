@@ -2035,42 +2035,38 @@ function fmtDateFR_(ts){
 }
 
 function renderResponsableRetours_(items){
-  const tb = $("agentResponsableRetoursTable");
-  if(!tb) return;
+  const tb = document.getElementById("agentResponsableRetoursTable");
+  if (!tb) return;
 
-  const arr = items || [];
-  if(!arr.length){
-    tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
+  if (!items || !items.length) {
+    tb.innerHTML = `<tr>
+      <td class="ghost" colspan="6">Aucun retour.</td>
+    </tr>`;
     return;
   }
 
-  // groupé par mission, comme l’admin
-  const byMission = {};
-  arr.forEach(it=>{
-    const mission = String(it.mission || it.mission_libelle || it.libelle || "—").trim() || "—";
-    (byMission[mission] ||= []).push(it);
-  });
-
-  let html = "";
-  Object.keys(byMission)
-    .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}))
-    .forEach(mission=>{
-      byMission[mission].forEach((it, idx)=>{
-        html += `
-          <tr>
-            <td>${idx===0 ? esc(mission) : ""}</td>
-            <td>${esc(it.agent || "")}</td>
-            <td>${esc(it.declaration || "")}</td>
-            <td>${esc(it.justificatif || "")}</td>
-            <td>${esc(fmtDateFR_(it.ts))}</td>
-            <td>${esc(it.validation || it.valid || it.validated ? "✅" : "")}</td>
-          </tr>
-        `;
-      });
+  const fmtDT = (v) => {
+    if(!v) return "";
+    const d = new Date(v);
+    if(isNaN(d)) return "";
+    return d.toLocaleString("fr-FR", {
+      day:"2-digit", month:"2-digit", year:"numeric",
+      hour:"2-digit", minute:"2-digit"
     });
+  };
 
-  tb.innerHTML = html;
+  tb.innerHTML = items.map(it => `
+    <tr>
+      <td>${it.mission || "—"}</td>
+      <td>${it.agent || "—"}</td>
+      <td>${it.declaration || "—"}</td>
+      <td>${it.justificatif || ""}</td>
+      <td>${fmtDT(it.ts)}</td>
+      <td>${it.validation ? "✔" : ""}</td>
+    </tr>
+  `).join("");
 }
+
 
     
 async function adminsAddToGroup(ev){
