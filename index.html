@@ -2301,16 +2301,7 @@ async function adminsLoadRetours(ev){
       return;
     }
 
-    tb.innerHTML = items.map(it => `
-      <tr>
-        <td>${esc(it.period_id || "")}</td>
-        <td>${esc(it.agent || "")}</td>
-        <td>${esc(it.mission || "")}</td>
-        <td>${esc(it.declaration || "")}</td>
-        <td>${esc(it.justificatif || "")}</td>
-        <td>${esc(it.remark || "")}</td>
-      </tr>
-    `).join("");
+    
 
     showToast("toastAdminsRetours","Chargé ✅",true);
 
@@ -2319,7 +2310,16 @@ async function adminsLoadRetours(ev){
     showToast("toastAdminsRetours","Erreur réseau.",false);
   }finally{
     setLoading(btn,false);
-  }
+  }tb.innerHTML = items.map(it => `
+  <tr>
+    <td>${esc(it.mission || "")}</td>
+    <td>${esc(it.agent || "")}</td>
+    <td>${esc(it.declaration || "")}</td>
+    <td>${esc(it.justificatif || "")}</td>
+    <td>${fmtDate(it.ts)}</td>
+    <td>${esc(it.remark || "")}</td>
+  </tr>
+`).join("");
 }
 
   function populateRetoursPeriodes(retours = []) {
