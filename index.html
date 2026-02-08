@@ -2022,6 +2022,57 @@ function renderResponsablesSelect(){
     (STATE.current.group||[]).map(a=>`<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`).join("");
 }
 
+function fmtDateFR_(ts){
+  if(!ts) return "";
+  const d = new Date(ts);
+  if(isNaN(d.getTime())) return "";
+  const dd = String(d.getDate()).padStart(2,"0");
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const yy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mi = String(d.getMinutes()).padStart(2,"0");
+  return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+}
+
+function renderResponsableRetours_(items){
+  const tb = $("agentResponsableRetoursTable");
+  if(!tb) return;
+
+  const arr = items || [];
+  if(!arr.length){
+    tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
+    return;
+  }
+
+  // groupé par mission, comme l’admin
+  const byMission = {};
+  arr.forEach(it=>{
+    const mission = String(it.mission || it.mission_libelle || it.libelle || "—").trim() || "—";
+    (byMission[mission] ||= []).push(it);
+  });
+
+  let html = "";
+  Object.keys(byMission)
+    .sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}))
+    .forEach(mission=>{
+      byMission[mission].forEach((it, idx)=>{
+        html += `
+          <tr>
+            <td>${idx===0 ? esc(mission) : ""}</td>
+            <td>${esc(it.agent || "")}</td>
+            <td>${esc(it.declaration || "")}</td>
+            <td>${esc(it.justificatif || "")}</td>
+            <td>${esc(fmtDateFR_(it.ts))}</td>
+            <td>${esc(it.validation || it.valid || it.validated ? "✅" : "")}</td>
+          </tr>
+        `;
+      });
+    });
+
+  tb.innerHTML = html;
+}
+
+    
 async function adminsAddToGroup(ev){
   hideToast("toastAdminsPeriod");
   if(!STATE.admins.ok){ showToast("toastAdminsPeriod","Non connecté.",false); return; }
@@ -2592,6 +2643,12 @@ async function agentsLoadPeriod(ev){
     if (boxResp) {
       boxResp.style.display = res.is_responsable ? "block" : "none";
     }
+
+    if (isResponsable) {
+  const r = await apiCall("adminGetRetours", { period_id });
+  if (r && r.ok) renderResponsableRetours_(r.items || []);
+  else renderResponsableRetours_([]);
+}
 
     showToast("toastAgentsLoad","Chargé ✅",true);
 
