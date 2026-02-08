@@ -2637,65 +2637,67 @@ function toPeriodYM(period_id, label){
   
 async function agentsLoadPeriod(ev){
   hideToast("toastAgentsLoad");
-  if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.",false); return; }
+  if(!STATE.agents.ok){
+    showToast("toastAgentsLoad","Non connecté.",false);
+    return;
+  }
+
   const btn = ev?.target || $("btnAgentsLoad");
   const period_id = $("agentsPeriodsSel").value;
-  if(!period_id){ showToast("toastAgentsLoad","Choisis une période.",false); return; }
+  if(!period_id){
+    showToast("toastAgentsLoad","Choisis une période.",false);
+    return;
+  }
 
   setLoading(btn,true);
-  try{
-    const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
-    if(!res || !res.ok){
-      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
-    }
-    // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
-STATE.agentWork.is_period_open = !!res.is_period_open;
-STATE.agentWork.is_responsable = !!res.is_responsable;
 
-setAgentPeriodLocked(!STATE.agentWork.is_period_open);
+  try{
+    const res = await apiCall("agentLoadPeriod", {
+      agent_id: STATE.agents.agent_id,
+      period_id
+    });
+
+    if(!res || !res.ok){
+      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false);
+      return;
+    }
+
+    // ===== ÉTAT =====
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
+    STATE.agentWork.is_period_open = !!res.is_period_open;
     STATE.agentWork.is_responsable = !!res.is_responsable;
+
     $("boxAgentsAfterLoad").style.display = "";
 
-    setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
+    setPill(
+      "pillAgentsPeriod",
+      "Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id),
+      "ok"
+    );
 
-
+    // ===== AFFICHAGE AGENT =====
     renderAgentMissions(res.missions || []);
     renderAgentTeam(res.group || [], res.responsable || null);
-      // ===============================
-// VUE RESPONSABLE – tableau retours
-// ===============================
-const boxResp = $("boxResponsableRetours");
-
-const myAgentId = String(
-  (STATE.agentWork && (STATE.agentWork.agent_id || STATE.agentWork.id)) ||
-  (STATE.agent && (STATE.agent.agent_id || STATE.agent.id)) ||
-  ""
-).trim();
-
-const responsableId = String(
-  (res.responsable && res.responsable.agent_id) || res.responsable || ""
-).trim();
-
-const isResponsable = myAgentId && responsableId && myAgentId === responsableId;
-
-if (boxResp) {
-  boxResp.style.display = isResponsable ? "block" : "none";
-}
 
     setAgentPeriodLocked(!STATE.agentWork.is_period_open);
-    console.log("TEAM GROUP =", res.group);
-console.log("RESPONSABLE =", res.responsable);
-    $("boxAgentsAfterLoad").style.display = "";
+
+    // ===== VUE RESPONSABLE =====
+    const boxResp = $("boxResponsableRetours");
+    if (boxResp) {
+      boxResp.style.display = res.is_responsable ? "block" : "none";
+    }
 
     showToast("toastAgentsLoad","Chargé ✅",true);
-  }catch(_){
+
+  }catch(e){
+    console.error(e);
     showToast("toastAgentsLoad","Erreur réseau.",false);
   }finally{
     setLoading(btn,false);
   }
 }
+
 
 function renderAgentMissions(list){
   const box = $("boxAgentsMissions");
