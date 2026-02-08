@@ -2663,6 +2663,27 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
 
     renderAgentMissions(res.missions || []);
     renderAgentTeam(res.group || [], res.responsable || null);
+      // ===============================
+// VUE RESPONSABLE – tableau retours
+// ===============================
+const boxResp = $("boxResponsableRetours");
+
+const myAgentId = String(
+  (STATE.agentWork && (STATE.agentWork.agent_id || STATE.agentWork.id)) ||
+  (STATE.agent && (STATE.agent.agent_id || STATE.agent.id)) ||
+  ""
+).trim();
+
+const responsableId = String(
+  (res.responsable && res.responsable.agent_id) || res.responsable || ""
+).trim();
+
+const isResponsable = myAgentId && responsableId && myAgentId === responsableId;
+
+if (boxResp) {
+  boxResp.style.display = isResponsable ? "block" : "none";
+}
+
     setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     console.log("TEAM GROUP =", res.group);
 console.log("RESPONSABLE =", res.responsable);
