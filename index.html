@@ -2580,7 +2580,11 @@ async function agentsLoadPeriod(ev){
   }
 
   const btn = ev?.target || $("btnAgentsLoad");
-  const period_id = $("agentsPeriodsSel").value;
+  const periodSel =
+  $("adminRetoursPeriod") ||
+  $("agentsPeriodsSel");
+
+const period_id = periodSel?.value || "";
   if(!period_id){
     showToast("toastAgentsLoad","Choisis une période.",false);
     return;
