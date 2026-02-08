@@ -2343,6 +2343,7 @@ async function adminsLoadRetours(ev){
           </tr>
         `).join("")
       : `<tr><td colspan="6" class="ghost">Aucun retour.</td></tr>`;
+      $("retoursSynthCard").style.display = "";
 
     showToast("toastAdminsRetours","Chargé ✅",true);
 
