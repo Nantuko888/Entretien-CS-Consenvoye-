@@ -2308,49 +2308,41 @@ async function adminsLoadRetoursValidations(){
 
   
 async function adminsLoadRetours(ev){
-    const tb = document.getElementById("agentResponsableRetoursTable");
-if (!tb) return;
   hideToast("toastAdminsRetours");
 
-  if(!STATE.admins.ok){
-    showToast("toastAdminsRetours","Non connecté.",false);
-    return;
-  }
-
-  const btn = ev?.target || $("btnAdminsLoadRetours");
-  const period_id = ($("adminsRetoursPeriodSel")?.value || "").trim();
-
+  const btn = ev?.target || $("btnAdminsRetoursLoad");
+  const period_id = $("adminsPeriodsSel")?.value;
   if(!period_id){
     showToast("toastAdminsRetours","Choisis une période.",false);
     return;
   }
 
+  const tb = document.getElementById("agentResponsableRetoursTable");
+  if(!tb) return;
+
   setLoading(btn,true);
 
   try{
-    const res = await apiCall("adminGetRetours", {
-      admin_code: STATE.admins.code,
-      period_id
-    });
-
+    const res = await apiCall("adminLoadRetours", { period_id });
     if(!res || !res.ok){
-      showToast("toastAdminsRetours",(res && res.message) || "Erreur",false);
+      showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false);
       return;
     }
 
-    const tb = $("adminsRetoursTable");
     const items = res.items || [];
 
-    // Liste agents à droite (si tu l’as)
-    try { renderRetoursAgents_(items); } catch(e) {}
-
-    if(!items.length){
-      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-      showToast("toastAdminsRetours","Chargé ✅",true);
-      return;
-    }
-
-    
+    tb.innerHTML = items.length
+      ? items.map(it => `
+          <tr>
+            <td>${esc(it.mission || "")}</td>
+            <td>${esc(it.agent || "")}</td>
+            <td>${esc(it.declaration || "")}</td>
+            <td>${esc(it.justificatif || "")}</td>
+            <td>${fmtDate(it.ts)}</td>
+            <td>${it.validation ? "Validé" : "En attente"}</td>
+          </tr>
+        `).join("")
+      : `<tr><td colspan="6" class="ghost">Aucun retour.</td></tr>`;
 
     showToast("toastAdminsRetours","Chargé ✅",true);
 
@@ -2359,16 +2351,7 @@ if (!tb) return;
     showToast("toastAdminsRetours","Erreur réseau.",false);
   }finally{
     setLoading(btn,false);
-  }tb.innerHTML = items.map(it => `
-  <tr>
-    <td>${esc(it.mission || "")}</td>
-    <td>${esc(it.agent || "")}</td>
-    <td>${esc(it.declaration || "")}</td>
-    <td>${esc(it.justificatif || "")}</td>
-    <td>${fmtDate(it.ts)}</td>
-    <td>${esc(it.remark || "")}</td>
-  </tr>
-`).join("");
+  }
 }
 
   function populateRetoursPeriodes(retours = []) {
