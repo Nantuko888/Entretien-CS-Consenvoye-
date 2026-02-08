@@ -1149,7 +1149,7 @@ button#btnAdminsLoadRetoursS,
   </tr>
 </thead>
 <tbody id="adminsRetoursTable">
-  <tr><td class="ghost" colspan="7">—</td></tr>
+  <tr><td class="ghost" colspan="6">—</td></tr>
 </tbody>
             </table>
           </div>
@@ -2263,148 +2263,54 @@ async function adminsLoadRetoursValidations(){
 async function adminsLoadRetours(ev){
   hideToast("toastAdminsRetours");
 
-  if(!STATE.admins || !STATE.admins.ok){
+  if(!STATE.admins.ok){
     showToast("toastAdminsRetours","Non connecté.",false);
     return;
   }
 
   const btn = ev?.target || $("btnAdminsLoadRetours");
   const period_id = ($("adminsRetoursPeriodSel")?.value || "").trim();
+
   if(!period_id){
     showToast("toastAdminsRetours","Choisis une période.",false);
     return;
   }
 
-  // Date/heure : JJ/MM/AAAA HH:mm (accepte Date, timestamp, ISO)
-  const fmtDT = (v) => {
-    if(!v) return "";
-    const d = (v instanceof Date) ? v : new Date(v);
-    if(isNaN(d.getTime())) return String(v);
-    const dd = String(d.getDate()).padStart(2,"0");
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const yy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2,"0");
-    const mi = String(d.getMinutes()).padStart(2,"0");
-    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
-  };
-
-  // Date par défaut pour les lignes "sans retour" : 01/MM/YYYY 00:00
-  const defaultDT = (() => {
-    const m = String(period_id).match(/^(\d{4})-(\d{2})$/);
-    if(!m) return period_id;
-    return `${m[1]}-${m[2]}-01T00:00:00`;
-  })();
-
   setLoading(btn,true);
 
   try{
-    // 1) Retours enregistrés (peut être vide)
-    const rRes = await apiCall("adminGetRetours", { admin_code: STATE.admins.code, period_id });
-    if(!rRes || !rRes.ok){
-      showToast("toastAdminsRetours",(rRes && rRes.message) || "Erreur",false);
-      return;
-    }
-    const items = rRes.items || [];
-
-    // 2) Missions du mois (c’est déjà utilisé ailleurs chez toi : adminsLoadActiveMissions)
-    const mRes = await apiCall("adminGetMonthMissions", { admin_code: STATE.admins.code, period_id });
-    if(!mRes || !mRes.ok){
-      showToast("toastAdminsRetours",(mRes && mRes.message) || "Erreur missions du mois",false);
-      return;
-    }
-
-    const missionsOn = (mRes.missionsOn || []).map(x=>{
-      const mid = (typeof x === "string") ? x : (x && x.mission_id);
-      const lib =
-        (typeof x === "string")
-          ? (STATE.catalogById?.[String(mid)] || String(mid))
-          : (x.libelle || STATE.catalogById?.[String(mid)] || String(mid));
-      return String(lib || "").trim();
-    }).filter(Boolean);
-
-    // Optionnel : garde ton résumé synchro si tu veux (existe chez toi)
-    try{ renderActiveSummary(mRes.missionsOn || []); }catch(_){}
-
-    // Index des retours par libellé mission (ton backend renvoie mission/mission_libelle)
-    const byMission = {};
-    (items || []).forEach(it=>{
-      const lab = String(it.mission_libelle || it.mission || it.libelle || "").trim();
-      if(!lab) return;
-      (byMission[lab] ||= []).push(it);
+    const res = await apiCall("adminGetRetours", {
+      admin_code: STATE.admins.code,
+      period_id
     });
 
-    // 3) Rendu tableau : TOUTES les missions, même sans retour
+    if(!res || !res.ok){
+      showToast("toastAdminsRetours",(res && res.message) || "Erreur",false);
+      return;
+    }
+
     const tb = $("adminsRetoursTable");
+    const items = res.items || [];
 
-    // Si pas de missionsOn → on affiche quand même les retours (fallback)
-    const base = missionsOn.length ? missionsOn : Object.keys(byMission);
+    // Liste agents à droite (si tu l’as)
+    try { renderRetoursAgents_(items); } catch(e) {}
 
-    if(!base.length && !items.length){
-      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucune mission.</td></tr>`;
+    if(!items.length){
+      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
       showToast("toastAdminsRetours","Chargé ✅",true);
       return;
     }
 
-    let html = "";
-
-    base.forEach(missionLabel=>{
-      const rows = byMission[missionLabel] || [];
-
-      // Aucun retour : mission affichée quand même, colonnes vides
-      if(!rows.length){
-        html +=
-          "<tr>" +
-            "<td>" + esc(missionLabel) + "</td>" + // Mission
-            "<td></td>" + // Fait par
-            "<td></td>" + // Déclaration
-            "<td></td>" + // Justificatif
-            "<td>" + esc(fmtDT(defaultDT)) + "</td>" + // Période
-            "<td></td>" + // Validation (temp)
-          "</tr>";
-        return;
-      }
-
-      // Retours existants : mission 1 fois, agents dessous
-      rows.forEach((it, idx)=>{
-        const dtRaw = it.ts;
-
-        html +=
-          "<tr>" +
-            "<td>" + (idx===0 ? esc(missionLabel) : "") + "</td>" + // Mission (1 fois)
-            "<td>" + esc(it.agent || "") + "</td>" + // Fait par
-            "<td>" + esc(it.declaration || "") + "</td>" + // Déclaration
-            "<td>" + esc(it.justificatif || "") + "</td>" + // Justificatif
-            "<td>" + esc(fmtDT(dtRaw)) + "</td>" + // Période
-            "<td>" + esc(it.remark || "") + "</td>" + // Validation (temp)
-          "</tr>";
-      });
-    });
-
-    // (si des retours existent pour des missions pas dans missionsOn, on les ajoute en bas)
-    const baseSet = new Set(base);
-    Object.keys(byMission).forEach(mLab=>{
-      if(baseSet.has(mLab)) return;
-      const rows = byMission[mLab] || [];
-      rows.forEach((it, idx)=>{
-        const dtRaw =
-          it.periode_dt || it.periode || it.date || it.timestamp || it.period_dt || it.period_id || defaultDT;
-
-        html +=
-          "<tr>" +
-            "<td>" + (idx===0 ? esc(mLab) : "") + "</td>" +
-            "<td>" + esc(it.agent || "") + "</td>" +
-            "<td>" + esc(it.declaration || "") + "</td>" +
-            "<td>" + esc(it.justificatif || "") + "</td>" +
-            "<td>" + esc(fmtDT(dtRaw)) + "</td>" +
-            "<td>" + esc(it.remark || "") + "</td>" +
-          "</tr>";
-      });
-    });
-
-    tb.innerHTML = html || `<tr><td class="ghost" colspan="6">—</td></tr>`;
-
-    // panneau agents (si tu l’as)
-    try{ await renderRetoursAgents_(items); }catch(_){}
+    tb.innerHTML = items.map(it => `
+      <tr>
+        <td>${esc(it.period_id || "")}</td>
+        <td>${esc(it.agent || "")}</td>
+        <td>${esc(it.mission || "")}</td>
+        <td>${esc(it.declaration || "")}</td>
+        <td>${esc(it.justificatif || "")}</td>
+        <td>${esc(it.remark || "")}</td>
+      </tr>
+    `).join("");
 
     showToast("toastAdminsRetours","Chargé ✅",true);
 
@@ -2415,7 +2321,6 @@ async function adminsLoadRetours(ev){
     setLoading(btn,false);
   }
 }
-
 
   function populateRetoursPeriodes(retours = []) {
   const select = document.getElementById("adminsRetoursPeriodSel");
