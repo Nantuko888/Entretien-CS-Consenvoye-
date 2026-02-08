@@ -2308,6 +2308,8 @@ async function adminsLoadRetoursValidations(){
 
   
 async function adminsLoadRetours(ev){
+    const tb = document.getElementById("agentResponsableRetoursTable");
+if (!tb) return;
   hideToast("toastAdminsRetours");
 
   if(!STATE.admins.ok){
