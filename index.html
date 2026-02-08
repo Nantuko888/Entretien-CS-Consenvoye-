@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="utf-8" />
+<head>xage
+    <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Entretien CS Consenvoye</title>
   <style>
@@ -806,6 +806,29 @@ button#btnAdminsLoadRetoursS,
                 <div id="boxAgentsMissions" class="scrollBox">
           <div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>
         </div>
+        <!-- ✅ VUE RESPONSABLE : tableau retours (lecture seule) -->
+<div id="boxResponsableRetours" class="card" style="display:none;">
+  <div class="cardTitle">Suivi des missions (vue responsable)</div>
+
+  <div class="scrollBox" style="margin-top:10px;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mission</th>
+          <th>Fait par</th>
+          <th>Déclaration</th>
+          <th>Justificatif</th>
+          <th>Période</th>
+          <th>Validation</th>
+        </tr>
+      </thead>
+      <tbody id="agentResponsableRetoursTable">
+        <tr><td class="ghost" colspan="6">Charge une période.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
            <div id="boxAgentsAfterLoad" style="display:none;justify-content:flex-end;margin-top:10px;gap:10px">
 
