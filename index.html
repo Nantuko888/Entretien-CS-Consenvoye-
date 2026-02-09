@@ -2814,32 +2814,51 @@ async function softRefresh(ev){
   
 async function agentsSave(ev){
   hideToast("toastAgentsSave");
-  if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
-  const btn = ev?.target || $("btnAgentsSave");
-  const period_id = STATE.agentWork.period_id;
-  if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
 
-  // collecte déclarations
-  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
+  if(!STATE.agents.ok){
+    showToast("toastAgentsSave","Non connecté.",false);
+    return;
+  }
+
+  const btn = ev?.target || $("btnAgentsSave");
+  const period_id = STATE.agentWork?.period_id;
+  if(!period_id){
+    showToast("toastAgentsSave","Charge une période.",false);
+    return;
+  }
+
+  // 1) Collecte des déclarations (toutes)
+  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel => {
     const mid = sel.getAttribute("data-mid");
     const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
     return {
       mission_id: mid,
       declaration: sel.value,
-      justificatif: just ? just.value.trim() : ""
+      justificatif: just ? (just.value || "").trim() : ""
     };
   });
-   // ✅ Autoriser l'enregistrement partiel : on n'envoie que les lignes renseignées
-const decsFilled = decs.filter(d => {
-  const v = String(d.declaration || "").trim();
-  return v && v !== "-";
-});
 
-}
+  // 2) Enregistrement partiel : on ne garde que ce qui est renseigné (≠ "-")
+  const decsFilled = decs.filter(d => {
+    const v = String(d.declaration || "").trim();
+    return v && v !== "-";
+  });
 
-  const remark = $("agentsRemark").value.trim();
+  // Si rien n’est rempli, on ne bloque pas “le système”, mais on n’envoie rien
+  if(!decsFilled.length){
+    showToast("toastAgentsSave","Rien à enregistrer.",false);
+    return;
+  }
 
-  // (on l’affiche après succès seulement)
+  // 3) Justificatif obligatoire si Partiel / Non fait
+  for(const d of decsFilled){
+    if((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif){
+      showToast("toastAgentsSave","Justificatif obligatoire si Partiel / Non fait.",false);
+      return;
+    }
+  }
+
+  const remark = ($("agentsRemark")?.value || "").trim();
 
   setLoading(btn,true);
   try{
@@ -2847,20 +2866,22 @@ const decsFilled = decs.filter(d => {
       agent_id: STATE.agents.agent_id,
       period_id,
       remark,
-      items: JSON.stringify(decs)
+      items: JSON.stringify(decsFilled) // ✅ on envoie uniquement le rempli
     });
+
     if(!res || !res.ok){
-      showToast("toastAgentsSave",(res&&res.message)||"Erreur",false);
+      showToast("toastAgentsSave",(res && res.message) || "Erreur",false);
       return;
     }
+
     showToast("toastAgentsSave","Enregistré ✅",true);
-  
   }catch(_){
     showToast("toastAgentsSave","Erreur réseau.",false);
   }finally{
     setLoading(btn,false);
   }
 }
+
 async function agentsValidate(ev){
   hideToast("toastAgentsSave"); // on réutilise le toast du bloc missions
   if(!STATE.agents.ok){ showToast("toastAgentsSave","Non connecté.",false); return; }
