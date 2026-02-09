@@ -664,10 +664,10 @@ option.periode-future {
 .badge-validate.is-off svg path{ fill: rgba(255,255,255,.35); }
 
  /* Retours : forcer le bouton Charger à taille contenu (même si flex ou width:100% ailleurs) */
-#btnAdminsLoadRetours,
-button#btnAdminsLoadRetours,
-#btnAdminsLoadRetours.btn,
-#btnAdminsLoadRetours.btn.primary{
+#btnurs,
+button#btnurs,
+#btnurs.btn,
+#btnurs.btn.primary{
   width: auto !important;
   max-width: fit-content !important;
   min-width: 0 !important;
@@ -2209,146 +2209,135 @@ function formatTsFR(ts){
 
   
 async function adminsLoadRetours(ev){
-  
   hideToast("toastAdminsRetours");
-  async function adminsLoadRetours(ev){
-  hideToast("toastAdminsRetours");
+
+  if(!STATE.admins.ok){
+    showToast("toastAdminsRetours","Non connecté.",false);
+    return;
+  }
 
   const card = document.getElementById("retoursSynthCard");
   if(card) card.style.display = "";
 
-  // le reste de ton code existant...
-}
-
-  if(!STATE.admins.ok){ showToast("toastAdminsRetours","Non connecté.",false); return; }
   const btn = ev?.target || $("btnAdminsLoadRetours");
-  const period_id = $("adminsRetoursPeriodSel").value.trim();
-if(!period_id){
-  showToast("toastAdminsRetours","Choisis une période.",false);
-  return;
-}
-
-  setLoading(btn,true);
-  try{
-    const res = await apiCall("adminGetRetours", { admin_code: STATE.admins.code, period_id });
-    if(!res || !res.ok){
-      showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false); return;
-    }
-    const tb = $("adminsRetoursTable");
-    const items = res.items || [];
-
-    const month = await apiCall("adminGetMonthMissions", { admin_code: STATE.admins.code, period_id });
-const missions = (month && month.missionsOn) ? month.missionsOn : [];
-console.log("missions du mois:", missions);
-console.log("retours:", items.length);
-    
-    if(!items.length){
-      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
-    } else {
-
- // 1) récupère les missions actives du mois (source officielle)
-const month = await apiCall("adminGetMonthMissions", {
-  admin_code: STATE.admins.code,
-  period_id
-});
-const missions = (month && month.missionsOn) ? month.missionsOn : [];
-
-// 2) regroupe les retours par mission_id + agent
-const byMissionAgent = new Map(); // key = mid||agent -> {mid, agent, count, justificatif}
-for (const it of items) {
-  const mid = String(it.mission_id || "").trim();
-  const agent = String(it.agent || "").trim();
-  if(!mid || !agent) continue;
-
-  const key = `${mid}||${agent}`;
-  let r = byMissionAgent.get(key);
-if(!r){
-  r = { mid, agent, count:0, justificatif:"", ts:null };
-  byMissionAgent.set(key, r);
-}
-r.count += 1;
-
-if (it.justificatif && String(it.justificatif).trim()) {
-  r.justificatif = String(it.justificatif).trim();
-}
-
-// garde la date la + récente
-if (it.ts) {
-  const t = new Date(it.ts).getTime();
-  if (!isNaN(t) && (!r.ts || t > new Date(r.ts).getTime())) {
-    r.ts = it.ts;
-  }
-}
-
-}
-
-// 3) rend : 1 mission = 1 bloc ; mission écrite 1 fois, puis vide dessous
-const out = [];
-
-for (const m of missions) {
-  const mid = String(m.mission_id || "").trim();
-  const lib = String(m.libelle || mid).trim();
-
-  // récupère les agents pour cette mission
-  const rows = [];
-  for (const r of byMissionAgent.values()) {
-    if (String(r.mid) === mid) rows.push(r);
-  }
-  rows.sort((a,b)=> a.agent.localeCompare(b.agent, "fr", {sensitivity:"base"}));
-
-  if (!rows.length) {
-    // mission du mois sans retour => une ligne avec tirets
-    out.push(`
-      <tr>
-        <td>${esc(lib)}</td>
-        <td class="ghost">—</td>
-        <td class="center ghost">—</td>
-        <td class="ghost">—</td>
-        <td class="ghost">${esc(period_id)}</td>
-        <td class="center ghost">—</td>
-      </tr>
-    `);
-    continue;
+  const period_id = ($("adminsRetoursPeriodSel")?.value || "").trim();
+  if(!period_id){
+    showToast("toastAdminsRetours","Choisis une période.",false);
+    return;
   }
 
   const fmtDT = (ts) => {
-  if (!ts) return "";
-  const d = new Date(ts);
-  if (isNaN(d)) return String(ts);
-  // jj/mm/aaaa hh:mm
-  return d.toLocaleString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  }).replace(",", "");
-};
-  rows.forEach((r, i) => {
-    out.push(`
-      <tr>
-        <td>${i === 0 ? esc(lib) : ""}</td>
-        <td>${esc(r.agent)}</td>
-        <td class="center">${r.count}</td>
-        <td>${esc(r.justificatif || "—")}</td>
-        <td class="ghost">${esc(fmtDT(r.ts) || period_id)}</td>
-        <td class="center">—</td>
-      </tr>
-    `);
-  });
-}
+    if(!ts) return "—";
+    const d = new Date(ts);
+    if(isNaN(d.getTime())) return "—";
+    return d.toLocaleString("fr-FR", {
+      day:"2-digit", month:"2-digit", year:"numeric",
+      hour:"2-digit", minute:"2-digit"
+    }).replace(",", "");
+  };
 
-tb.innerHTML = out.join("");
+  setLoading(btn,true);
+  try{
+    // 1) retours (Non fait / Partiel) avec ts + agent + mission
+    const res = await apiCall("adminGetRetours", {
+      admin_code: STATE.admins.code,
+      period_id
+    });
+    if(!res || !res.ok){
+      showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false);
+      return;
+    }
+    const items = res.items || [];
 
-}
+    // 2) liste officielle des missions du mois (pour afficher toutes les missions)
+    const month = await apiCall("adminGetMonthMissions", {
+      admin_code: STATE.admins.code,
+      period_id
+    });
+    const missions = (month && month.missionsOn) ? month.missionsOn : [];
 
+    const tb = $("adminsRetoursTable");
+
+    // 3) on garde pour chaque (mission_id + agent) la ligne la + récente
+    const byMissionAgent = new Map(); // key mid||agent => {agent, declaration, justificatif, ts}
+    for(const it of items){
+      const mid = String(it.mission_id || "").trim();
+      const agent = String(it.agent || "").trim(); // déjà "nom" normalement
+      if(!mid || !agent) continue;
+
+      const key = `${mid}||${agent}`;
+      const ts = it.ts ? new Date(it.ts).getTime() : null;
+
+      const cur = byMissionAgent.get(key);
+      const curTs = cur && cur.ts ? new Date(cur.ts).getTime() : null;
+
+      if(!cur || (ts && (!curTs || ts > curTs))){
+        byMissionAgent.set(key, {
+          agent,
+          declaration: String(it.declaration || "").trim(),
+          justificatif: String(it.justificatif || "").trim(),
+          ts: it.ts || null
+        });
+      }
+    }
+
+    // 4) rendu : 1 mission = libellé une seule fois, agents en dessous
+    const out = [];
+    const sortedMissions = [...missions].sort((a,b)=>
+      String(a.libelle||a.mission_id||"").localeCompare(String(b.libelle||b.mission_id||""),"fr",{sensitivity:"base"})
+    );
+
+    for(const m of sortedMissions){
+      const mid = String(m.mission_id || "").trim();
+      const lib = String(m.libelle || mid).trim();
+
+      // récupère les lignes pour cette mission
+      const rows = [];
+      for(const [key, r] of byMissionAgent.entries()){
+        if(key.startsWith(mid + "||")) rows.push(r);
+      }
+      rows.sort((a,b)=> a.agent.localeCompare(b.agent,"fr",{sensitivity:"base"}));
+
+      if(!rows.length){
+        // mission du mois sans retour => affichée quand même
+        out.push(`
+          <tr>
+            <td>${esc(lib)}</td>
+            <td class="ghost">—</td>
+            <td class="ghost">—</td>
+            <td class="ghost">—</td>
+            <td class="ghost">${esc(period_id)}</td>
+            <td class="ghost">—</td>
+          </tr>
+        `);
+        continue;
+      }
+
+      rows.forEach((r, i)=>{
+        out.push(`
+          <tr>
+            <td>${i===0 ? esc(lib) : ""}</td>
+            <td>${esc(r.agent)}</td>
+            <td>${esc(r.declaration || "—")}</td>
+            <td>${esc(r.justificatif || "—")}</td>
+            <td>${esc(fmtDT(r.ts))}</td>
+            <td class="center">—</td>
+          </tr>
+        `);
+      });
+    }
+
+    tb.innerHTML = out.join("") || `<tr><td class="ghost" colspan="6">Aucune mission.</td></tr>`;
     showToast("toastAdminsRetours","Chargé ✅",true);
-  }catch(_){
+
+  }catch(e){
+    console.error("adminsLoadRetours ERROR", e);
     showToast("toastAdminsRetours","Erreur réseau.",false);
   }finally{
     setLoading(btn,false);
   }
 }
+
   function populateRetoursPeriodes(retours = []) {
   const select = document.getElementById("adminsRetoursPeriodSel");
   if (!select) return;
