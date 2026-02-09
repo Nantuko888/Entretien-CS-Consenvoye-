@@ -2311,7 +2311,7 @@ async function adminsLoadRetours(ev){
   hideToast("toastAdminsRetours");
 
   const btn = ev?.target || $("btnAdminsRetoursLoad");
-  const period_id = $("adminsPeriodsSel")?.value;
+  const period_id = $("adminsRetoursPeriodSel")?.value;
   if(!period_id){
     showToast("toastAdminsRetours","Choisis une période.",false);
     return;
