@@ -2307,50 +2307,39 @@ async function adminsLoadRetoursValidations(){
 }
 
   
-async function adminsLoadRetours(ev){
+
+Pierre Vénante <pierre.venante@gmail.com>
+11:46 (il y a 0 minute)
+À moi
+
+async function adminsLoadRetours(ev) {
   hideToast("toastAdminsRetours");
 
   const btn = ev?.target || $("btnAdminsRetoursLoad");
-  const period_id = $("adminsRetoursPeriodSel")?.value?.trim();
+  const period_id = $("adminsRetoursPeriodSel")?.value;
 
-  if(!period_id){
-    showToast("toastAdminsRetours","Choisis une période.",false);
+  if (!period_id) {
+    showToast("toastAdminsRetours", "Choisis une période.", false);
     return;
   }
-
-  // ✅ Récupère le code admin depuis le champ + fallback (au lieu d'une variable vide)
-  const admin_code =
-    ($("adminCode")?.value || $("adminCodeInput")?.value || $("adminsCode")?.value || $("codeAdmin")?.value || "")
-      .trim()
-    || (localStorage.getItem("admin_code") || "").trim();
-
-  if(!admin_code){
-    showToast("toastAdminsRetours","Code admin manquant",false);
-    return;
-  }
-
-  // ✅ On le mémorise pour les prochains appels
-  localStorage.setItem("admin_code", admin_code);
 
   const tb = document.getElementById("agentResponsableRetoursTable");
-  if(!tb) {
-    showToast("toastAdminsRetours","Table retours introuvable (ID agentResponsableRetoursTable).",false);
-    return;
-  }
+  if (!tb) return;
 
-  setLoading(btn,true);
+  setLoading(btn, true);
 
-  try{
-    let res;
-try {
-  res = await apiCall("adminLoadRetours", { period_id, admin_code });
-} catch (e) {
-  console.error("apiCall crash", e);
-  showToast("toastAdminsRetours", "Erreur réseau (appel API cassé)", false);
-  return;
+  try {
+    const res = await apiCall("adminLoadRetours", {
+      period_id,
+      admin_code: STATE.admin_code
+    });
 
-    if(!res || !res.ok){
-      showToast("toastAdminsRetours",(res && res.message) ? res.message : "Erreur",false);
+    if (!res || !res.ok) {
+      showToast(
+        "toastAdminsRetours",
+        (res && res.message) || "Erreur",
+        false
+      );
       return;
     }
 
@@ -2358,25 +2347,26 @@ try {
 
     tb.innerHTML = items.length
       ? items.map(it => `
-          <tr>
-            <td>${esc(it.mission || "")}</td>
-            <td>${esc(it.agent || "")}</td>
-            <td>${esc(it.declaration || "")}</td>
-            <td>${esc(it.justificatif || "")}</td>
-            <td>${fmtDate(it.ts)}</td>
-            <td>${it.validation ? "Validé" : "En attente"}</td>
-          </tr>
-        `).join("")
+        <tr>
+          <td>${esc(it.mission || "")}</td>
+          <td>${esc(it.agent || "")}</td>
+          <td>${esc(it.declaration || "")}</td>
+          <td>${esc(it.justificatif || "")}</td>
+          <td>${fmtDate(it.ts)}</td>
+          <td>${it.validation ? "Validé" : "En attente"}</td>
+        </tr>
+      `).join("")
       : `<tr><td colspan="6" class="ghost">Aucun retour.</td></tr>`;
 
     $("retoursSynthCard").style.display = "";
-    showToast("toastAdminsRetours","Chargé ✅",true);
+    showToast("toastAdminsRetours", "Chargé ✅", true);
 
-  } catch(e){
+  } catch (e) {
     console.error("adminsLoadRetours ERROR", e);
-    showToast("toastAdminsRetours","Erreur réseau.",false);
+    showToast("toastAdminsRetours", "Erreur réseau.", false);
+
   } finally {
-    setLoading(btn,false);
+    setLoading(btn, false);
   }
 }
 
