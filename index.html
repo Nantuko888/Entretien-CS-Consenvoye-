@@ -2312,20 +2312,35 @@ async function adminsLoadRetours(ev){
 
   const btn = ev?.target || $("btnAdminsRetoursLoad");
   const period_id = $("adminsRetoursPeriodSel")?.value;
-  if(!period_id){
-    showToast("toastAdminsRetours","Choisis une période.",false);
+
+  if (!period_id) {
+    showToast("toastAdminsRetours", "Choisis une période.", false);
     return;
   }
 
   const tb = document.getElementById("agentResponsableRetoursTable");
-  if(!tb) return;
+  if (!tb) return;
 
-  setLoading(btn,true);
+  setLoading(btn, true);
 
-  try{
-    const res = await apiCall("adminLoadRetours", { period_id, admin_code: STATE.admins.code });
-    if(!res || !res.ok){
-      showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false);
+  try {
+    // ✅ récupère le code admin (soit mémorisé, soit dans un champ)
+    const admin_code =
+      (window.STATE && STATE.admin_code) ||
+      $("adminCode")?.value ||
+      $("adminCodeInput")?.value ||
+      "";
+
+    if (!admin_code) {
+      showToast("toastAdminsRetours", "Code admin manquant", false);
+      return;
+    }
+
+    // ✅ appel API correct
+    const res = await apiCall("adminLoadRetours", { period_id, admin_code });
+
+    if (!res || !res.ok) {
+      showToast("toastAdminsRetours", (res && res.message) ? res.message : "Erreur", false);
       return;
     }
 
@@ -2343,17 +2358,19 @@ async function adminsLoadRetours(ev){
           </tr>
         `).join("")
       : `<tr><td colspan="6" class="ghost">Aucun retour.</td></tr>`;
-      $("retoursSynthCard").style.display = "";
 
-    showToast("toastAdminsRetours","Chargé ✅",true);
+    $("retoursSynthCard").style.display = "";
+    showToast("toastAdminsRetours", "Chargé ✅", true);
 
-  }catch(e){
+  } catch (e) {
     console.error("adminsLoadRetours ERROR", e);
-    showToast("toastAdminsRetours","Erreur réseau.",false);
-  }finally{
-    setLoading(btn,false);
+    showToast("toastAdminsRetours", "Erreur réseau.", false);
+
+  } finally {
+    setLoading(btn, false);
   }
 }
+
 
   function populateRetoursPeriodes(retours = []) {
   const select = document.getElementById("adminsRetoursPeriodSel");
