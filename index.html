@@ -1741,61 +1741,47 @@ async function adminsDeleteAgent(agent_id){
   }catch(_){}
 }
 
-async function adminsListMissions(){
-  if(!STATE.admins.ok) return;
-  const tb = $("adminsMissionsTable");
-if (!tb.dataset.loaded) {
-  tb.innerHTML = '<tr><td class="ghost" colspan="3">Chargement...</td></tr>';
-}
+async function adminsListMissions(ev){
+  const btn = ev?.target || $("btnAdminsMissionsLoad");
+  const tb = document.getElementById("adminsMissionsTable");
+  if(!tb) return;
+
+  setLoading(btn,true);
+
   try{
-    const res = await apiCall("adminListCatalog", { admin_code: STATE.admins.code });
-    if(!res || !res.ok) throw new Error("bad");
-    const list = res.catalog || [];
-   
-    // NORMALISATION du booléen actif (Sheets renvoie "TRUE"/"FALSE")
-list.forEach(m => {
-  m.actif = (m.actif === true) || (String(m.actif ?? "").trim().toUpperCase() === "TRUE");
-});
+    const res = await apiCall("adminListMissions", { admin_code: STATE.admin_code });
 
-    STATE.catalogById = {};
-list.forEach(m => {
-  STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
-});
-    tb.innerHTML = list.map(m => {
-  const isOn =
-  m.actif === true ||
-  String(m.actif ?? "").trim().toUpperCase() === "TRUE";
+    if(!res || !res.ok){
+      tb.innerHTML = `<tr><td class="ghost" colspan="3">${esc((res && res.message) || "Erreur")}</td></tr>`;
+      return;
+    }
 
-  return `
-    <tr>
-      <td>${esc(m.libelle)}</td>
-      <td>${isOn ? "Oui" : "Non"}</td>
-      <td class="right">
-        <button
-          type="button"
-          class="btn small toggle ${isOn ? "off" : "on"}"
-          data-actif="${isOn ? "1" : "0"}"
-          onclick="adminsToggleMission(event, '${esc(m.mission_id)}', this)"
-        >
-          ${isOn ? "Désactiver" : "Activer"}
-        </button>
+    const items = res.items || [];
 
-        <button
-          type="button"
-          class="btn small danger"
-          onclick="adminsDeleteMission(event, '${esc(m.mission_id)}', this)"
-        >Supprimer</button>
-      </td>
-    </tr>
-  `;
-}).join("");
+    tb.innerHTML = items.length
+      ? items.map(m => `
+          <tr>
+            <td>${esc(m.mission || "")}</td>
+            <td>${m.actif ? "Oui" : "Non"}</td>
+            <td>
+              <button class="btn small danger"
+                onclick="adminsDeleteMission(event,'${esc(m.mission_id)}')">Supprimer</button>
+            </td>
+          </tr>
+        `).join("")
+      : `<tr><td class="ghost" colspan="3">Aucune mission</td></tr>`;
+
     tb.dataset.loaded = "1";
-   updateMissionCountersFromDOM();
-  }catch(e){
-  console.error("adminsListMissions ERROR", e);
-  tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur (voir console)</td></tr>`;
+    updateMissionCountersFromDOM();
+
+  } catch(e){
+    console.error("adminsListMissions ERROR", e);
+    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur réseau</td></tr>`;
+  } finally {
+    setLoading(btn,false);
+  }
 }
-}
+
   function updateMissionCountersFromDOM(){
   const rows = Array.from(document.querySelectorAll("#adminsMissionsTable tr"));
   let total = 0, active = 0;
