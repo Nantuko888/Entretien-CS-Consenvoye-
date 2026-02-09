@@ -2311,36 +2311,40 @@ async function adminsLoadRetours(ev){
   hideToast("toastAdminsRetours");
 
   const btn = ev?.target || $("btnAdminsRetoursLoad");
-  const period_id = $("adminsRetoursPeriodSel")?.value;
+  const period_id = $("adminsRetoursPeriodSel")?.value?.trim();
 
-  if (!period_id) {
-    showToast("toastAdminsRetours", "Choisis une période.", false);
+  if(!period_id){
+    showToast("toastAdminsRetours","Choisis une période.",false);
     return;
   }
 
+  // ✅ Récupère le code admin depuis le champ + fallback (au lieu d'une variable vide)
+  const admin_code =
+    ($("adminCode")?.value || $("adminCodeInput")?.value || $("adminsCode")?.value || $("codeAdmin")?.value || "")
+      .trim()
+    || (localStorage.getItem("admin_code") || "").trim();
+
+  if(!admin_code){
+    showToast("toastAdminsRetours","Code admin manquant",false);
+    return;
+  }
+
+  // ✅ On le mémorise pour les prochains appels
+  localStorage.setItem("admin_code", admin_code);
+
   const tb = document.getElementById("agentResponsableRetoursTable");
-  if (!tb) return;
+  if(!tb) {
+    showToast("toastAdminsRetours","Table retours introuvable (ID agentResponsableRetoursTable).",false);
+    return;
+  }
 
-  setLoading(btn, true);
+  setLoading(btn,true);
 
-  try {
-    // ✅ récupère le code admin (soit mémorisé, soit dans un champ)
-    const admin_code =
-      (window.STATE && STATE.admin_code) ||
-      $("adminCode")?.value ||
-      $("adminCodeInput")?.value ||
-      "";
-
-    if (!admin_code) {
-      showToast("toastAdminsRetours", "Code admin manquant", false);
-      return;
-    }
-
-    // ✅ appel API correct
+  try{
     const res = await apiCall("adminLoadRetours", { period_id, admin_code });
 
-    if (!res || !res.ok) {
-      showToast("toastAdminsRetours", (res && res.message) ? res.message : "Erreur", false);
+    if(!res || !res.ok){
+      showToast("toastAdminsRetours",(res && res.message) ? res.message : "Erreur",false);
       return;
     }
 
@@ -2360,16 +2364,16 @@ async function adminsLoadRetours(ev){
       : `<tr><td colspan="6" class="ghost">Aucun retour.</td></tr>`;
 
     $("retoursSynthCard").style.display = "";
-    showToast("toastAdminsRetours", "Chargé ✅", true);
+    showToast("toastAdminsRetours","Chargé ✅",true);
 
-  } catch (e) {
+  } catch(e){
     console.error("adminsLoadRetours ERROR", e);
-    showToast("toastAdminsRetours", "Erreur réseau.", false);
-
+    showToast("toastAdminsRetours","Erreur réseau.",false);
   } finally {
-    setLoading(btn, false);
+    setLoading(btn,false);
   }
 }
+
 
 
   function populateRetoursPeriodes(retours = []) {
