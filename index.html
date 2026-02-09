@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr">
-<head>xage
-    <meta charset="utf-8" />
+<head>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Entretien CS Consenvoye</title>
   <style>
@@ -806,29 +806,6 @@ button#btnAdminsLoadRetoursS,
                 <div id="boxAgentsMissions" class="scrollBox">
           <div class="ghost" style="padding:10px">Choisis une période puis “Charger”.</div>
         </div>
-        <!-- ✅ VUE RESPONSABLE : tableau retours (lecture seule) -->
-<div id="boxResponsableRetours" class="card" style="display:none;">
-  <div class="cardTitle">Suivi des missions (vue responsable)</div>
-
-  <div class="scrollBox" style="margin-top:10px;">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Mission</th>
-          <th>Fait par</th>
-          <th>Déclaration</th>
-          <th>Justificatif</th>
-          <th>Période</th>
-          <th>Validation</th>
-        </tr>
-      </thead>
-      <tbody id="agentResponsableRetoursTable">
-        <tr><td class="ghost" colspan="6">Charge une période.</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
 
            <div id="boxAgentsAfterLoad" style="display:none;justify-content:flex-end;margin-top:10px;gap:10px">
 
@@ -868,7 +845,7 @@ button#btnAdminsLoadRetoursS,
 </div>
         </div>
         <div class="right">
-          <button class="btn primary" id="btnAdminsLogin" onclick="adminsLogin(event)">Se connecter</button>
+          <button class="btn primary" id="btn" onclick="(event)">Se connecter</button>
         </div>
       </div>
       <div id="toast" class="toast"></div>
@@ -1139,17 +1116,16 @@ button#btnAdminsLoadRetoursS,
             <table class="table">
               <thead>
   <tr>
+    <th>Période</th>
+    <th>Agent</th>
     <th>Mission</th>
-    <th>Fait par</th>
     <th>Déclaration</th>
     <th>Justificatif</th>
-    <th>Période</th>
-   
       <th style="width:80px;text-align:center;">Validation</th>
   </tr>
 </thead>
 <tbody id="adminsRetoursTable">
-  <tr><td class="ghost" colspan="6">—</td></tr>
+  <tr><td class="ghost" colspan="7">—</td></tr>
 </tbody>
             </table>
           </div>
@@ -1170,7 +1146,7 @@ button#btnAdminsLoadRetoursS,
 /* ===============================
    CONFIG (COLLE TON /exec ICI)
    =============================== */
-const API_URL = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // <-- remplace par ton /exec Apps Script
+const API_EXEC = "https://script.google.com/macros/s/AKfycbwTo8mKf9yDCmFDZbT03-nbxv5QVLcMjNEGuvlL25alCktBLX9P-G3i4NTVMw048DE/exec"; // <-- remplace par ton /exec Apps Script
 
 /* ===============================
    OUTILS
@@ -1404,15 +1380,13 @@ function renderAdminsAddToGroupSelect(){
    ADMIN
    =============================== */
 async function adminsLogin(ev){
-  ev?.preventDefault?.();
-  hideToast("toast");
+  hideToast("toastAdminsLogin");
 
   const btn = ev?.target || $("btnAdminsLogin");
   const code = $("adminsCode").value.trim();
 
   if(!code){
-    setPill("pillAdminsStatus","Admin : non connecté","bad");
-    showToast("toast","Code requis.",false);
+    showToast("toastAdminsLogin","Code requis.",false);
     return;
   }
 
@@ -1427,25 +1401,36 @@ async function adminsLogin(ev){
       return;
     }
 
+    // ✅ état admin
     STATE.admins.ok = true;
     STATE.admins.code = code;
 
+    // ✅ UI admin connectée
     setPill("pillAdminsStatus","Admin : connecté ✅","ok");
     $("btnAdminsKey").style.display = "";
     $("btnAdminsLogout").style.display = "";
     $("boxAdminsWork").style.display = "";
 
+    // ✅ charge tout ce qui dépend du login (agents, missions, périodes, etc.)
     await adminsRefreshAll();
 
+    try{
+  const r = await apiCall("adminListRetoursPeriods", { admin_code: STATE.admins.code });
+  if(r && r.ok){
+    populateRetoursPeriodes(r.periods || []);
+  }
+}catch(_){}
+
+    
     showToast("toastAdminsLogin","Admin connecté ✅",true);
 
   } catch(e){
     showToast("toastAdminsLogin","Erreur réseau.",false);
+
   } finally{
     setLoading(btn,false);
   }
 }
-
 
 function adminsLogout(){
   STATE.admins = { ok:false, code:"" };
@@ -1741,47 +1726,61 @@ async function adminsDeleteAgent(agent_id){
   }catch(_){}
 }
 
-async function adminsListMissions(ev){
-  const btn = ev?.target || $("btnAdminsMissionsLoad");
-  const tb = document.getElementById("adminsMissionsTable");
-  if(!tb) return;
-
-  setLoading(btn,true);
-
-  try{
-    const res = await apiCall("adminListMissions", { admin_code: STATE.admin_code });
-
-    if(!res || !res.ok){
-      tb.innerHTML = `<tr><td class="ghost" colspan="3">${esc((res && res.message) || "Erreur")}</td></tr>`;
-      return;
-    }
-
-    const items = res.items || [];
-
-    tb.innerHTML = items.length
-      ? items.map(m => `
-          <tr>
-            <td>${esc(m.mission || "")}</td>
-            <td>${m.actif ? "Oui" : "Non"}</td>
-            <td>
-              <button class="btn small danger"
-                onclick="adminsDeleteMission(event,'${esc(m.mission_id)}')">Supprimer</button>
-            </td>
-          </tr>
-        `).join("")
-      : `<tr><td class="ghost" colspan="3">Aucune mission</td></tr>`;
-
-    tb.dataset.loaded = "1";
-    updateMissionCountersFromDOM();
-
-  } catch(e){
-    console.error("adminsListMissions ERROR", e);
-    tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur réseau</td></tr>`;
-  } finally {
-    setLoading(btn,false);
-  }
+async function adminsListMissions(){
+  if(!STATE.admins.ok) return;
+  const tb = $("adminsMissionsTable");
+if (!tb.dataset.loaded) {
+  tb.innerHTML = '<tr><td class="ghost" colspan="3">Chargement...</td></tr>';
 }
+  try{
+    const res = await apiCall("adminListCatalog", { admin_code: STATE.admins.code });
+    if(!res || !res.ok) throw new Error("bad");
+    const list = res.catalog || [];
+   
+    // NORMALISATION du booléen actif (Sheets renvoie "TRUE"/"FALSE")
+list.forEach(m => {
+  m.actif = (m.actif === true) || (String(m.actif ?? "").trim().toUpperCase() === "TRUE");
+});
 
+    STATE.catalogById = {};
+list.forEach(m => {
+  STATE.catalogById[String(m.mission_id)] = m.libelle || m.mission_id;
+});
+    tb.innerHTML = list.map(m => {
+  const isOn =
+  m.actif === true ||
+  String(m.actif ?? "").trim().toUpperCase() === "TRUE";
+
+  return `
+    <tr>
+      <td>${esc(m.libelle)}</td>
+      <td>${isOn ? "Oui" : "Non"}</td>
+      <td class="right">
+        <button
+          type="button"
+          class="btn small toggle ${isOn ? "off" : "on"}"
+          data-actif="${isOn ? "1" : "0"}"
+          onclick="adminsToggleMission(event, '${esc(m.mission_id)}', this)"
+        >
+          ${isOn ? "Désactiver" : "Activer"}
+        </button>
+
+        <button
+          type="button"
+          class="btn small danger"
+          onclick="adminsDeleteMission(event, '${esc(m.mission_id)}', this)"
+        >Supprimer</button>
+      </td>
+    </tr>
+  `;
+}).join("");
+    tb.dataset.loaded = "1";
+   updateMissionCountersFromDOM();
+  }catch(e){
+  console.error("adminsListMissions ERROR", e);
+  tb.innerHTML = `<tr><td class="ghost" colspan="3">Erreur (voir console)</td></tr>`;
+}
+}
   function updateMissionCountersFromDOM(){
   const rows = Array.from(document.querySelectorAll("#adminsMissionsTable tr"));
   let total = 0, active = 0;
@@ -2008,53 +2007,6 @@ function renderResponsablesSelect(){
     (STATE.current.group||[]).map(a=>`<option value="${esc(a.agent_id)}">${esc(a.nom)}</option>`).join("");
 }
 
-function fmtDateFR_(ts){
-  if(!ts) return "";
-  const d = new Date(ts);
-  if(isNaN(d.getTime())) return "";
-  const dd = String(d.getDate()).padStart(2,"0");
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const yy = d.getFullYear();
-  const hh = String(d.getHours()).padStart(2,"0");
-  const mi = String(d.getMinutes()).padStart(2,"0");
-  return `${dd}/${mm}/${yy} ${hh}:${mi}`;
-}
-
-function renderResponsableRetours_(items){
-  const tb = document.getElementById("agentResponsableRetoursTable");
-  if (!tb) return;
-
-  if (!items || !items.length) {
-    tb.innerHTML = `<tr>
-      <td class="ghost" colspan="6">Aucun retour.</td>
-    </tr>`;
-    return;
-  }
-
-  const fmtDT = (v) => {
-    if(!v) return "";
-    const d = new Date(v);
-    if(isNaN(d)) return "";
-    return d.toLocaleString("fr-FR", {
-      day:"2-digit", month:"2-digit", year:"numeric",
-      hour:"2-digit", minute:"2-digit"
-    });
-  };
-
-  tb.innerHTML = items.map(it => `
-    <tr>
-      <td>${it.mission || "—"}</td>
-      <td>${it.agent || "—"}</td>
-      <td>${it.declaration || "—"}</td>
-      <td>${it.justificatif || ""}</td>
-      <td>${fmtDT(it.ts)}</td>
-      <td>${it.validation ? "✔" : ""}</td>
-    </tr>
-  `).join("");
-}
-
-
-    
 async function adminsAddToGroup(ev){
   hideToast("toastAdminsPeriod");
   if(!STATE.admins.ok){ showToast("toastAdminsPeriod","Non connecté.",false); return; }
@@ -2242,145 +2194,109 @@ async function adminsLoadRetoursValidations(){
     populateRetoursPeriodes([]);
   }
 }
-
-  async function renderRetoursAgents_(items){
-  const wrap = $("retoursAgentsWrap");
-  const tb = $("retoursAgentsTable");
-  if(!wrap || !tb) return;
-
-  const period_id = ($("adminsRetoursPeriodSel")?.value || "").trim();
-  if(!period_id){
-    wrap.style.display = "none";
-    return;
-  }
-
-  // Cache simple
-  STATE.cache ||= {};
-  STATE.cache.retoursAgents ||= {};
-
-  let names = STATE.cache.retoursAgents[period_id];
-
-  // Base = TOUS les agents affectés à la période (via adminLoadPeriod existant)
-  if(!Array.isArray(names)){
-    names = [];
-    try{
-      const res = await apiCall("adminLoadPeriod", { admin_code: STATE.admins.code, period_id });
-      if(res && res.ok){
-        const group = res.group || [];
-        names = group
-          .map(a => String(a.nom || a.name || a.agent || "").trim())
-          .filter(Boolean);
-      }
-    }catch(e){
-      names = [];
-    }
-    STATE.cache.retoursAgents[period_id] = names;
-  }
-
-  // Ceux qui ont fait au moins un retour (marquage)
-  const did = new Set(
-    (items || []).map(it => String(it.agent || "").trim()).filter(Boolean)
-  );
-
-  names = [...new Set(names)].sort((a,b)=>a.localeCompare(b,"fr",{sensitivity:"base"}));
-
-  // Affiche toujours le bloc (même si 0 retour)
-  wrap.style.display = "grid";
-
-  tb.innerHTML = names.length
-    ? names.map(n => `<tr><td>${esc(n)}${did.has(n) ? " ✅" : ""}</td></tr>`).join("")
-    : `<tr><td class="ghost">Aucun agent affecté à cette période.</td></tr>`;
-}
-
   
-async function adminsLoadRetours(ev) {
+async function adminsLoadRetours(ev){
+  
+  hideToast("toastAdminsRetours");
+  async function adminsLoadRetours(ev){
   hideToast("toastAdminsRetours");
 
-  const btn = ev?.target || $("btnAdminsRetoursLoad");
-  const period_id = $("adminsRetoursPeriodSel")?.value;
+  const card = document.getElementById("retoursSynthCard");
+  if(card) card.style.display = "";
 
-  if (!period_id) {
-    showToast("toastAdminsRetours", "Choisis une période.", false);
-    return;
-  }
-
-  const tb = document.getElementById("agentResponsableRetoursTable");
-  if (!tb) return;
-
-  setLoading(btn, true);
-
-  try {
-    const res = await apiCall("adminLoadRetours", {
-      period_id,
-      admin_code: getAadmin_code()
-    });
-
-    if (!res || !res.ok) {
-      showToast(
-        "toastAdminsRetours",
-        (res && res.message) || "Erreur",
-        false
-      );
-      return;
-    }
-
-    const items = res.items || [];
-
-    tb.innerHTML = items.length
-      ? items.map(it => `
-        <tr>
-          <td>${esc(it.mission || "")}</td>
-          <td>${esc(it.agent || "")}</td>
-          <td>${esc(it.declaration || "")}</td>
-          <td>${esc(it.justificatif || "")}</td>
-          <td>${fmtDate(it.ts)}</td>
-          <td>${it.validation ? "Validé" : "En attente"}</td>
-        </tr>
-      `).join("")
-      : `<tr><td colspan="6" class="ghost">Aucun retour.</td></tr>`;
-
-    $("retoursSynthCard").style.display = "";
-    showToast("toastAdminsRetours", "Chargé ✅", true);
-
-  } catch (e) {
-    console.error("adminsLoadRetours ERROR", e);
-    showToast("toastAdminsRetours", "Erreur réseau.", false);
-
-  } finally {
-    setLoading(btn, false);
-  }
+  // le reste de ton code existant...
 }
 
+  if(!STATE.admins.ok){ showToast("toastAdminsRetours","Non connecté.",false); return; }
+  const btn = ev?.target || $("btnAdminsLoadRetours");
+  const period_id = $("adminsRetoursPeriodSel").value.trim();
+if(!period_id){
+  showToast("toastAdminsRetours","Choisis une période.",false);
+  return;
+}
 
+  setLoading(btn,true);
+  try{
+    const res = await apiCall("adminGetRetours", { admin_code: STATE.admins.code, period_id });
+    if(!res || !res.ok){
+      showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false); return;
+    }
+    const tb = $("adminsRetoursTable");
+    const items = res.items || [];
+    
+    if(!items.length){
+      tb.innerHTML = `<tr><td class="ghost" colspan="6">Aucun retour.</td></tr>`;
+    }else{
+      tb.innerHTML = items.map(it=>`
+        <tr>
+          <td>${esc(it.period_id)}</td>
+          <td>${esc(it.agent)}</td>
+          <td>${esc(it.mission)}</td>
+          <td>${esc(it.declaration)}</td>
+          <td>${esc(it.justificatif)}</td>
+          <td>${esc(it.remark||"")}</td>
+        </tr>
+      `).join("");
+    }
+    showToast("toastAdminsRetours","Chargé ✅",true);
+  }catch(_){
+    showToast("toastAdminsRetours","Erreur réseau.",false);
+  }finally{
+    setLoading(btn,false);
+  }
+}
   function populateRetoursPeriodes(retours = []) {
   const select = document.getElementById("adminsRetoursPeriodSel");
   if (!select) return;
 
-  // garder la sélection actuelle si possible
-  const prev = select.value;
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // 1..12
 
-  select.innerHTML = "";
-  select.appendChild(new Option("— Choisir période —", ""));
+  // mois qui ont au moins un retour (format attendu: period_id = "YYYY-MM")
+  const monthsWithRetour = new Set(
+    (retours || [])
+      .map(r => String(r.period_id || r.period || r.periode_id || "").trim())
+      .filter(Boolean)
+      .map(pid => pid.slice(0, 7)) // "YYYY-MM"
+      .filter(pid => /^\d{4}-\d{2}$/.test(pid))
+  );
 
-  const year = new Date().getFullYear(); // année en cours
+  // reset menu
+  select.innerHTML = `<option value="">— Choisir période —</option>`;
 
   for (let m = 1; m <= 12; m++) {
     const mm = String(m).padStart(2, "0");
-    const pid = `${year}-${mm}`; // valeur interne (YYYY-MM)
-    const d = new Date(year, m - 1, 1);
-    const label = d.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+    const pid = `${currentYear}-${mm}`;
 
-    select.appendChild(new Option(label, pid));
-  }
+    const isPast = m < currentMonth;
+    const isCurrent = m === currentMonth;
+    const hasRetour = monthsWithRetour.has(pid);
 
-  // restaurer la sélection si elle existe encore, sinon mettre le mois courant
-  if (prev && Array.from(select.options).some(o => o.value === prev)) {
-    select.value = prev;
-  } else {
-    const cur = String(new Date().getMonth() + 1).padStart(2, "0");
-    select.value = `${year}-${cur}`;
+    const opt = document.createElement("option");
+    opt.value = pid;
+
+    // libellé FR: "janvier 2026"
+    opt.textContent = new Date(currentYear, m - 1, 1).toLocaleDateString("fr-FR", {
+      month: "long",
+      year: "numeric"
+    });
+
+    // ✅ Règle demandée :
+    // - mois passés : cliquables
+    // - mois courant : cliquable
+    // - mois futurs : grisés (sauf si tu veux les rendre cliquables quand hasRetour = true)
+    opt.disabled = !(isPast || isCurrent); // <- SIMPLE ET CLAIR
+
+    // (optionnel) si tu veux que futur devienne cliquable dès qu’il y a un retour :
+    // opt.disabled = !(isPast || isCurrent || hasRetour);
+
+    select.appendChild(opt);
   }
 }
+
+
+
 
 function monthLabel(mm) {
   const names = [
@@ -2572,77 +2488,44 @@ function toPeriodYM(period_id, label){
   
 async function agentsLoadPeriod(ev){
   hideToast("toastAgentsLoad");
-  if(!STATE.agents.ok){
-    showToast("toastAgentsLoad","Non connecté.",false);
-    return;
-  }
-
+  if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.",false); return; }
   const btn = ev?.target || $("btnAgentsLoad");
-  const periodSel =
-  $("adminRetoursPeriod") ||
-  $("agentsPeriodsSel");
-
-const period_id = periodSel?.value || "";
-  if(!period_id){
-    showToast("toastAgentsLoad","Choisis une période.",false);
-    return;
-  }
+  const period_id = $("agentsPeriodsSel").value;
+  if(!period_id){ showToast("toastAgentsLoad","Choisis une période.",false); return; }
 
   setLoading(btn,true);
-
   try{
-    const res = await apiCall("agentLoadPeriod", {
-      agent_id: STATE.agents.agent_id,
-      period_id
-    });
-
+    const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
     if(!res || !res.ok){
-      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false);
-      return;
+      showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
     }
+    // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
+STATE.agentWork.is_period_open = !!res.is_period_open;
+STATE.agentWork.is_responsable = !!res.is_responsable;
 
-    // ===== ÉTAT =====
+setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
-    STATE.agentWork.is_period_open = !!res.is_period_open;
     STATE.agentWork.is_responsable = !!res.is_responsable;
-
     $("boxAgentsAfterLoad").style.display = "";
 
-    setPill(
-      "pillAgentsPeriod",
-      "Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id),
-      "ok"
-    );
+    setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
-    // ===== AFFICHAGE AGENT =====
+
     renderAgentMissions(res.missions || []);
     renderAgentTeam(res.group || [], res.responsable || null);
-
     setAgentPeriodLocked(!STATE.agentWork.is_period_open);
-
-    // ===== VUE RESPONSABLE =====
-    const boxResp = $("boxResponsableRetours");
-    if (boxResp) {
-      boxResp.style.display = res.is_responsable ? "block" : "none";
-    }
-
-    if (isResponsable) {
-  const r = await apiCall("adminGetRetours", { period_id });
-  if (r && r.ok) renderResponsableRetours_(r.items || []);
-  else renderResponsableRetours_([]);
-}
+    console.log("TEAM GROUP =", res.group);
+console.log("RESPONSABLE =", res.responsable);
+    $("boxAgentsAfterLoad").style.display = "";
 
     showToast("toastAgentsLoad","Chargé ✅",true);
-
-  }catch(e){
-    console.error(e);
+  }catch(_){
     showToast("toastAgentsLoad","Erreur réseau.",false);
   }finally{
     setLoading(btn,false);
   }
 }
-
 
 function renderAgentMissions(list){
   const box = $("boxAgentsMissions");
@@ -2842,7 +2725,11 @@ async function agentsSave(ev){
       justificatif: just ? just.value.trim() : ""
     };
   });
-   
+   // ⛔ Interdire l'enregistrement si toutes les missions ne sont pas renseignées
+if (decs.some(d => !d.declaration)) {
+  showToast("toastAgentsSave", "Tu dois renseigner toutes les missions avant d’enregistrer.", false);
+  return;
+}
 
   for (const d of decs) {
   if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
@@ -2886,21 +2773,16 @@ async function agentsValidate(ev){
   const period_id = STATE.agentWork.period_id;
   if(!period_id){ showToast("toastAgentsSave","Charge une période.",false); return; }
 
- const decs = Array.from(
-  $("boxAgentsMissions").querySelectorAll(".decSel")
-)
-.filter(sel => sel.value && sel.value.trim() !== "")
-.map(sel => {
-  const mid = sel.getAttribute("data-mid");
-  const just = $("boxAgentsMissions")
-    .querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
-
-  return {
-    mission_id: mid,
-    declaration: sel.value.trim(),
-    justificatif: just ? just.value.trim() : ""
-  };
-});
+  // 1) Vérif locale : toutes les missions doivent être remplies
+  const decs = Array.from($("boxAgentsMissions").querySelectorAll(".decSel")).map(sel=>{
+    const mid = sel.getAttribute("data-mid");
+    const just = $("boxAgentsMissions").querySelector(`.justifInp[data-mid="${CSS.escape(mid)}"]`);
+    return {
+      mission_id: mid,
+      declaration: sel.value,
+      justificatif: just ? just.value.trim() : ""
+    };
+  });
 
   if(!decs.length){
     showToast("toastAgentsSave","Aucune mission à valider.",false);
@@ -2908,7 +2790,10 @@ async function agentsValidate(ev){
   }
 
   for(const d of decs){
-    
+    if(!d.declaration){
+      showToast("toastAgentsSave","Tu dois renseigner toutes les missions avant de valider.",false);
+      return;
+    }
     if((d.declaration==="Partiel" || d.declaration==="Non fait") && !d.justificatif){
       showToast("toastAgentsSave","Justificatif obligatoire si Partiel / Non fait.",false);
       return;
