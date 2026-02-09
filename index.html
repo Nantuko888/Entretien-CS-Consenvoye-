@@ -2323,7 +2323,7 @@ async function adminsLoadRetours(ev){
   setLoading(btn,true);
 
   try{
-    const res = await apiCall("adminLoadRetours", { period_id });
+    const res = await apiCall("adminLoadRetours", { period_id, admin_code: STATE.admins.code });
     if(!res || !res.ok){
       showToast("toastAdminsRetours",(res&&res.message)||"Erreur",false);
       return;
