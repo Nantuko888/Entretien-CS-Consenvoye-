@@ -2348,7 +2348,6 @@ try {
   console.error("apiCall crash", e);
   showToast("toastAdminsRetours", "Erreur réseau (appel API cassé)", false);
   return;
-}
 
     if(!res || !res.ok){
       showToast("toastAdminsRetours",(res && res.message) ? res.message : "Erreur",false);
@@ -2380,7 +2379,6 @@ try {
     setLoading(btn,false);
   }
 }
-
 
 
   function populateRetoursPeriodes(retours = []) {
