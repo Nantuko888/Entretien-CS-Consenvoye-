@@ -2917,8 +2917,96 @@ document.addEventListener("DOMContentLoaded", () => {
   if (elActive) elActive.textContent = active;
   if (elInactive) elInactive.textContent = inactive;
 }
+
+  // =====================
+// FIX LOGIN (secours)
+// =====================
+
+// helpers
+function $(id){ return document.getElementById(id); }
+function toastMsg(id, msg){
+  const t = $(id);
+  if(!t) return;
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(t._to);
+  t._to = setTimeout(()=>{ t.style.display="none"; }, 3500);
+}
+function getAPI(){
+  // on accepte les anciens noms possibles
+  return window.API_EXEC || window.API_URL || window.apiUrl || window.API;
+}
+
+// --- AGENT ---
+window.agentsLogin = async function agentsLogin(e){
+  e?.preventDefault?.();
+  try{
+    const code = ($("agentsCode")?.value || "").trim();
+    if(!code){ toastMsg("toastAgentsLogin", "Code agent manquant."); return; }
+
+    const API = getAPI();
+    if(!API){ toastMsg("toastAgentsLogin", "API non configurée (API_EXEC/API_URL)."); return; }
+
+    // appelle Apps Script
+    const url = `${API}?action=agentsLogin&code=${encodeURIComponent(code)}`;
+    const r = await fetch(url, { method:"GET", cache:"no-store" });
+    const txt = await r.text();
+
+    // JSONP -> on essaye de récupérer le JSON à l'intérieur cb(...)
+    const m = txt.match(/\((\{[\s\S]*\})\)\s*;?\s*$/);
+    const data = m ? JSON.parse(m[1]) : JSON.parse(txt);
+
+    if(!data.ok){
+      toastMsg("toastAgentsLogin", data.message || "Connexion agent refusée.");
+      return;
+    }
+
+    // stocke session
+    window.__session = { role:"agent", token:data.token || "", agent_id:data.agent_id || "" };
+
+    // appelle ton code existant si présent
+    if(typeof window.onAgentsLoggedIn === "function") window.onAgentsLoggedIn(data);
+    else toastMsg("toastAgentsLogin", "Agent connecté.");
+  }catch(err){
+    console.error(err);
+    toastMsg("toastAgentsLogin", "Erreur réseau / script.");
+  }
+};
+
+// --- ADMIN ---
+window.adminLogin = async function adminLogin(e){
+  e?.preventDefault?.();
+  try{
+    const code = ($("adminsCode")?.value || "").trim();
+    if(!code){ toastMsg("toast", "Code admin manquant."); return; }
+
+    const API = getAPI();
+    if(!API){ toastMsg("toast", "API non configurée (API_EXEC/API_URL)."); return; }
+
+    const url = `${API}?action=adminLogin&code=${encodeURIComponent(code)}`;
+    const r = await fetch(url, { method:"GET", cache:"no-store" });
+    const txt = await r.text();
+
+    const m = txt.match(/\((\{[\s\S]*\})\)\s*;?\s*$/);
+    const data = m ? JSON.parse(m[1]) : JSON.parse(txt);
+
+    if(!data.ok){
+      toastMsg("toast", data.message || "Connexion admin refusée.");
+      return;
+    }
+
+    window.__session = { role:"admin", token:data.token || "" };
+
+    if(typeof window.onAdminLoggedIn === "function") window.onAdminLoggedIn(data);
+    else toastMsg("toast", "Admin connecté.");
+  }catch(err){
+    console.error(err);
+    toastMsg("toast", "Erreur réseau / script.");
+  }
+};
+
 </script>
-  <script src="./adapter.js"></script>
+  
 </body>
 </html>
 
