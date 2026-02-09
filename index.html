@@ -2262,14 +2262,24 @@ for (const it of items) {
 
   const key = `${mid}||${agent}`;
   let r = byMissionAgent.get(key);
-  if(!r){
-    r = { mid, agent, count:0, justificatif:"" };
-    byMissionAgent.set(key, r);
+if(!r){
+  r = { mid, agent, count:0, justificatif:"", ts:null };
+  byMissionAgent.set(key, r);
+}
+r.count += 1;
+
+if (it.justificatif && String(it.justificatif).trim()) {
+  r.justificatif = String(it.justificatif).trim();
+}
+
+// garde la date la + récente
+if (it.ts) {
+  const t = new Date(it.ts).getTime();
+  if (!isNaN(t) && (!r.ts || t > new Date(r.ts).getTime())) {
+    r.ts = it.ts;
   }
-  r.count += 1;
-  if (it.justificatif && String(it.justificatif).trim()) {
-    r.justificatif = String(it.justificatif).trim(); // dernier justificatif non vide
-  }
+}
+
 }
 
 // 3) rend : 1 mission = 1 bloc ; mission écrite 1 fois, puis vide dessous
