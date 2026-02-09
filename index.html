@@ -2312,7 +2312,7 @@ async function adminsLoadRetours(ev) {
   try {
     const res = await apiCall("adminLoadRetours", {
       period_id,
-      admin_code: STATE.admin_code
+      admin_code: getAadmin_code()
     });
 
     if (!res || !res.ok) {
