@@ -2829,17 +2829,12 @@ async function agentsSave(ev){
       justificatif: just ? just.value.trim() : ""
     };
   });
-   // ⛔ Interdire l'enregistrement si toutes les missions ne sont pas renseignées
-if (decs.some(d => !d.declaration)) {
-  showToast("toastAgentsSave", "Tu dois renseigner toutes les missions avant d’enregistrer.", false);
-  return;
-}
+   // ✅ Autoriser l'enregistrement partiel : on n'envoie que les lignes renseignées
+const decsFilled = decs.filter(d => {
+  const v = String(d.declaration || "").trim();
+  return v && v !== "-";
+});
 
-  for (const d of decs) {
-  if ((d.declaration === "Partiel" || d.declaration === "Non fait") && !d.justificatif) {
-    showToast("toastAgentsSave", "Justificatif obligatoire si Partiel / Non fait.", false);
-    return;
-  }
 }
 
   const remark = $("agentsRemark").value.trim();
