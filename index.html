@@ -987,13 +987,11 @@ button#btnAdminsLoadRetoursS,
 
             <div class="divider"></div>
 
-           <!-- ===== RESPONSABLE : Missions du mois (lecture seule) ===== -->
-<div id="respMissionsBox" style="display:none">
+            <!-- ===== RESPONSABLE : Missions du mois (lecture seule) ===== -->
+<h3 style="margin-top:16px;">Missions du mois</h3>
 
-  <h3 style="margin-top:16px;">Missions du mois</h3>
-
-  <table class="table">
-    <thead>
+<table class="table">
+  <thead>
     <tr>
       <th>Mission</th>
       <th>État</th>
@@ -1005,7 +1003,6 @@ button#btnAdminsLoadRetoursS,
     <tr><td class="ghost" colspan="4">Choisis une période…</td></tr>
   </tbody>
 </table>
-</div>
 
             <div class="h2" style="margin:0 0 8px 0">Groupe</div>
             <div class="scrollBox">
@@ -2609,17 +2606,7 @@ async function agentsLoadPeriod(ev){
     const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
     if(!res || !res.ok){
       showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
-      }
-    // RESPONSABLE : afficher + charger le tableau "Missions du mois"
-const box = $("respMissionsBox");
-if(box){
-  if(res.is_responsable){
-    box.style.display = "block";
-    await respLoadMissionsMonthTable(period_id); // ou res.period_id si tu préfères
-  }else{
-    box.style.display = "none";
-  }
-}
+    }
     // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
 STATE.agentWork.is_period_open = !!res.is_period_open;
 STATE.agentWork.is_responsable = !!res.is_responsable;
@@ -2628,18 +2615,6 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
-    
-    // ===== RESPONSABLE : missions du mois (lecture seule) =====
-if (res.is_responsable === true) {
-  if (typeof renderRespMissionsMonth === "function") {
-    renderRespMissionsMonth(res.missions || []);
-  } else {
-    console.error("renderRespMissionsMonth NON DÉFINIE");
-  }
-  $("respMissionsBox").style.display = "block";
-} else {
-  $("respMissionsBox").style.display = "none";
-}
     $("boxAgentsAfterLoad").style.display = "";
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
@@ -2659,26 +2634,7 @@ console.log("RESPONSABLE =", res.responsable);
     setLoading(btn,false);
   }
 }
-function renderRespMissionsMonth(missions){
-  const tb = $("respMissionsMonthTable");
-  if(!tb) return;
 
-  if(!missions || !missions.length){
-    tb.innerHTML = `<tr><td class="ghost" colspan="4">Aucune mission.</td></tr>`;
-    return;
-  }
-
-  tb.innerHTML = missions.map(m => `
-    <tr>
-      <td>${esc(m.libelle || m.mission_id || "")}</td>
-      <td class="center">—</td>
-      <td class="center">—</td>
-      <td class="center">—</td>
-    </tr>
-  `).join("");
-}
-
-  
 function renderAgentMissions(list){
   const box = $("boxAgentsMissions");
   if(!list.length){
