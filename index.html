@@ -2259,7 +2259,7 @@ async function adminsLoadRetours(ev){
   try{
    // await respLoadMissionsMonthTable(period_id);
     // 1) retours (Non fait / Partiel) avec ts + agent + mission
-    const res = await apiCall("adminGetRetours", {
+    const res = await apiCall("adminGetDeclarations", {
       admin_code: STATE.admins.code,
       period_id
     });
