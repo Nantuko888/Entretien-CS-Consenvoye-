@@ -2609,7 +2609,17 @@ async function agentsLoadPeriod(ev){
     const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
     if(!res || !res.ok){
       showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
-    }
+      }
+    // RESPONSABLE : afficher + charger le tableau "Missions du mois"
+const box = $("respMissionsBox");
+if(box){
+  if(res.is_responsable){
+    box.style.display = "block";
+    await respLoadMissionsMonthTable(period_id); // ou res.period_id si tu préfères
+  }else{
+    box.style.display = "none";
+  }
+}
     // ===== OUVERTURE / FERMETURE AUTOMATIQUE =====
 STATE.agentWork.is_period_open = !!res.is_period_open;
 STATE.agentWork.is_responsable = !!res.is_responsable;
