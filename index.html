@@ -2630,8 +2630,12 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.is_responsable = !!res.is_responsable;
     
     // ===== RESPONSABLE : missions du mois (lecture seule) =====
-if (res.is_responsable) {
-  renderRespMissionsMonth(res.missions || []);
+if (res.is_responsable === true) {
+  if (typeof renderRespMissionsMonth === "function") {
+    renderRespMissionsMonth(res.missions || []);
+  } else {
+    console.error("renderRespMissionsMonth NON DÉFINIE");
+  }
   $("respMissionsBox").style.display = "block";
 } else {
   $("respMissionsBox").style.display = "none";
