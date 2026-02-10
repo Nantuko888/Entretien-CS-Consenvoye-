@@ -2628,6 +2628,14 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.period_id = period_id;
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
+    
+    // ===== RESPONSABLE : missions du mois (lecture seule) =====
+if (res.is_responsable) {
+  renderRespMissionsMonth(res.missions || []);
+  $("respMissionsBox").style.display = "block";
+} else {
+  $("respMissionsBox").style.display = "none";
+}
     $("boxAgentsAfterLoad").style.display = "";
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
@@ -2647,7 +2655,26 @@ console.log("RESPONSABLE =", res.responsable);
     setLoading(btn,false);
   }
 }
+function renderRespMissionsMonth(missions){
+  const tb = $("respMissionsMonthTable");
+  if(!tb) return;
 
+  if(!missions || !missions.length){
+    tb.innerHTML = `<tr><td class="ghost" colspan="4">Aucune mission.</td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = missions.map(m => `
+    <tr>
+      <td>${esc(m.libelle || m.mission_id || "")}</td>
+      <td class="center">—</td>
+      <td class="center">—</td>
+      <td class="center">—</td>
+    </tr>
+  `).join("");
+}
+
+  
 function renderAgentMissions(list){
   const box = $("boxAgentsMissions");
   if(!list.length){
