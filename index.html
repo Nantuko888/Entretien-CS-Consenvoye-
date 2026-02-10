@@ -2236,7 +2236,7 @@ async function adminsLoadRetours(ev){
   setLoading(btn,true);
   try{
     // 1) retours (Non fait / Partiel) avec ts + agent + mission
-    const res = await apiCall("adminGetRetours", {
+    const res = await apiCall("adminGetDeclarations", {
       admin_code: STATE.admins.code,
       period_id
     });
