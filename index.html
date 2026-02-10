@@ -1733,7 +1733,7 @@ if (!tb.dataset.loaded) {
   tb.innerHTML = '<tr><td class="ghost" colspan="3">Chargement...</td></tr>';
 }
   try{
-    const res = await apiCall("adminListCatalog", { admin_code: STATE.admins.code });
+    const res = await apiCall("adminListMissions", { admin_code: STATE.admins.code });
     if(!res || !res.ok) throw new Error("bad");
     const list = res.catalog || [];
    
