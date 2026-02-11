@@ -2630,6 +2630,9 @@ function toPeriodYM(period_id, label){
 
   
 async function agentsLoadPeriod(ev){
+  $("boxAgentsRetours").style.display = "none";
+$("agentsRetoursTable").innerHTML =
+  `<tr><td class="ghost" colspan="5">Chargement...</td></tr>`;
   hideToast("toastAgentsLoad");
   if(!STATE.agents.ok){ showToast("toastAgentsLoad","Non connecté.",false); return; }
   const btn = ev?.target || $("btnAgentsLoad");
@@ -2639,6 +2642,7 @@ async function agentsLoadPeriod(ev){
   setLoading(btn,true);
   try{
     const res = await apiCall("agentLoadPeriod", { agent_id: STATE.agents.agent_id, period_id });
+    console.log("LOAD PERIOD RESPONSE =>", res);
     if(!res || !res.ok){
       showToast("toastAgentsLoad",(res&&res.message)||"Erreur",false); return;
     }
@@ -2651,6 +2655,11 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
     $("boxAgentsAfterLoad").style.display = "";
+    $("boxAgentsRetours").style.display = "";
+    // ===== Affichage retours groupe si présents =====
+if(res.retours){
+  renderAgentsRetours(res.retours);
+}
 
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
@@ -3075,6 +3084,31 @@ document.addEventListener("DOMContentLoaded", () => {
   if (elActive) elActive.textContent = active;
   if (elInactive) elInactive.textContent = inactive;
 }
+  /* ===============================
+   AGENT — RENDER RETOURS TABLE
+   =============================== */
+function renderAgentsRetours(retours){
+
+  const tb = $("agentsRetoursTable");
+
+  if(!retours || !retours.length){
+    tb.innerHTML =
+      `<tr><td class="ghost" colspan="5">Aucun retour pour cette période.</td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = retours.map(r => `
+    <tr>
+      <td>${esc(r.mission || "")}</td>
+      <td>${esc(r.agent || "")}</td>
+      <td>${esc(r.etat || "")}</td>
+      <td>${esc(r.justificatif || "")}</td>
+      <td>${esc(r.date || "")}</td>
+    </tr>
+  `).join("");
+
+}
+
 
 </script>
 </body>
