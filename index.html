@@ -2614,6 +2614,7 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     console.log("TEAM GROUP =", res.group);
 console.log("RESPONSABLE =", res.responsable);
     $("boxAgentsAfterLoad").style.display = "";
+    await agentsLoadRetoursForPeriod(period_id);
 
     showToast("toastAgentsLoad","Chargé ✅",true);
   }catch(_){
@@ -3028,6 +3029,87 @@ document.addEventListener("DOMContentLoaded", () => {
   if (elActive) elActive.textContent = active;
   if (elInactive) elInactive.textContent = inactive;
 }
+  function agentGetRetours_(p){
+  const agent_id = String(p.agent_id || "").trim();
+  const period_id = normPeriodId_(p.period_id || p.periode_id || "");
+  if(!agent_id || !period_id) return { ok:false, message:"missing_params" };
+
+  // 1) agent doit exister + actif
+  const agents = readAgents_();
+  const me = agents.find(a => String(a.agent_id).trim() === agent_id && !!a.actif);
+  if(!me) return { ok:false, message:"unauthorized" };
+
+  // 2) récupérer le groupe d’agents affectés à la période (Affectations in_group TRUE)
+  const shAff = SpreadsheetApp.getActive().getSheetByName(SH.AFFECT);
+  const aff = shAff ? shAff.getDataRange().getValues() : [];
+  const groupSet = new Set();
+  for(let i=1;i<aff.length;i++){
+    const pid = normPeriodId_(aff[i][0]);
+    const aid = String(aff[i][1] || "").trim();
+    const inGroup = (aff[i][2] === true) || (String(aff[i][2] ?? "TRUE").trim().toUpperCase() === "TRUE");
+    if(pid === period_id && aid && inGroup) groupSet.add(aid);
+  }
+
+  // l’agent demandeur doit faire partie de la période
+  if(!groupSet.has(agent_id)) return { ok:false, message:"not_assigned" };
+
+  // 3) missions actives du mois (MissionsActives) -> pour filtrer proprement
+  const shAct = SpreadsheetApp.getActive().getSheetByName(SH.ACTIVE);
+  const act = shAct ? shAct.getDataRange().getValues() : [];
+  const onSet = new Set();
+  for(let i=1;i<act.length;i++){
+    const pid = normPeriodId_(act[i][0]);
+    const mid = String(act[i][1] || "").trim();
+    const active = (act[i][2] === true) || (String(act[i][2] ?? "TRUE").trim().toUpperCase() === "TRUE");
+    if(pid === period_id && mid && active) onSet.add(mid);
+  }
+
+  // 4) index noms agents + libellés missions
+  const idxA = new Map(agents.map(a => [String(a.agent_id).trim(), String(a.nom || "").trim()]));
+  const catalog = readCatalog_();
+  const idxM = new Map(catalog.map(m => [String(m.mission_id).trim(), String(m.libelle || "").trim()]));
+
+  // 5) lire Declarations et garder la DERNIÈRE déclaration par (mission_id + agent_id)
+  const shDecl = SpreadsheetApp.getActive().getSheetByName(SH.DECL);
+  const decl = shDecl ? shDecl.getDataRange().getValues() : [];
+
+  const last = new Map(); // key = mid||aid => item
+  for(let i=1;i<decl.length;i++){
+    const tsCell = decl[i][0];
+    const pid = normPeriodId_(decl[i][1]);
+    const aid = String(decl[i][2] || "").trim();
+    const mid = String(decl[i][3] || "").trim();
+    const state = String(decl[i][4] || "").trim(); // Fait / Non fait / Partiel / "-"
+    const just = String(decl[i][5] || "").trim();
+
+    if(pid !== period_id) continue;
+    if(!groupSet.has(aid)) continue;
+    if(onSet.size && !onSet.has(mid)) continue; // si onSet vide -> on laisse passer
+    if(!mid || !aid) continue;
+
+    const ts = tsCell ? new Date(tsCell).getTime() : null;
+    const key = `${mid}||${aid}`;
+
+    const cur = last.get(key);
+    const curTs = cur ? (cur.ts || 0) : 0;
+
+    if(!cur || (ts && ts > curTs)){
+      last.set(key, {
+        period_id,
+        ts: ts || null,
+        agent_id: aid,
+        agent: idxA.get(aid) || aid,
+        mission_id: mid,
+        mission: idxM.get(mid) || mid,
+        declaration: state,
+        justificatif: just
+      });
+    }
+  }
+
+  return { ok:true, items: Array.from(last.values()) };
+}
+
 
 </script>
 </body>
