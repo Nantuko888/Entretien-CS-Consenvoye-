@@ -2660,7 +2660,7 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
 if(res.retours){
   renderAgentsRetours(res.retours);
 }
-
+console.log("RETROURS[0] =>", (res.retours && res.retours[0]) ? res.retours[0] : null);
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
 
