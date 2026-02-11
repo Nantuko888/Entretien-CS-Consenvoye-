@@ -1292,7 +1292,8 @@ function apiCall(action, params){
 
     const cleanup = () => {
       try { if (script && script.parentNode) script.parentNode.removeChild(script); } catch(e){}
-      try { window[cb] = function(){ /* noop: JSONP late callback */ }; } catch(e){}
+      try { delete window[cb]; } catch(e){ window[cb] = undefined; }
+
     };
 
     const finishOk = (data) => {
