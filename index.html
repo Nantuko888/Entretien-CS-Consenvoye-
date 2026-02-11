@@ -1293,7 +1293,6 @@ function apiCall(action, params){
     const cleanup = () => {
       try { if (script && script.parentNode) script.parentNode.removeChild(script); } catch(e){}
       try { delete window[cb]; } catch(e){ window[cb] = undefined; }
-
     };
 
     const finishOk = (data) => {
@@ -2661,8 +2660,7 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
 if(res.retours){
   renderAgentsRetours(res.retours);
 }
-cconsole.log("RES KEYS =>", Object.keys(res || {}));
-console.log("RETROURS TYPE/LEN =>", Array.isArray(res?.retours) ? ("array len=" + res.retours.length) : typeof res?.retours, res?.retours);
+
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
 
@@ -2672,7 +2670,6 @@ console.log("RETROURS TYPE/LEN =>", Array.isArray(res?.retours) ? ("array len=" 
     console.log("TEAM GROUP =", res.group);
 console.log("RESPONSABLE =", res.responsable);
     $("boxAgentsAfterLoad").style.display = "";
-    console.error("AGENTS LOAD ERROR =>", _);
 
     showToast("toastAgentsLoad","Chargé ✅",true);
   }catch(_){
