@@ -2671,6 +2671,7 @@ console.log("RETROURS TYPE/LEN =>", Array.isArray(res?.retours) ? ("array len=" 
     console.log("TEAM GROUP =", res.group);
 console.log("RESPONSABLE =", res.responsable);
     $("boxAgentsAfterLoad").style.display = "";
+    console.error("AGENTS LOAD ERROR =>", _);
 
     showToast("toastAgentsLoad","Chargé ✅",true);
   }catch(_){
