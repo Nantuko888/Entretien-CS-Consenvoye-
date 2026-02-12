@@ -2721,11 +2721,12 @@ $("agentsRetoursTable").innerHTML =
       period_id
     });
 
-    if(!res || !res.ok){
-      $("agentsRetoursTable").innerHTML =
-        `<tr><td class="ghost" colspan="5">Aucun retour.</td></tr>`;
-      return;
-    }
+   if(!res || !res.ok){
+  const msg = (res && res.message) ? res.message : "Erreur";
+  $("agentsRetoursTable").innerHTML =
+    `<tr><td class="ghost" colspan="5">${esc(msg)}</td></tr>`;
+  return;
+}
 
     const items = res.items || [];
 
