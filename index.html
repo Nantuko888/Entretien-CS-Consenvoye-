@@ -1059,22 +1059,42 @@ button#btnAdminsLoadRetoursS,
 
         <div class="card">
           <div class="headRow"><div class="h2">📌 Retours (Non fait / Partiel)</div></div>
-          <div class="row align-center" style="gap:12px; margin-top:10px;">
-  <select id="adminsRetoursPeriodSel" class="periodeSelect" style="max-width:240px;">
-    <option value="">— Choisir période —</option>
-  </select>
+          <div style="display:flex; gap:20px; align-items:flex-start; margin-top:10px;">
 
-  <button
-    class="btn primary"
-    id="btnAdminsLoadRetours"
-    onclick="adminsLoadRetours(event)"
-    style="width:auto; padding:6px 14px; white-space:nowrap;"
-  >
-    Charger
-  </button>
+  <!-- Partie gauche -->
+  <div style="flex:1;">
+    <div style="display:flex; gap:10px;">
+      <select id="adminRetoursPeriodSel" class="periodeSelect" style="max-width:240px;">
+        <option value="">— Choisir période —</option>
+      </select>
 
-  <span id="retoursValidBadge"></span>
+      <button
+        class="btn primary"
+        id="btnAdminLoadRetours"
+        onclick="adminLoadRetours(event)"
+        style="width:140px;"
+      >
+        Charger
+      </button>
+    </div>
+
+    <span id="retoursValidBadge"></span>
+  </div>
+
+  <!-- Partie droite : remarques -->
+  <div style="flex:1;">
+    <div style="font-weight:bold; margin-bottom:8px;">
+      Remarques générales
+    </div>
+
+    <div id="adminRemarquesBox"
+         style="background:#1e1e1e; padding:12px; border-radius:8px; min-height:60px; max-height:180px; overflow:auto;">
+      —
+    </div>
+  </div>
+
 </div>
+
 </div>
 
         <!-- Agents du mois (à droite) -->
