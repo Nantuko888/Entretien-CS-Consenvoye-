@@ -2641,9 +2641,7 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     $("boxAgentsAfterLoad").style.display = "";
     // Charge et rend "Retours du groupe" (lecture seule)
 await agentsLoadRetoursGroup(period_id);
-  renderAgentsRetours(res.retours);
-}
-
+  
     setPill("pillAgentsPeriod","Période : " + ($("agentsPeriodsSel").selectedOptions[0]?.textContent || period_id), "ok");
 
 
