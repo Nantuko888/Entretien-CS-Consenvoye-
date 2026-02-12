@@ -1058,43 +1058,47 @@ button#btnAdminsLoadRetoursS,
         <div class="divider"></div>
 
         <div class="card">
-          <div class="headRow"><div class="h2">📌 Retours (Non fait / Partiel)</div></div>
-          <div style="display:flex; gap:20px; align-items:flex-start; margin-top:10px;">
 
- <div class="row" style="gap:20px; margin-top:10px; align-items:flex-start;">
-
-  <!-- COLONNE GAUCHE -->
-  <div style="flex:1; min-width:260px;">
-    <div class="row align-center" style="gap:12px;">
-      <select id="adminsRetoursPeriodSel" class="periodeSelect" style="max-width:240px;">
-        <option value="">— Choisir période —</option>
-      </select>
-
-      <button
-        class="btn primary"
-        id="btnAdminsLoadRetours"
-        onclick="adminsLoadRetours(event)"
-        style="white-space:nowrap;"
-      >
-        Charger
-      </button>
-
-      <span id="retoursValidBadge"></span>
-    </div>
+  <!-- Ligne TITRES -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div class="h2">📌 Retours (Non fait / Partiel)</div>
+    <div style="font-weight:700;">Remarques générales</div>
   </div>
 
-  <!-- COLONNE DROITE -->
-  <div style="flex:1;">
-    <div class="h3" style="margin-bottom:6px;">Remarques générales</div>
-    <div id="adminRemarquesBox" class="scrollBox"
-         style="max-height:140px; padding:10px;">
-      —
+  <!-- Ligne CONTENU -->
+  <div style="display:flex; gap:20px; margin-top:12px; flex-wrap:wrap;">
+
+    <!-- COLONNE GAUCHE -->
+    <div style="flex:1 1 400px; min-width:320px;">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <select id="adminsRetoursPeriodSel" class="periodeSelect" style="max-width:240px;">
+          <option value="">— Choisir période —</option>
+        </select>
+
+        <button
+          class="btn primary"
+          id="btnAdminsLoadRetours"
+          onclick="adminsLoadRetours(event)"
+          style="padding:6px 14px;"
+        >
+          Charger
+        </button>
+
+        <span id="retoursValidBadge"></span>
+      </div>
     </div>
+
+    <!-- COLONNE DROITE -->
+    <div style="flex:1 1 400px; min-width:320px;">
+      <div id="adminsRemarksBox" class="scrollBox" style="max-height:120px;">
+        <div class="muted">—</div>
+      </div>
+    </div>
+
   </div>
 
 </div>
 
-</div>
 
         <!-- Agents du mois (à droite) -->
 <div class="twoColBlock" id="retoursAgentsWrap" style="display:none; margin-top:10px;">
