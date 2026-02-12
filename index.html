@@ -2701,9 +2701,9 @@ function renderAgentMissions(list){
 
   async function agentsLoadRetoursGroup(period_id){
   // UI : état "chargement"
-  $("boxAgentsRetours").style.display = "none";
-  $("agentsRetoursTable").innerHTML =
-    `<tr><td class="ghost" colspan="5">Chargement...</td></tr>`;
+ $("boxAgentsRetours").style.display = "";
+$("agentsRetoursTable").innerHTML =
+  `<tr><td class="ghost" colspan="5">Chargement...</td></tr>`;
 
   const fmtDT = (ts) => {
     if(!ts) return "—";
