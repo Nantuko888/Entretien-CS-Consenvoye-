@@ -2987,10 +2987,13 @@ async function agentsSave(ev){
   });
 
   // Si rien n’est rempli, on ne bloque pas “le système”, mais on n’envoie rien
-  if(!decsFilled.length){
-    showToast("toastAgentsSave","Rien à enregistrer.",false);
-    return;
-  }
+ const remark = ($("agentsRemark")?.value || "").trim();
+
+if(!decsFilled.length && !remark){
+  showToast("toastAgentsSave","Rien à enregistrer.",false);
+  return;
+}
+
 
   // 3) Justificatif obligatoire si Partiel / Non fait
   for(const d of decsFilled){
@@ -3000,8 +3003,7 @@ async function agentsSave(ev){
     }
   }
 
-  const remark = ($("agentsRemark")?.value || "").trim();
-
+  
   setLoading(btn,true);
   try{
     const res = await apiCall("agentSaveDeclarations", {
