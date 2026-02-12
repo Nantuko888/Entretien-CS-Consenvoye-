@@ -2639,9 +2639,8 @@ setAgentPeriodLocked(!STATE.agentWork.is_period_open);
     STATE.agentWork.missions = res.missions || [];
     STATE.agentWork.is_responsable = !!res.is_responsable;
     $("boxAgentsAfterLoad").style.display = "";
-    $("boxAgentsRetours").style.display = "";
-    // ===== Affichage retours groupe si présents =====
-if(res.retours){
+    // Charge et rend "Retours du groupe" (lecture seule)
+await agentsLoadRetoursGroup(period_id);
   renderAgentsRetours(res.retours);
 }
 
@@ -2701,6 +2700,118 @@ function renderAgentMissions(list){
   `).join("");
   box.querySelectorAll(".decSel").forEach(onAgentDeclarationChange);
 }
+
+  async function agentsLoadRetoursGroup(period_id){
+  // UI : état "chargement"
+  $("boxAgentsRetours").style.display = "none";
+  $("agentsRetoursTable").innerHTML =
+    `<tr><td class="ghost" colspan="5">Chargement...</td></tr>`;
+
+  const fmtDT = (ts) => {
+    if(!ts) return "—";
+    const d = new Date(ts);
+    if(isNaN(d.getTime())) return "—";
+    return d.toLocaleString("fr-FR", {
+      day:"2-digit", month:"2-digit", year:"numeric",
+      hour:"2-digit", minute:"2-digit"
+    }).replace(",", "");
+  };
+
+  try{
+    const res = await apiCall("agentGetDeclarations", {
+      agent_id: STATE.agents.agent_id,
+      period_id
+    });
+
+    if(!res || !res.ok){
+      $("agentsRetoursTable").innerHTML =
+        `<tr><td class="ghost" colspan="5">Aucun retour.</td></tr>`;
+      return;
+    }
+
+    const items = res.items || [];
+
+    const month = await apiCall("agentGetMonthMissions", {
+      agent_id: STATE.agents.agent_id,
+      period_id
+    });
+
+    const missions = (month && month.missionsOn) ? month.missionsOn : [];
+
+    const byMissionAgent = new Map();
+    for(const it of items){
+      const mid = String(it.mission_id || "").trim();
+      const agent = String(it.agent || "").trim();
+      if(!mid || !agent) continue;
+
+      const key = `${mid}||${agent}`;
+      const ts = it.ts ? new Date(it.ts).getTime() : null;
+
+      const cur = byMissionAgent.get(key);
+      const curTs = cur && cur.ts ? new Date(cur.ts).getTime() : null;
+
+      if(!cur || (ts && (!curTs || ts > curTs))){
+        byMissionAgent.set(key, {
+          agent,
+          declaration: String(it.declaration || "").trim(),
+          justificatif: String(it.justificatif || "").trim(),
+          ts: it.ts || null
+        });
+      }
+    }
+
+    const out = [];
+    const sortedMissions = [...missions].sort((a,b)=>
+      String(a.libelle||a.mission_id||"").localeCompare(String(b.libelle||b.mission_id||""),"fr",{sensitivity:"base"})
+    );
+
+    for(const m of sortedMissions){
+      const mid = String(m.mission_id || "").trim();
+      const lib = String(m.libelle || mid).trim();
+
+      const rows = [];
+      for(const [key, r] of byMissionAgent.entries()){
+        if(key.startsWith(mid + "||")) rows.push(r);
+      }
+      rows.sort((a,b)=> a.agent.localeCompare(b.agent,"fr",{sensitivity:"base"}));
+
+      if(!rows.length){
+        out.push(`
+          <tr>
+            <td>${esc(lib)}</td>
+            <td class="ghost">—</td>
+            <td class="ghost">—</td>
+            <td class="ghost">—</td>
+            <td class="ghost">—</td>
+          </tr>
+        `);
+        continue;
+      }
+
+      rows.forEach((r, i)=>{
+        out.push(`
+          <tr>
+            <td>${i===0 ? esc(lib) : ""}</td>
+            <td>${esc(r.agent)}</td>
+            <td>${esc(r.declaration || "—")}</td>
+            <td>${esc(r.justificatif || "—")}</td>
+            <td>${esc(fmtDT(r.ts))}</td>
+          </tr>
+        `);
+      });
+    }
+
+    $("agentsRetoursTable").innerHTML =
+      out.join("") || `<tr><td class="ghost" colspan="5">Aucune mission.</td></tr>`;
+
+    $("boxAgentsRetours").style.display = "";
+
+  }catch(e){
+    $("agentsRetoursTable").innerHTML =
+      `<tr><td class="ghost" colspan="5">Aucun retour.</td></tr>`;
+  }
+}
+
 
   function renderAgentTeam(group, responsable){
   const box = $("boxAgentsTeam");
